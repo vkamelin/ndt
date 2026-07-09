@@ -13,6 +13,9 @@ use App\Modules\Employees\Http\Controllers\EmployeeController;
 use App\Modules\Employees\Http\Controllers\PositionController;
 use App\Modules\Objects\Http\Controllers\CityController;
 use App\Modules\Objects\Http\Controllers\ObjectController;
+use App\Modules\Organizations\Http\Controllers\OrganizationController;
+use App\Modules\Welds\Http\Controllers\WeldController;
+use App\Modules\NdtRequests\Http\Controllers\NdtRequestController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', WelcomeController::class)->name('home');
@@ -67,6 +70,60 @@ Route::middleware(['auth', 'active.user'])
         Route::post('/', [ObjectController::class, 'store'])->name('store');
         Route::patch('{object}', [ObjectController::class, 'update'])->name('update');
         Route::delete('{object}', [ObjectController::class, 'destroy'])->name('destroy');
+    });
+
+Route::middleware(['auth', 'active.user'])
+    ->prefix('admin/organizations')
+    ->name('admin.organizations.')
+    ->scopeBindings()
+    ->group(function (): void {
+        Route::get('/', [OrganizationController::class, 'index'])->name('index');
+        Route::post('/', [OrganizationController::class, 'store'])->name('store');
+        Route::get('{organization}', [OrganizationController::class, 'show'])->name('show');
+        Route::patch('{organization}', [OrganizationController::class, 'update'])->name('update');
+        Route::delete('{organization}', [OrganizationController::class, 'destroy'])->name('destroy');
+        Route::post('{organization}/contacts', [OrganizationController::class, 'storeContact'])->name('contacts.store');
+        Route::patch('{organization}/contacts/{contact}', [OrganizationController::class, 'updateContact'])->name('contacts.update');
+        Route::delete('{organization}/contacts/{contact}', [OrganizationController::class, 'destroyContact'])->name('contacts.destroy');
+        Route::post('{organization}/laboratories', [OrganizationController::class, 'storeLaboratory'])->name('laboratories.store');
+        Route::patch('{organization}/laboratories/{laboratory}', [OrganizationController::class, 'updateLaboratory'])->name('laboratories.update');
+        Route::delete('{organization}/laboratories/{laboratory}', [OrganizationController::class, 'destroyLaboratory'])->name('laboratories.destroy');
+    });
+
+Route::middleware(['auth', 'active.user'])
+    ->prefix('admin/welders')
+    ->name('admin.welders.')
+    ->group(function (): void {
+        Route::get('/', [WeldController::class, 'index'])->name('index');
+        Route::post('/', [WeldController::class, 'storeWelder'])->name('store');
+        Route::patch('{welder}', [WeldController::class, 'updateWelder'])->name('update');
+        Route::delete('{welder}', [WeldController::class, 'destroyWelder'])->name('destroy');
+    });
+
+Route::middleware(['auth', 'active.user'])
+    ->prefix('admin/welds')
+    ->name('admin.welds.')
+    ->group(function (): void {
+        Route::get('/', [WeldController::class, 'index'])->name('index');
+        Route::post('/', [WeldController::class, 'store'])->name('store');
+        Route::get('{weld}', [WeldController::class, 'show'])->name('show');
+        Route::patch('{weld}', [WeldController::class, 'update'])->name('update');
+        Route::patch('{weld}/status', [WeldController::class, 'updateStatus'])->name('status.update');
+        Route::post('{weld}/welders', [WeldController::class, 'attachWelder'])->name('welders.attach');
+        Route::delete('{weld}/welders/{welder}', [WeldController::class, 'detachWelder'])->name('welders.detach');
+    });
+
+Route::middleware(['auth', 'active.user'])
+    ->prefix('admin/ndt-requests')
+    ->name('admin.ndt-requests.')
+    ->group(function (): void {
+        Route::get('/', [NdtRequestController::class, 'index'])->name('index');
+        Route::post('/', [NdtRequestController::class, 'store'])->name('store');
+        Route::get('{ndtRequest}', [NdtRequestController::class, 'show'])->name('show');
+        Route::patch('{ndtRequest}', [NdtRequestController::class, 'update'])->name('update');
+        Route::patch('{ndtRequest}/status', [NdtRequestController::class, 'updateStatus'])->name('status.update');
+        Route::post('{ndtRequest}/welds', [NdtRequestController::class, 'attachWeld'])->name('welds.attach');
+        Route::delete('{ndtRequest}/welds/{weld}', [NdtRequestController::class, 'detachWeld'])->name('welds.detach');
     });
 
 Route::middleware(['auth', 'active.user'])

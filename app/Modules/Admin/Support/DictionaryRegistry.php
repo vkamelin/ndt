@@ -6,15 +6,18 @@ namespace App\Modules\Admin\Support;
 
 use App\Modules\Admin\Models\ActType;
 use App\Modules\Admin\Models\AbstractDictionary;
+use App\Modules\Admin\Models\Drawing;
 use App\Modules\Admin\Models\ChemicalType;
 use App\Modules\Admin\Models\DefectType;
 use App\Modules\Admin\Models\FilmType;
+use App\Modules\Admin\Models\Line;
 use App\Modules\Admin\Models\Material;
 use App\Modules\Admin\Models\Medium;
 use App\Modules\Admin\Models\NormativeDocument;
 use App\Modules\Admin\Models\PipelineCategory;
 use App\Modules\Admin\Models\RegisterType;
 use App\Modules\Admin\Models\ResultStatus;
+use App\Modules\Admin\Models\Title;
 use App\Modules\Admin\Models\WeldType;
 use App\Modules\Admin\Models\WeldingProcess;
 
@@ -37,6 +40,18 @@ final class DictionaryRegistry
             'weld-types' => [
                 'label' => 'Типы сварных соединений',
                 'model' => WeldType::class,
+            ],
+            'titles' => [
+                'label' => 'Титулы',
+                'model' => Title::class,
+            ],
+            'drawings' => [
+                'label' => 'Чертежи',
+                'model' => Drawing::class,
+            ],
+            'lines' => [
+                'label' => 'Линии',
+                'model' => Line::class,
             ],
             'pipeline-categories' => [
                 'label' => 'Категории трубопроводов',

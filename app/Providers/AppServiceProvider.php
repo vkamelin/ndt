@@ -15,6 +15,14 @@ use App\Modules\Objects\Models\City;
 use App\Modules\Objects\Models\NdtObject;
 use App\Modules\Objects\Policies\CityPolicy;
 use App\Modules\Objects\Policies\ObjectPolicy;
+use App\Modules\NdtRequests\Models\NdtRequest;
+use App\Modules\NdtRequests\Policies\NdtRequestPolicy;
+use App\Modules\Organizations\Models\Organization;
+use App\Modules\Organizations\Policies\OrganizationPolicy;
+use App\Modules\Welds\Models\Weld;
+use App\Modules\Welds\Models\Welder;
+use App\Modules\Welds\Policies\WeldPolicy;
+use App\Modules\Welds\Policies\WelderPolicy;
 use Illuminate\Support\Facades\Gate;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\ServiceProvider;
@@ -38,5 +46,9 @@ final class AppServiceProvider extends ServiceProvider
         Gate::policy(City::class, CityPolicy::class);
         Gate::policy(NdtObject::class, ObjectPolicy::class);
         Gate::policy(Employee::class, EmployeePolicy::class);
+        Gate::policy(Organization::class, OrganizationPolicy::class);
+        Gate::policy(Welder::class, WelderPolicy::class);
+        Gate::policy(Weld::class, WeldPolicy::class);
+        Gate::policy(NdtRequest::class, NdtRequestPolicy::class);
     }
 }
