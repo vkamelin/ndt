@@ -15,7 +15,11 @@ return new class extends Migration
             $table->foreignId('user_id')
                 ->constrained()
                 ->cascadeOnDelete();
-            $table->unsignedBigInteger('employee_id')->nullable()->unique();
+            $table->foreignId('employee_id')
+                ->nullable()
+                ->unique()
+                ->constrained('employees')
+                ->nullOnDelete();
             $table->timestamps();
 
             $table->unique('user_id');

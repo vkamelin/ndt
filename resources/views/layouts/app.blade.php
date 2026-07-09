@@ -27,6 +27,21 @@
                         @can('users.view')
                             <a href="{{ route('admin.users.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Пользователи</a>
                         @endcan
+                        @can('cities.view_any')
+                            <a href="{{ route('admin.cities.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Города</a>
+                        @endcan
+                        @can('objects.view_any')
+                            <a href="{{ route('admin.objects.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Объекты</a>
+                        @endcan
+                        @can('employees.view_any')
+                            <a href="{{ route('admin.employees.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Сотрудники</a>
+                        @endcan
+                        @can('positions.manage')
+                            <a href="{{ route('admin.positions.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Должности</a>
+                        @endcan
+                        @can('directories.manage')
+                            <a href="{{ route('admin.dictionaries.overview') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Справочники</a>
+                        @endcan
                         @can('viewAny', \App\Modules\Audit\Models\AuditLog::class)
                             <a href="{{ route('admin.audit-logs.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Журнал аудита</a>
                         @endcan

@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Modules\Auth\Enums\UserStatus;
+use App\Modules\Employees\Models\Employee;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -62,5 +64,21 @@ final class User extends Authenticatable
     public function isBlocked(): bool
     {
         return $this->status === UserStatus::Blocked;
+    }
+
+    public function employees(): BelongsToMany
+    {
+        return $this->belongsToMany(Employee::class, 'employee_user')
+            ->withTimestamps();
+    }
+
+    public function primaryEmployee(): ?Employee
+    {
+        return $this->employees()->first();
+    }
+
+    public function objectId(): ?int
+    {
+        return $this->primaryEmployee()?->object_id;
     }
 }

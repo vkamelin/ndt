@@ -23,6 +23,15 @@ final class RolePermissionSeeder extends Seeder
             'users.manage',
             'roles.view',
             'roles.manage',
+            'cities.view_any',
+            'cities.manage',
+            'objects.view_any',
+            'objects.manage',
+            'employees.view_any',
+            'employees.manage',
+            'positions.manage',
+            'directories.view_any',
+            'directories.manage',
         ];
 
         foreach ($permissions as $permissionName) {
@@ -34,6 +43,8 @@ final class RolePermissionSeeder extends Seeder
             'Начальник участка' => [
                 'dashboard.view',
                 'profile.view',
+                'objects.view_any',
+                'employees.view_any',
             ],
             'Инженер НК / Дешифровщик' => [
                 'dashboard.view',
