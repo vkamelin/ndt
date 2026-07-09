@@ -49,28 +49,10 @@ return new class extends Migration
 
             $table->index('organization_id');
         });
-
-        Schema::create('welders', function (Blueprint $table): void {
-            $table->id();
-            $table->foreignId('employee_id')
-                ->nullable()
-                ->constrained('employees')
-                ->nullOnDelete();
-            $table->string('name');
-            $table->string('stamp');
-            $table->boolean('is_active')->default(true)->index();
-            $table->text('comment')->nullable();
-            $table->softDeletes();
-            $table->timestamps();
-
-            $table->index('employee_id');
-            $table->index('stamp');
-        });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('welders');
         Schema::dropIfExists('laboratories');
         Schema::dropIfExists('organization_contacts');
         Schema::dropIfExists('organizations');

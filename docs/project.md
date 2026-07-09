@@ -1059,8 +1059,6 @@ Octane, Swoole, сложный Kubernetes и микросервисы не ну�
 
 * welds;
 * weld_materials;
-* welders;
-* weld_welders;
 * weld_repairs;
 * weld_status_history.
 

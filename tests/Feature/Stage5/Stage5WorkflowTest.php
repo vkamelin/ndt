@@ -15,7 +15,6 @@ use App\Modules\Objects\Models\City;
 use App\Modules\Objects\Models\NdtObject;
 use App\Modules\Organizations\Models\Organization;
 use App\Modules\Welds\Models\Weld;
-use App\Modules\Welds\Models\Welder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
@@ -96,29 +95,6 @@ final class Stage5WorkflowTest extends TestCase
             ->assertRedirect();
 
         $weld = Weld::query()->where('weld_number', '1-01')->firstOrFail();
-
-        $this->actingAs($admin)
-            ->post(route('admin.welders.store'), [
-                'name' => 'Сварщик А',
-                'stamp' => 'A1',
-                'employee_id' => null,
-                'comment' => 'Полевой сварщик',
-                'is_active' => true,
-            ])
-            ->assertRedirect();
-
-        $welder = Welder::query()->where('stamp', 'A1')->firstOrFail();
-
-        $this->actingAs($admin)
-            ->post(route('admin.welds.welders.attach', $weld), [
-                'welder_id' => $welder->id,
-            ])
-            ->assertRedirect();
-
-        $this->assertDatabaseHas('weld_welders', [
-            'weld_id' => $weld->id,
-            'welder_id' => $welder->id,
-        ]);
 
         $this->actingAs($admin)
             ->post(route('admin.ndt-requests.store'), [

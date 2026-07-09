@@ -91,16 +91,6 @@ Route::middleware(['auth', 'active.user'])
     });
 
 Route::middleware(['auth', 'active.user'])
-    ->prefix('admin/welders')
-    ->name('admin.welders.')
-    ->group(function (): void {
-        Route::get('/', [WeldController::class, 'index'])->name('index');
-        Route::post('/', [WeldController::class, 'storeWelder'])->name('store');
-        Route::patch('{welder}', [WeldController::class, 'updateWelder'])->name('update');
-        Route::delete('{welder}', [WeldController::class, 'destroyWelder'])->name('destroy');
-    });
-
-Route::middleware(['auth', 'active.user'])
     ->prefix('admin/welds')
     ->name('admin.welds.')
     ->group(function (): void {
@@ -109,8 +99,6 @@ Route::middleware(['auth', 'active.user'])
         Route::get('{weld}', [WeldController::class, 'show'])->name('show');
         Route::patch('{weld}', [WeldController::class, 'update'])->name('update');
         Route::patch('{weld}/status', [WeldController::class, 'updateStatus'])->name('status.update');
-        Route::post('{weld}/welders', [WeldController::class, 'attachWelder'])->name('welders.attach');
-        Route::delete('{weld}/welders/{welder}', [WeldController::class, 'detachWelder'])->name('welders.detach');
     });
 
 Route::middleware(['auth', 'active.user'])

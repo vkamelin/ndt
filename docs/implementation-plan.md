@@ -875,7 +875,7 @@ API:
 
 - модели `Organization`, `OrganizationContact`, `Laboratory`;
 - модели `Title`, `Drawing`, `Line`;
-- модели `Weld`, `Welder`, `WeldRepair`, `WeldStatusHistory`;
+- модели `Weld`, `WeldRepair`, `WeldStatusHistory`;
 - модели `NdtRequest`, `NdtRequestItem`, `NdtRequestStatusHistory`;
 - enum `WeldStatus`;
 - enum `NdtRequestStatus`;
@@ -895,8 +895,6 @@ API:
 - `lines`;
 - `welds`;
 - `weld_materials`;
-- `welders`;
-- `weld_welders`;
 - `weld_repairs`;
 - `weld_status_history`;
 - `ndt_requests`;

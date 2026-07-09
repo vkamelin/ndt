@@ -18,7 +18,6 @@ use App\Modules\Objects\Models\NdtObject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -115,11 +114,6 @@ final class Weld extends Model
     public function normativeDocument(): BelongsTo
     {
         return $this->belongsTo(NormativeDocument::class);
-    }
-
-    public function welders(): BelongsToMany
-    {
-        return $this->belongsToMany(Welder::class, 'weld_welders')->withTimestamps();
     }
 
     public function requests(): BelongsToMany

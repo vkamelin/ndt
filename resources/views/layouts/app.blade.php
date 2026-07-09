@@ -39,9 +39,6 @@
                         @can('organizations.view_any')
                             <a href="{{ route('admin.organizations.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Организации</a>
                         @endcan
-                        @can('welders.view_any')
-                            <a href="{{ route('admin.welders.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Сварщики</a>
-                        @endcan
                         @can('welds.view_any')
                             <a href="{{ route('admin.welds.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Стыки</a>
                         @endcan

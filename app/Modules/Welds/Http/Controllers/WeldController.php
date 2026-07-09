@@ -14,19 +14,13 @@ use App\Modules\Admin\Models\PipelineCategory;
 use App\Modules\Admin\Models\Title;
 use App\Modules\Admin\Models\WeldType;
 use App\Modules\Admin\Models\WeldingProcess;
-use App\Modules\Employees\Models\Employee;
 use App\Modules\Objects\Models\NdtObject;
 use App\Modules\Welds\Enums\WeldStatus;
 use App\Modules\Welds\Http\Requests\StoreWeldRequest;
-use App\Modules\Welds\Http\Requests\StoreWeldWelderRequest;
-use App\Modules\Welds\Http\Requests\StoreWelderRequest;
 use App\Modules\Welds\Http\Requests\UpdateWeldRequest;
 use App\Modules\Welds\Http\Requests\UpdateWeldStatusRequest;
-use App\Modules\Welds\Http\Requests\UpdateWelderRequest;
 use App\Modules\Welds\Models\Weld;
-use App\Modules\Welds\Models\Welder;
 use App\Modules\Welds\Services\WeldService;
-use App\Modules\Welds\Services\WelderService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -38,7 +32,7 @@ final class WeldController extends Controller
         $this->authorize('viewAny', Weld::class);
 
         $welds = Weld::query()
-            ->with(['object.city', 'title', 'drawing', 'line', 'welders'])
+            ->with(['object.city', 'title', 'drawing', 'line'])
             ->when(! $request->user()->can('welds.manage') && $request->user() !== null, function ($query) use ($request): void {
                 $query->where('object_id', $request->user()->objectId());
             })
@@ -68,8 +62,6 @@ final class WeldController extends Controller
             'pipelineCategories' => PipelineCategory::query()->orderBy('name')->get(),
             'media' => Medium::query()->orderBy('name')->get(),
             'normativeDocuments' => NormativeDocument::query()->orderBy('name')->get(),
-            'welders' => Welder::query()->with('employee')->orderBy('name')->get(),
-            'employeeOptions' => Employee::query()->with(['object.city'])->orderBy('last_name')->get(),
         ]);
     }
 
@@ -77,7 +69,7 @@ final class WeldController extends Controller
     {
         $this->authorize('view', $weld);
 
-        $weld->load(['object.city', 'title', 'drawing', 'line', 'material1', 'material2', 'weldingProcess', 'weldType', 'pipelineCategory', 'medium', 'normativeDocument', 'welders.employee', 'statusHistory.changedBy']);
+        $weld->load(['object.city', 'title', 'drawing', 'line', 'material1', 'material2', 'weldingProcess', 'weldType', 'pipelineCategory', 'medium', 'normativeDocument', 'statusHistory.changedBy']);
 
         return view('modules.welds.show', [
             'weld' => $weld,
@@ -91,8 +83,6 @@ final class WeldController extends Controller
             'pipelineCategories' => PipelineCategory::query()->orderBy('name')->get(),
             'media' => Medium::query()->orderBy('name')->get(),
             'normativeDocuments' => NormativeDocument::query()->orderBy('name')->get(),
-            'welders' => Welder::query()->with('employee')->orderBy('name')->get(),
-            'employeeOptions' => Employee::query()->with(['object.city'])->orderBy('last_name')->get(),
         ]);
     }
 
@@ -139,76 +129,4 @@ final class WeldController extends Controller
         return back()->with('status', 'Статус стыка обновлен.');
     }
 
-    public function attachWelder(StoreWeldWelderRequest $request, Weld $weld, WeldService $welds): RedirectResponse
-    {
-        $this->authorize('manage', $weld);
-
-        $welder = Welder::query()->findOrFail((int) $request->validated('welder_id'));
-
-        $welds->attachWelder(
-            weld: $weld,
-            welder: $welder,
-            actor: $request->user(),
-            ipAddress: $request->ip(),
-            userAgent: $request->userAgent(),
-        );
-
-        return back()->with('status', 'Сварщик добавлен к стыку.');
-    }
-
-    public function detachWelder(Request $request, Weld $weld, Welder $welder, WeldService $welds): RedirectResponse
-    {
-        $this->authorize('manage', $weld);
-
-        $welds->detachWelder(
-            weld: $weld,
-            welder: $welder,
-            actor: $request->user(),
-            ipAddress: $request->ip(),
-            userAgent: $request->userAgent(),
-        );
-
-        return back()->with('status', 'Сварщик удален из стыка.');
-    }
-
-    public function storeWelder(StoreWelderRequest $request, WelderService $welders): RedirectResponse
-    {
-        $welders->create(
-            data: $request->validated(),
-            actor: $request->user(),
-            ipAddress: $request->ip(),
-            userAgent: $request->userAgent(),
-        );
-
-        return back()->with('status', 'Сварщик создан.');
-    }
-
-    public function updateWelder(UpdateWelderRequest $request, Welder $welder, WelderService $welders): RedirectResponse
-    {
-        $this->authorize('manage', $welder);
-
-        $welders->update(
-            welder: $welder,
-            data: $request->validated(),
-            actor: $request->user(),
-            ipAddress: $request->ip(),
-            userAgent: $request->userAgent(),
-        );
-
-        return back()->with('status', 'Сварщик обновлен.');
-    }
-
-    public function destroyWelder(Request $request, Welder $welder, WelderService $welders): RedirectResponse
-    {
-        $this->authorize('manage', $welder);
-
-        $welders->deactivate(
-            welder: $welder,
-            actor: $request->user(),
-            ipAddress: $request->ip(),
-            userAgent: $request->userAgent(),
-        );
-
-        return back()->with('status', 'Сварщик деактивирован.');
-    }
 }

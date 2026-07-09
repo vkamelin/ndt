@@ -68,18 +68,6 @@ return new class extends Migration
             $table->index('normative_document_id');
         });
 
-        Schema::create('weld_welders', function (Blueprint $table): void {
-            $table->foreignId('weld_id')
-                ->constrained('welds')
-                ->cascadeOnDelete();
-            $table->foreignId('welder_id')
-                ->constrained('welders')
-                ->cascadeOnDelete();
-            $table->timestamps();
-
-            $table->primary(['weld_id', 'welder_id']);
-        });
-
         Schema::create('weld_status_history', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('weld_id')
@@ -101,7 +89,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('weld_status_history');
-        Schema::dropIfExists('weld_welders');
         Schema::dropIfExists('welds');
     }
 };

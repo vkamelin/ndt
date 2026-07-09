@@ -9,7 +9,6 @@ use App\Modules\Audit\Concerns\RecordsAuditLogs;
 use App\Modules\Audit\DTO\AuditData;
 use App\Modules\Welds\Enums\WeldStatus;
 use App\Modules\Welds\Models\Weld;
-use App\Modules\Welds\Models\Welder;
 use Illuminate\Validation\ValidationException;
 
 final class WeldService
@@ -126,50 +125,6 @@ final class WeldService
         );
 
         return $weld;
-    }
-
-    public function attachWelder(Weld $weld, Welder $welder, ?User $actor = null, ?string $ipAddress = null, ?string $userAgent = null): void
-    {
-        if ($weld->welders()->whereKey($welder->getKey())->exists()) {
-            return;
-        }
-
-        $weld->welders()->attach($welder->getKey());
-
-        $this->recordAudit(
-            AuditData::forModelChange(
-                entityType: Weld::class,
-                entityId: $weld->getKey(),
-                operation: 'weld.welder_attached',
-                after: [
-                    'weld_id' => $weld->getKey(),
-                    'welder_id' => $welder->getKey(),
-                ],
-                actor: $actor,
-                ipAddress: $ipAddress,
-                userAgent: $userAgent,
-            ),
-        );
-    }
-
-    public function detachWelder(Weld $weld, Welder $welder, ?User $actor = null, ?string $ipAddress = null, ?string $userAgent = null): void
-    {
-        $weld->welders()->detach($welder->getKey());
-
-        $this->recordAudit(
-            AuditData::forModelChange(
-                entityType: Weld::class,
-                entityId: $weld->getKey(),
-                operation: 'weld.welder_detached',
-                after: [
-                    'weld_id' => $weld->getKey(),
-                    'welder_id' => $welder->getKey(),
-                ],
-                actor: $actor,
-                ipAddress: $ipAddress,
-                userAgent: $userAgent,
-            ),
-        );
     }
 
     /**
