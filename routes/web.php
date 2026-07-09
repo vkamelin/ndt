@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\WelcomeController;
+use App\Modules\Audit\Http\Controllers\AuditLogController;
 use App\Modules\Auth\Http\Controllers\AuthenticatedSessionController;
 use App\Modules\Auth\Http\Controllers\ProfileController;
 use App\Modules\Auth\Http\Controllers\UserController as AdminUserController;
@@ -34,4 +35,11 @@ Route::middleware(['auth', 'active.user', 'can:users.view'])
         Route::patch('{user}/roles', [AdminUserController::class, 'updateRoles'])->name('roles.update');
         Route::patch('{user}/block', [AdminUserController::class, 'block'])->name('block');
         Route::patch('{user}/unblock', [AdminUserController::class, 'unblock'])->name('unblock');
+    });
+
+Route::middleware(['auth', 'active.user'])
+    ->prefix('admin/audit-logs')
+    ->name('admin.audit-logs.')
+    ->group(function (): void {
+        Route::get('/', [AuditLogController::class, 'index'])->name('index');
     });

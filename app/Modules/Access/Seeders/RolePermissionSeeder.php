@@ -18,6 +18,7 @@ final class RolePermissionSeeder extends Seeder
         $permissions = [
             'dashboard.view',
             'profile.view',
+            'audit_log.view_any',
             'users.view',
             'users.manage',
             'roles.view',

@@ -8,6 +8,7 @@
     @if (is_file(public_path('build/manifest.json')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @endif
+    @livewireStyles
 </head>
 <body class="bg-slate-50 text-slate-900">
     <div class="min-h-screen">
@@ -26,6 +27,9 @@
                         @can('users.view')
                             <a href="{{ route('admin.users.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Пользователи</a>
                         @endcan
+                        @can('viewAny', \App\Modules\Audit\Models\AuditLog::class)
+                            <a href="{{ route('admin.audit-logs.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Журнал аудита</a>
+                        @endcan
                         <form method="post" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Выйти</button>
@@ -41,5 +45,6 @@
             @yield('content')
         </main>
     </div>
+    @livewireScripts
 </body>
 </html>
