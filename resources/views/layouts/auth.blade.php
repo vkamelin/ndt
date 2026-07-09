@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('app.name', 'NDT Web Application') }}</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @if (is_file(public_path('build/manifest.json')))
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @endif
 </head>
 <body class="bg-slate-50 text-slate-900">
     <main class="app-shell flex min-h-screen items-center justify-center py-12">
@@ -22,4 +24,3 @@
     </main>
 </body>
 </html>
-

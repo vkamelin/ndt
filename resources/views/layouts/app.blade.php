@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('app.name', 'NDT Web Application') }}</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @if (is_file(public_path('build/manifest.json')))
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @endif
 </head>
 <body class="bg-slate-50 text-slate-900">
     <div class="min-h-screen">
@@ -18,7 +20,19 @@
 
                 <nav class="flex items-center gap-3 text-sm font-medium text-slate-600">
                     <a href="{{ route('home') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Главная</a>
-                    <a href="{{ route('dashboard') }}" class="rounded-full bg-brand-50 px-4 py-2 text-brand-700 transition hover:bg-brand-100">Рабочий стол</a>
+                    @auth
+                        <a href="{{ route('dashboard') }}" class="rounded-full bg-brand-50 px-4 py-2 text-brand-700 transition hover:bg-brand-100">Рабочий стол</a>
+                        <a href="{{ route('profile.show') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Профиль</a>
+                        @can('users.view')
+                            <a href="{{ route('admin.users.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Пользователи</a>
+                        @endcan
+                        <form method="post" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Выйти</button>
+                        </form>
+                    @else
+                        <a href="{{ route('login') }}" class="rounded-full bg-brand-50 px-4 py-2 text-brand-700 transition hover:bg-brand-100">Войти</a>
+                    @endauth
                 </nav>
             </div>
         </header>
@@ -29,4 +43,3 @@
     </div>
 </body>
 </html>
-

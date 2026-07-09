@@ -7,8 +7,11 @@
             <h1 class="mt-2 text-3xl font-semibold text-slate-900">Базовый экран приложения</h1>
             <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
                 Здесь будет размещаться основной интерфейс системы после реализации
-                авторизации, ролей и доменных модулей. На текущем этапе это только
-                нейтральная рабочая оболочка.
+                доменных модулей. Сейчас доступ уже ограничен по ролям и статусу
+                пользователя.
+            </p>
+            <p class="mt-4 text-sm font-medium text-slate-700">
+                Вы вошли как {{ auth()->user()->name }}.
             </p>
         </div>
 
@@ -18,14 +21,15 @@
                 <p class="mt-2 text-lg font-semibold">PHP 8.4 / Laravel 12</p>
             </div>
             <div class="panel p-5">
-                <p class="text-sm font-medium text-slate-500">Frontend</p>
-                <p class="mt-2 text-lg font-semibold">Blade / Livewire / Alpine</p>
+                <p class="text-sm font-medium text-slate-500">Доступ</p>
+                <p class="mt-2 text-lg font-semibold">
+                    {{ auth()->user()->getRoleNames()->join(', ') ?: 'Без роли' }}
+                </p>
             </div>
             <div class="panel p-5">
-                <p class="text-sm font-medium text-slate-500">Infra</p>
-                <p class="mt-2 text-lg font-semibold">MySQL / Redis / Vite</p>
+                <p class="text-sm font-medium text-slate-500">Статус</p>
+                <p class="mt-2 text-lg font-semibold">{{ auth()->user()->status->label() }}</p>
             </div>
         </div>
     </div>
 @endsection
-

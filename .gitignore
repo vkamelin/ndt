@@ -13,3 +13,4 @@ bootstrap/cache/*
 public/build/
 phpstan-baseline.neon
 coverage/
+/.phpunit.result.cache

@@ -10,6 +10,9 @@ RUN apk add --no-cache \
         oniguruma-dev \
         unzip \
         zip \
+        $PHPIZE_DEPS \
+    && pecl install redis \
+    && docker-php-ext-enable redis \
     && docker-php-ext-install \
         bcmath \
         intl \
@@ -17,8 +20,6 @@ RUN apk add --no-cache \
         pcntl \
         pdo_mysql \
         zip \
-    && pecl install redis \
-    && docker-php-ext-enable redis \
     && rm -rf /tmp/pear
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -29,4 +30,3 @@ RUN addgroup -g 1000 -S www && adduser -u 1000 -S www -G www \
 USER www
 
 CMD ["php-fpm"]
-
