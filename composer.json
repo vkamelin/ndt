@@ -1,0 +1,72 @@
+{
+    "name": "vkamelin/ndt-web-app",
+    "type": "project",
+    "description": "Production-level web application for non-destructive testing of welded joints.",
+    "license": "proprietary",
+    "require": {
+        "php": "^8.4",
+        "ext-ctype": "*",
+        "ext-curl": "*",
+        "ext-dom": "*",
+        "ext-fileinfo": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "ext-openssl": "*",
+        "ext-pdo": "*",
+        "ext-pdo_mysql": "*",
+        "ext-tokenizer": "*",
+        "ext-xml": "*",
+        "laravel/framework": "^12.0",
+        "laravel/sanctum": "^4.0",
+        "livewire/livewire": "^3.6",
+        "spatie/laravel-activitylog": "^4.10",
+        "spatie/laravel-permission": "^6.18"
+    },
+    "require-dev": {
+        "fakerphp/faker": "^1.24",
+        "larastan/larastan": "^3.3",
+        "laravel/pint": "^1.24",
+        "nunomaduro/collision": "^8.7",
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^11.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi"
+        ],
+        "post-root-package-install": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ],
+        "analyse": [
+            "@php vendor/bin/phpstan analyse"
+        ],
+        "test": [
+            "@php artisan test"
+        ],
+        "pint": [
+            "@php vendor/bin/pint"
+        ]
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true,
+        "preferred-install": "dist",
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}
+

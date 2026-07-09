@@ -6,6 +6,26 @@
 
 Основной проектный документ: `project.md`.
 
+## Локальная разработка
+
+Этап 1 уже подготавливает базовый Laravel-каркас, Docker Compose и конфиги для фронтенд-сборки.
+
+Базовые команды после установки зависимостей:
+
+```bash
+composer install
+npm install
+cp .env.example .env
+php artisan key:generate
+docker compose -f docker/compose.yml up --build
+```
+
+Отдельно доступны:
+
+- `php artisan test`
+- `php artisan app:ping`
+- `npm run build`
+
 ## Назначение
 
 Приложение должно заменить ручной табличный учет и стать единой рабочей системой для участка или лаборатории НК.

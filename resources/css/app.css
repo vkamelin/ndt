@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        color-scheme: light;
+        --app-bg: #f8fafc;
+        --app-surface: rgba(255, 255, 255, 0.88);
+        --app-border: rgba(148, 163, 184, 0.24);
+        --app-text: #0f172a;
+        --app-muted: #475569;
+        --app-accent: #1d4ed8;
+    }
+
+    html {
+        background:
+            radial-gradient(circle at top left, rgba(37, 99, 235, 0.12), transparent 35%),
+            linear-gradient(180deg, #f8fbff 0%, #f1f5f9 100%);
+    }
+
+    body {
+        @apply min-h-screen text-slate-900 antialiased;
+        color: var(--app-text);
+    }
+}
+
+@layer components {
+    .app-shell {
+        @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+    }
+
+    .panel {
+        @apply rounded-3xl border border-slate-200/70 bg-white/90 shadow-soft backdrop-blur;
+    }
+
+    .panel-title {
+        @apply text-sm font-semibold uppercase tracking-[0.24em] text-slate-500;
+    }
+}
+
