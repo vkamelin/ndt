@@ -21,6 +21,7 @@ use App\Modules\Documents\Http\Controllers\DocumentController;
 use App\Modules\Documents\Http\Controllers\FileController;
 use App\Modules\Conclusions\Http\Controllers\ConclusionController;
 use App\Modules\Radiography\Http\Controllers\RadiographyController;
+use App\Modules\Registers\Http\Controllers\TransferRegisterController;
 use App\Modules\Shifts\Http\Controllers\ShiftController;
 use App\Modules\Welds\Http\Controllers\WeldController;
 use App\Modules\NdtRequests\Http\Controllers\NdtRequestController;
@@ -193,6 +194,27 @@ Route::middleware(['auth', 'active.user'])
         Route::post('{rtResult}/archive-items', [RadiographyController::class, 'storeArchiveItem'])->name('archive-items.store');
         Route::post('{rtFilm}/images', [RadiographyController::class, 'storeImage'])->name('images.store');
         Route::post('{rtFilm}/exposures', [RadiographyController::class, 'storeExposure'])->name('exposures.store');
+    });
+
+Route::middleware(['auth', 'active.user'])
+    ->prefix('admin/registers')
+    ->name('admin.registers.')
+    ->scopeBindings()
+    ->group(function (): void {
+        Route::get('/', [TransferRegisterController::class, 'index'])->name('index');
+        Route::post('/', [TransferRegisterController::class, 'store'])->name('store');
+        Route::get('{transferRegister}', [TransferRegisterController::class, 'show'])->name('show');
+        Route::patch('{transferRegister}', [TransferRegisterController::class, 'update'])->name('update');
+        Route::patch('{transferRegister}/status', [TransferRegisterController::class, 'updateStatus'])->name('status.update');
+        Route::post('{transferRegister}/items', [TransferRegisterController::class, 'storeItem'])->name('items.store');
+        Route::post('{transferRegister}/files', [TransferRegisterController::class, 'storeFile'])->name('files.store');
+        Route::post('{transferRegister}/export/pdf', [TransferRegisterController::class, 'exportPdf'])->name('export.pdf');
+        Route::post('{transferRegister}/export/excel', [TransferRegisterController::class, 'exportExcel'])->name('export.excel');
+        Route::post('{transferRegister}/acts', [TransferRegisterController::class, 'storeAct'])->name('acts.store');
+        Route::post('{act}/export/pdf', [TransferRegisterController::class, 'exportActPdf'])->name('acts.export.pdf');
+        Route::post('{act}/export/excel', [TransferRegisterController::class, 'exportActExcel'])->name('acts.export.excel');
+        Route::post('{transferRegister}/archive-cases', [TransferRegisterController::class, 'storeArchiveCase'])->name('archive-cases.store');
+        Route::post('{archiveCase}/items', [TransferRegisterController::class, 'storeArchiveCaseItem'])->name('archive-cases.items.store');
     });
 
 Route::middleware(['auth', 'active.user'])

@@ -17,6 +17,12 @@ use App\Modules\Documents\Policies\DocumentPolicy;
 use App\Modules\Documents\Policies\FilePolicy;
 use App\Modules\Conclusions\Models\Conclusion;
 use App\Modules\Conclusions\Policies\ConclusionPolicy;
+use App\Modules\Registers\Models\Act;
+use App\Modules\Registers\Models\ArchiveCase;
+use App\Modules\Registers\Models\TransferRegister;
+use App\Modules\Registers\Policies\ActPolicy;
+use App\Modules\Registers\Policies\ArchiveCasePolicy;
+use App\Modules\Registers\Policies\TransferRegisterPolicy;
 use App\Modules\Objects\Models\City;
 use App\Modules\Objects\Models\NdtObject;
 use App\Modules\Objects\Policies\CityPolicy;
@@ -72,5 +78,8 @@ final class AppServiceProvider extends ServiceProvider
         Gate::policy(Conclusion::class, ConclusionPolicy::class);
         Gate::policy(Document::class, DocumentPolicy::class);
         Gate::policy(File::class, FilePolicy::class);
+        Gate::policy(TransferRegister::class, TransferRegisterPolicy::class);
+        Gate::policy(Act::class, ActPolicy::class);
+        Gate::policy(ArchiveCase::class, ArchiveCasePolicy::class);
     }
 }
