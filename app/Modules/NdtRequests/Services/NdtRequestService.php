@@ -9,6 +9,7 @@ use App\Modules\Audit\Concerns\RecordsAuditLogs;
 use App\Modules\Audit\DTO\AuditData;
 use App\Modules\NdtRequests\Enums\NdtRequestStatus;
 use App\Modules\NdtRequests\Models\NdtRequest;
+use App\Modules\Notifications\Services\NotificationService;
 use App\Modules\Welds\Models\Weld;
 use Illuminate\Validation\ValidationException;
 
@@ -45,6 +46,10 @@ final class NdtRequestService
                 userAgent: $userAgent,
             ),
         );
+
+        if ($status === NdtRequestStatus::Clarification) {
+            app(NotificationService::class)->notifyRequestClarification($request);
+        }
 
         return $request;
     }

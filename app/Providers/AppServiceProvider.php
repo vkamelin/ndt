@@ -9,6 +9,13 @@ use App\Modules\Audit\Models\AuditLog;
 use App\Modules\Audit\Policies\AuditLogPolicy;
 use App\Modules\Access\Policies\RolePolicy;
 use App\Modules\Access\Policies\UserPolicy;
+use App\Modules\Notifications\Models\Notification;
+use App\Modules\Notifications\Policies\NotificationPolicy;
+use App\Modules\Notifications\Console\Commands\CheckExpiringEquipmentCommand;
+use App\Modules\Notifications\Console\Commands\CheckExpiringQualificationsCommand;
+use App\Modules\Notifications\Console\Commands\CheckNotificationQueueCommand;
+use App\Modules\Notifications\Console\Commands\CheckOpenShiftsCommand;
+use App\Modules\Notifications\Console\Commands\CheckOverdueTasksCommand;
 use App\Modules\Employees\Models\Employee;
 use App\Modules\Employees\Policies\EmployeePolicy;
 use App\Modules\Documents\Models\Document;
@@ -58,6 +65,16 @@ final class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(EquipmentAvailabilityServiceInterface::class, EquipmentAvailabilityService::class);
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                CheckOverdueTasksCommand::class,
+                CheckOpenShiftsCommand::class,
+                CheckExpiringEquipmentCommand::class,
+                CheckExpiringQualificationsCommand::class,
+                CheckNotificationQueueCommand::class,
+            ]);
+        }
     }
 
     public function boot(): void
@@ -69,6 +86,7 @@ final class AppServiceProvider extends ServiceProvider
         Gate::policy(AuditLog::class, AuditLogPolicy::class);
         Gate::policy(User::class, UserPolicy::class);
         Gate::policy(Role::class, RolePolicy::class);
+        Gate::policy(Notification::class, NotificationPolicy::class);
         Gate::policy(City::class, CityPolicy::class);
         Gate::policy(NdtObject::class, ObjectPolicy::class);
         Gate::policy(\App\Modules\Equipment\Models\Equipment::class, EquipmentPolicy::class);

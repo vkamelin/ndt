@@ -69,6 +69,8 @@ final class RolePermissionSeeder extends Seeder
             'file.create',
             'file.download',
             'file.delete',
+            'notifications.view_own',
+            'notifications.view_any',
         ];
 
         foreach ($permissions as $permissionName) {
@@ -117,6 +119,7 @@ final class RolePermissionSeeder extends Seeder
                 'file.create',
                 'file.download',
                 'file.delete',
+                'notifications.view_own',
             ],
             'Инженер НК / Дешифровщик' => [
                 'dashboard.view',
@@ -145,6 +148,7 @@ final class RolePermissionSeeder extends Seeder
                 'document.view_any',
                 'file.create',
                 'file.download',
+                'notifications.view_own',
             ],
             'Дефектоскопист' => [
                 'dashboard.view',
@@ -167,6 +171,7 @@ final class RolePermissionSeeder extends Seeder
                 'equipment.view_any',
                 'document.view_any',
                 'file.download',
+                'notifications.view_own',
             ],
             'Лаборант' => [
                 'dashboard.view',
@@ -190,6 +195,7 @@ final class RolePermissionSeeder extends Seeder
                 'document.view_any',
                 'file.create',
                 'file.download',
+                'notifications.view_own',
             ],
         ];
 

@@ -14,6 +14,7 @@ use App\Modules\Conclusions\Models\ConclusionItem;
 use App\Modules\Documents\Models\File;
 use App\Modules\NdtResults\Enums\NdtResultStatus;
 use App\Modules\NdtResults\Models\NdtResult;
+use App\Modules\Notifications\Services\NotificationService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -165,6 +166,8 @@ final class ConclusionService
                 ),
             );
 
+            app(NotificationService::class)->notifyConclusionWaitingApproval($conclusion);
+
             return $conclusion;
         });
     }
@@ -200,6 +203,8 @@ final class ConclusionService
                     userAgent: $userAgent,
                 ),
             );
+
+            app(NotificationService::class)->notifyConclusionReturned($conclusion);
 
             return $conclusion;
         });

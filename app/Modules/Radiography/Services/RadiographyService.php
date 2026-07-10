@@ -16,6 +16,7 @@ use App\Modules\Radiography\Models\RtFilm;
 use App\Modules\Radiography\Models\RtImage;
 use App\Modules\Radiography\Models\RtReshoot;
 use App\Modules\Radiography\Models\RtResult;
+use App\Modules\Notifications\Services\NotificationService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -195,6 +196,7 @@ final class RadiographyService
             ]);
 
             $this->changeStatus($result, RtStatus::NeedsReshoot, $actor, 'Фиксация пересвета', $ipAddress, $userAgent);
+            app(NotificationService::class)->notifyReshootRequired($result);
 
             $this->recordAudit(
                 AuditData::forModelChange(

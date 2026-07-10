@@ -14,6 +14,7 @@ use App\Modules\NdtResults\Enums\NdtResultStatus;
 use App\Modules\NdtResults\Models\NdtResult;
 use App\Modules\NdtTasks\Enums\NdtTaskStatus;
 use App\Modules\NdtTasks\Models\NdtTask;
+use App\Modules\Notifications\Services\NotificationService;
 use App\Modules\Welds\Enums\WeldStatus;
 use App\Modules\Welds\Models\Weld;
 use App\Modules\Welds\Services\WeldService;
@@ -268,6 +269,14 @@ final class NdtResultService
                     ipAddress: $ipAddress,
                     userAgent: $userAgent,
                 );
+            }
+
+            $notifications = app(NotificationService::class);
+
+            if ($toStatus === NdtResultStatus::InAnalysis) {
+                $notifications->notifyResultWaitingAnalysis($result);
+            } elseif ($toStatus === NdtResultStatus::Defect) {
+                $notifications->notifyDefectFound($result);
             }
 
             return $result;

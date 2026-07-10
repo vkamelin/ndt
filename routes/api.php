@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Modules\Api\Http\Controllers\AuthController;
+use App\Modules\Api\Http\Controllers\NotificationsController;
 use App\Modules\Api\Http\Controllers\MobileEquipmentController;
 use App\Modules\Api\Http\Controllers\MobileFilesController;
 use App\Modules\Api\Http\Controllers\MobileShiftsController;
@@ -19,6 +20,11 @@ Route::middleware('api')->group(function (): void {
     Route::middleware(['auth:sanctum', 'active.user', 'throttle:api'])->group(function (): void {
         Route::post('auth/logout', [AuthController::class, 'logout'])->name('api.auth.logout');
         Route::get('profile', [ProfileController::class, 'show'])->name('api.profile.show');
+        Route::prefix('notifications')->name('api.notifications.')->group(function (): void {
+            Route::get('/', [NotificationsController::class, 'index'])->name('index');
+            Route::post('{notification}/read', [NotificationsController::class, 'read'])->name('read');
+            Route::post('read-all', [NotificationsController::class, 'readAll'])->name('read-all');
+        });
 
         Route::prefix('mobile/tasks')->name('api.mobile.tasks.')->group(function (): void {
             Route::get('/', [MobileTasksController::class, 'index'])->name('index');

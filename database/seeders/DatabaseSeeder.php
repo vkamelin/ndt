@@ -16,6 +16,7 @@ final class DatabaseSeeder extends Seeder
         $this->call(RolePermissionSeeder::class);
         $this->call(RegisterDictionarySeeder::class);
         $this->call(NdtMethodSeeder::class);
+        $this->call(NotificationTemplateSeeder::class);
 
         $admin = User::query()->updateOrCreate(
             ['email' => 'admin@example.test'],

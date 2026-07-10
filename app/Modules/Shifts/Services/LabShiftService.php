@@ -12,6 +12,7 @@ use App\Modules\Inventory\Models\ChemicalInventoryTransaction;
 use App\Modules\Inventory\Models\ChemicalRequest;
 use App\Modules\Inventory\Models\FilmInventoryTransaction;
 use App\Modules\Inventory\Services\InventoryService;
+use App\Modules\Notifications\Services\NotificationService;
 use App\Modules\Shifts\Enums\ShiftStatus;
 use App\Modules\Shifts\Enums\ShiftType;
 use App\Modules\Shifts\Models\LabShiftRegulatoryWork;
@@ -168,7 +169,10 @@ final class LabShiftService
      */
     public function requestChemical(Shift $shift, array $data, ?User $actor = null, ?string $ipAddress = null, ?string $userAgent = null): ChemicalRequest
     {
-        return app(InventoryService::class)->requestChemical($shift, $data, $actor, $ipAddress, $userAgent);
+        $request = app(InventoryService::class)->requestChemical($shift, $data, $actor, $ipAddress, $userAgent);
+        app(NotificationService::class)->notifyChemicalRequired($request);
+
+        return $request;
     }
 
     public function complete(Shift $shift, ?string $comment = null, ?User $actor = null, ?string $ipAddress = null, ?string $userAgent = null): Shift

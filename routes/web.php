@@ -23,6 +23,7 @@ use App\Modules\Documents\Http\Controllers\FileController;
 use App\Modules\Conclusions\Http\Controllers\ConclusionController;
 use App\Modules\Radiography\Http\Controllers\RadiographyController;
 use App\Modules\Registers\Http\Controllers\TransferRegisterController;
+use App\Modules\Notifications\Http\Controllers\NotificationController;
 use App\Modules\Shifts\Http\Controllers\ShiftController;
 use App\Modules\Welds\Http\Controllers\WeldController;
 use App\Modules\NdtRequests\Http\Controllers\NdtRequestController;
@@ -40,6 +41,15 @@ Route::middleware(['auth', 'active.user'])->group(function (): void {
     Route::get('/dashboard', DashboardController::class)
         ->middleware('can:dashboard.view')
         ->name('dashboard');
+    Route::get('/notifications', [NotificationController::class, 'index'])
+        ->middleware('can:notifications.view_own')
+        ->name('notifications.index');
+    Route::post('/notifications/{notification}/read', [NotificationController::class, 'read'])
+        ->middleware('can:notifications.view_own')
+        ->name('notifications.read');
+    Route::post('/notifications/read-all', [NotificationController::class, 'readAll'])
+        ->middleware('can:notifications.view_own')
+        ->name('notifications.read-all');
     Route::get('/profile', [ProfileController::class, 'show'])
         ->middleware('can:profile.view')
         ->name('profile.show');

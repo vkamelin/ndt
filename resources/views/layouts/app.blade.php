@@ -23,6 +23,14 @@
                     <a href="{{ route('home') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Главная</a>
                     @auth
                         <a href="{{ route('dashboard') }}" class="rounded-full bg-brand-50 px-4 py-2 text-brand-700 transition hover:bg-brand-100">Рабочий стол</a>
+                        @can('notifications.view_own')
+                            <a href="{{ route('notifications.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">
+                                Уведомления
+                                <span class="ml-1 rounded-full bg-slate-200 px-2 py-0.5 text-xs text-slate-700">
+                                    {{ auth()->user()->systemNotifications()->whereNull('read_at')->count() }}
+                                </span>
+                            </a>
+                        @endcan
                         <a href="{{ route('profile.show') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Профиль</a>
                         @can('users.view')
                             <a href="{{ route('admin.users.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Пользователи</a>
