@@ -17,6 +17,10 @@ use App\Modules\Objects\Policies\CityPolicy;
 use App\Modules\Objects\Policies\ObjectPolicy;
 use App\Modules\NdtRequests\Models\NdtRequest;
 use App\Modules\NdtRequests\Policies\NdtRequestPolicy;
+use App\Modules\NdtResults\Models\NdtResult;
+use App\Modules\NdtResults\Policies\NdtResultPolicy;
+use App\Modules\NdtResults\Services\EquipmentAvailabilityServiceInterface;
+use App\Modules\NdtResults\Services\NullEquipmentAvailabilityService;
 use App\Modules\NdtTasks\Models\NdtTask;
 use App\Modules\NdtTasks\Policies\NdtTaskPolicy;
 use App\Modules\Organizations\Models\Organization;
@@ -31,7 +35,7 @@ final class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        //
+        $this->app->bind(EquipmentAvailabilityServiceInterface::class, NullEquipmentAvailabilityService::class);
     }
 
     public function boot(): void
@@ -49,6 +53,7 @@ final class AppServiceProvider extends ServiceProvider
         Gate::policy(Organization::class, OrganizationPolicy::class);
         Gate::policy(Weld::class, WeldPolicy::class);
         Gate::policy(NdtRequest::class, NdtRequestPolicy::class);
+        Gate::policy(NdtResult::class, NdtResultPolicy::class);
         Gate::policy(NdtTask::class, NdtTaskPolicy::class);
     }
 }

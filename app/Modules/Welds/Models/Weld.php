@@ -15,6 +15,7 @@ use App\Modules\Admin\Models\WeldType;
 use App\Modules\Admin\Models\WeldingProcess;
 use App\Modules\NdtTasks\Models\NdtMethod;
 use App\Modules\NdtRequests\Models\NdtRequest;
+use App\Modules\NdtResults\Models\NdtResult;
 use App\Modules\Objects\Models\NdtObject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -131,5 +132,10 @@ final class Weld extends Model
     public function statusHistory(): HasMany
     {
         return $this->hasMany(WeldStatusHistory::class);
+    }
+
+    public function results(): HasMany
+    {
+        return $this->hasMany(NdtResult::class);
     }
 }

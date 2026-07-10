@@ -40,6 +40,10 @@ final class RolePermissionSeeder extends Seeder
             'ndt_requests.manage',
             'ndt_tasks.view_any',
             'ndt_tasks.manage',
+            'ndt_results.view_any',
+            'ndt_results.manage',
+            'ndt_results.analyze',
+            'ndt_results.approve',
             'weld_ndt_methods.manage',
         ];
 
@@ -62,6 +66,10 @@ final class RolePermissionSeeder extends Seeder
                 'ndt_requests.manage',
                 'ndt_tasks.view_any',
                 'ndt_tasks.manage',
+                'ndt_results.view_any',
+                'ndt_results.manage',
+                'ndt_results.analyze',
+                'ndt_results.approve',
                 'weld_ndt_methods.manage',
             ],
             'Инженер НК / Дешифровщик' => [
@@ -71,6 +79,9 @@ final class RolePermissionSeeder extends Seeder
                 'welds.view_any',
                 'ndt_requests.view_any',
                 'ndt_tasks.view_any',
+                'ndt_results.view_any',
+                'ndt_results.manage',
+                'ndt_results.analyze',
             ],
             'Дефектоскопист' => [
                 'dashboard.view',
@@ -79,6 +90,8 @@ final class RolePermissionSeeder extends Seeder
                 'welds.view_any',
                 'ndt_requests.view_any',
                 'ndt_tasks.view_any',
+                'ndt_results.view_any',
+                'ndt_results.manage',
             ],
             'Лаборант' => [
                 'dashboard.view',
@@ -87,6 +100,7 @@ final class RolePermissionSeeder extends Seeder
                 'welds.view_any',
                 'ndt_requests.view_any',
                 'ndt_tasks.view_any',
+                'ndt_results.view_any',
             ],
         ];
 

@@ -15,6 +15,7 @@ use App\Modules\Objects\Http\Controllers\CityController;
 use App\Modules\Objects\Http\Controllers\ObjectController;
 use App\Modules\Organizations\Http\Controllers\OrganizationController;
 use App\Modules\NdtTasks\Http\Controllers\NdtTaskController;
+use App\Modules\NdtResults\Http\Controllers\NdtResultController;
 use App\Modules\Welds\Http\Controllers\WeldController;
 use App\Modules\NdtRequests\Http\Controllers\NdtRequestController;
 use Illuminate\Support\Facades\Route;
@@ -130,6 +131,26 @@ Route::middleware(['auth', 'active.user'])
         Route::patch('{ndtTask}/partial', [NdtTaskController::class, 'completePartial'])->name('status.partial');
         Route::patch('{ndtTask}/return', [NdtTaskController::class, 'returnTask'])->name('status.return');
         Route::patch('{ndtTask}/cancel', [NdtTaskController::class, 'cancel'])->name('status.cancel');
+    });
+
+Route::middleware(['auth', 'active.user'])
+    ->prefix('admin/ndt-results')
+    ->name('admin.ndt-results.')
+    ->group(function (): void {
+        Route::get('/', [NdtResultController::class, 'index'])->name('index');
+        Route::post('/', [NdtResultController::class, 'store'])->name('store');
+        Route::get('{ndtResult}', [NdtResultController::class, 'show'])->name('show');
+        Route::patch('{ndtResult}', [NdtResultController::class, 'update'])->name('update');
+        Route::patch('{ndtResult}/analysis', [NdtResultController::class, 'sendToAnalysis'])->name('status.analysis');
+        Route::patch('{ndtResult}/defect', [NdtResultController::class, 'markDefect'])->name('status.defect');
+        Route::patch('{ndtResult}/ready', [NdtResultController::class, 'markReadyForConclusion'])->name('status.ready');
+        Route::patch('{ndtResult}/return', [NdtResultController::class, 'returnForCorrection'])->name('status.return');
+        Route::patch('{ndtResult}/approve', [NdtResultController::class, 'approve'])->name('status.approve');
+        Route::post('{ndtResult}/defects', [NdtResultController::class, 'storeDefect'])->name('defects.store');
+        Route::patch('{ndtResult}/vt', [NdtResultController::class, 'updateVisualControl'])->name('vt.update');
+        Route::patch('{ndtResult}/pt', [NdtResultController::class, 'updatePenetrantControl'])->name('pt.update');
+        Route::patch('{ndtResult}/mt', [NdtResultController::class, 'updateMagneticControl'])->name('mt.update');
+        Route::patch('{ndtResult}/ut', [NdtResultController::class, 'updateUltrasonicControl'])->name('ut.update');
     });
 
 Route::middleware(['auth', 'active.user'])
