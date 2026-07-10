@@ -22,6 +22,7 @@ use App\Modules\Notifications\Models\Notification;
 use App\Modules\Notifications\Models\NotificationDelivery;
 use App\Modules\Notifications\Models\NotificationTemplate;
 use App\Modules\Radiography\Models\RtResult;
+use App\Modules\Reports\Models\ReportJob;
 use App\Modules\Shifts\Models\Shift;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -292,6 +293,24 @@ final class NotificationService
             'object_name' => $shift->object?->name ?? '',
         ], [
             'shift_id' => $shift->getKey(),
+        ]);
+    }
+
+    public function notifyReportReady(ReportJob $reportJob): void
+    {
+        $reportJob->loadMissing(['requestedBy', 'object.city']);
+
+        if ($reportJob->requestedBy === null) {
+            return;
+        }
+
+        $this->notifyUser($reportJob->requestedBy, NotificationType::ReportReady, 'report_ready', [
+            'report_title' => $reportJob->title,
+            'report_type' => $reportJob->report_type instanceof \App\Modules\Reports\Enums\ReportType ? $reportJob->report_type->label() : (string) $reportJob->report_type,
+            'object_name' => $reportJob->object?->name ?? '',
+        ], [
+            'report_job_id' => $reportJob->getKey(),
+            'file_id' => $reportJob->file?->getKey(),
         ]);
     }
 

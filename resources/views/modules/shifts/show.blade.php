@@ -32,6 +32,15 @@
                         <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Старт</p>
                         <p class="mt-2 text-sm font-medium text-slate-900">{{ $shift->started_at?->format('d.m.Y H:i') }}</p>
                     </div>
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Печать</p>
+                        <form method="post" action="{{ route('admin.reports.store') }}" class="mt-3">
+                            @csrf
+                            <input type="hidden" name="entity_id" value="{{ $shift->id }}">
+                            <input type="hidden" name="report_type" value="{{ $shift->type->value === 'lab' ? 'lab_shift' : 'decoder_shift' }}">
+                            <button type="submit" class="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700">PDF через отчеты</button>
+                        </form>
+                    </div>
                 </div>
 
                 @can('manage', $shift)

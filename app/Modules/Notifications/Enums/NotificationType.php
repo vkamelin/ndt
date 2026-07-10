@@ -19,6 +19,7 @@ enum NotificationType: string
     case QualificationExpiring = 'qualification_expiring';
     case ShiftIncomplete = 'shift_incomplete';
     case ChemicalRequired = 'chemical_required';
+    case ReportReady = 'report_ready';
     case QueueFailure = 'queue_failure';
 
     public function label(): string
@@ -37,6 +38,7 @@ enum NotificationType: string
             self::QualificationExpiring => 'Заканчивается удостоверение сотрудника',
             self::ShiftIncomplete => 'Смена не завершена',
             self::ChemicalRequired => 'Требуется химия',
+            self::ReportReady => 'Отчет готов',
             self::QueueFailure => 'Ошибка фоновой задачи',
         };
     }

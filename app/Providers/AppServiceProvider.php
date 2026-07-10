@@ -24,6 +24,8 @@ use App\Modules\Documents\Policies\DocumentPolicy;
 use App\Modules\Documents\Policies\FilePolicy;
 use App\Modules\Conclusions\Models\Conclusion;
 use App\Modules\Conclusions\Policies\ConclusionPolicy;
+use App\Modules\Reports\Models\ReportJob;
+use App\Modules\Reports\Policies\ReportPolicy;
 use App\Modules\Registers\Models\Act;
 use App\Modules\Registers\Models\ArchiveCase;
 use App\Modules\Registers\Models\TransferRegister;
@@ -100,6 +102,7 @@ final class AppServiceProvider extends ServiceProvider
         Gate::policy(NdtTaskItem::class, NdtTaskItemPolicy::class);
         Gate::policy(Shift::class, ShiftPolicy::class);
         Gate::policy(Conclusion::class, ConclusionPolicy::class);
+        Gate::policy(ReportJob::class, ReportPolicy::class);
         Gate::policy(Document::class, DocumentPolicy::class);
         Gate::policy(File::class, FilePolicy::class);
         Gate::policy(TransferRegister::class, TransferRegisterPolicy::class);

@@ -106,6 +106,17 @@
                         <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Получатель</p>
                         <p class="mt-2 text-sm font-medium text-slate-900">{{ $register->receiverEmployee?->fullName() }}</p>
                     </div>
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 md:col-span-2 xl:col-span-2">
+                        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Печать</p>
+                        <div class="mt-3 flex flex-wrap gap-2">
+                            <form method="post" action="{{ route('admin.reports.store') }}">
+                                @csrf
+                                <input type="hidden" name="report_type" value="registers">
+                                <input type="hidden" name="entity_id" value="{{ $register->id }}">
+                                <button type="submit" class="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700">PDF реестра через отчеты</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
 
                 @can('transition', $register)
@@ -249,6 +260,12 @@
                                     <form method="post" action="{{ route('admin.registers.acts.export.excel', $act) }}">
                                         @csrf
                                         <button type="submit" class="rounded-full border border-slate-200 px-3 py-1 text-xs font-medium text-slate-700">Excel</button>
+                                    </form>
+                                    <form method="post" action="{{ route('admin.reports.store') }}">
+                                        @csrf
+                                        <input type="hidden" name="report_type" value="acts">
+                                        <input type="hidden" name="entity_id" value="{{ $act->id }}">
+                                        <button type="submit" class="rounded-full border border-slate-200 px-3 py-1 text-xs font-medium text-slate-700">Через отчеты</button>
                                     </form>
                                 </div>
                             @endcan

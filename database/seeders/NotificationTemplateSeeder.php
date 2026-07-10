@@ -104,6 +104,13 @@ final class NotificationTemplateSeeder extends Seeder
                 'body' => 'По смене {{shift_id}} был оформлен запрос химии {{chemical_name}}.',
             ],
             [
+                'code' => 'report_ready',
+                'name' => 'Отчет готов',
+                'title' => 'Отчет {{report_title}} готов',
+                'subject' => 'Отчет {{report_title}} готов',
+                'body' => 'Отчет {{report_title}} по объекту {{object_name}} готов к скачиванию.',
+            ],
+            [
                 'code' => 'queue_failure',
                 'name' => 'Ошибка фоновой задачи',
                 'title' => 'Ошибка фоновой задачи',

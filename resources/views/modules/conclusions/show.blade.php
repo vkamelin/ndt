@@ -120,6 +120,13 @@
                             <input type="file" name="file" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
                             <button type="submit" class="rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white">Загрузить файл</button>
                         </form>
+
+                        <form method="post" action="{{ route('admin.reports.store') }}" class="space-y-3">
+                            @csrf
+                            <input type="hidden" name="report_type" value="conclusions">
+                            <input type="hidden" name="entity_id" value="{{ $conclusion->id }}">
+                            <button type="submit" class="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700">Печатная форма через отчеты</button>
+                        </form>
                     </div>
                 @endcan
 

@@ -22,6 +22,7 @@ use App\Modules\Documents\Http\Controllers\DocumentController;
 use App\Modules\Documents\Http\Controllers\FileController;
 use App\Modules\Conclusions\Http\Controllers\ConclusionController;
 use App\Modules\Radiography\Http\Controllers\RadiographyController;
+use App\Modules\Reports\Http\Controllers\ReportController;
 use App\Modules\Registers\Http\Controllers\TransferRegisterController;
 use App\Modules\Notifications\Http\Controllers\NotificationController;
 use App\Modules\Shifts\Http\Controllers\ShiftController;
@@ -314,6 +315,14 @@ Route::middleware(['auth', 'active.user'])
         Route::get('{document}', [DocumentController::class, 'show'])->name('show');
         Route::patch('{document}', [DocumentController::class, 'update'])->name('update');
         Route::post('{document}/versions', [DocumentController::class, 'storeVersion'])->name('versions.store');
+    });
+
+Route::middleware(['auth', 'active.user'])
+    ->prefix('admin/reports')
+    ->name('admin.reports.')
+    ->group(function (): void {
+        Route::get('/', [ReportController::class, 'index'])->name('index');
+        Route::post('/', [ReportController::class, 'store'])->name('store');
     });
 
 Route::middleware(['auth', 'active.user'])
