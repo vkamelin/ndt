@@ -51,6 +51,15 @@
                         @can('ndt_results.view_any')
                             <a href="{{ route('admin.ndt-results.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Результаты</a>
                         @endcan
+                        @can('conclusions.view_any')
+                            <a href="{{ route('admin.conclusions.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Заключения</a>
+                        @endcan
+                        @can('radiography.view_any')
+                            <a href="{{ route('admin.radiography.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">РК</a>
+                        @endcan
+                        @can('shifts.view_any')
+                            <a href="{{ route('admin.shifts.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Смены</a>
+                        @endcan
                         @can('equipment.view_any')
                             <a href="{{ route('admin.equipment.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Оборудование</a>
                         @endcan

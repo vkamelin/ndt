@@ -19,6 +19,9 @@ use App\Modules\NdtTasks\Http\Controllers\NdtTaskController;
 use App\Modules\NdtResults\Http\Controllers\NdtResultController;
 use App\Modules\Documents\Http\Controllers\DocumentController;
 use App\Modules\Documents\Http\Controllers\FileController;
+use App\Modules\Conclusions\Http\Controllers\ConclusionController;
+use App\Modules\Radiography\Http\Controllers\RadiographyController;
+use App\Modules\Shifts\Http\Controllers\ShiftController;
 use App\Modules\Welds\Http\Controllers\WeldController;
 use App\Modules\NdtRequests\Http\Controllers\NdtRequestController;
 use Illuminate\Support\Facades\Route;
@@ -154,6 +157,64 @@ Route::middleware(['auth', 'active.user'])
         Route::patch('{ndtResult}/pt', [NdtResultController::class, 'updatePenetrantControl'])->name('pt.update');
         Route::patch('{ndtResult}/mt', [NdtResultController::class, 'updateMagneticControl'])->name('mt.update');
         Route::patch('{ndtResult}/ut', [NdtResultController::class, 'updateUltrasonicControl'])->name('ut.update');
+    });
+
+Route::middleware(['auth', 'active.user'])
+    ->prefix('admin/conclusions')
+    ->name('admin.conclusions.')
+    ->scopeBindings()
+    ->group(function (): void {
+        Route::get('/', [ConclusionController::class, 'index'])->name('index');
+        Route::post('/', [ConclusionController::class, 'store'])->name('store');
+        Route::get('{conclusion}', [ConclusionController::class, 'show'])->name('show');
+        Route::patch('{conclusion}', [ConclusionController::class, 'update'])->name('update');
+        Route::post('{conclusion}/submit', [ConclusionController::class, 'submit'])->name('submit');
+        Route::patch('{conclusion}/approve', [ConclusionController::class, 'approve'])->name('approve');
+        Route::patch('{conclusion}/return', [ConclusionController::class, 'returnForRevision'])->name('return');
+        Route::patch('{conclusion}/issue', [ConclusionController::class, 'issue'])->name('issue');
+        Route::patch('{conclusion}/annul', [ConclusionController::class, 'annul'])->name('annul');
+        Route::post('{conclusion}/replace', [ConclusionController::class, 'replace'])->name('replace');
+        Route::post('{conclusion}/versions', [ConclusionController::class, 'storeVersion'])->name('versions.store');
+        Route::post('{conclusion}/files', [ConclusionController::class, 'storeFile'])->name('files.store');
+    });
+
+Route::middleware(['auth', 'active.user'])
+    ->prefix('admin/radiography')
+    ->name('admin.radiography.')
+    ->scopeBindings()
+    ->group(function (): void {
+        Route::get('/', [RadiographyController::class, 'index'])->name('index');
+        Route::post('/', [RadiographyController::class, 'store'])->name('store');
+        Route::get('{rtResult}', [RadiographyController::class, 'show'])->name('show');
+        Route::patch('{rtResult}/status', [RadiographyController::class, 'updateStatus'])->name('status.update');
+        Route::post('{rtResult}/films', [RadiographyController::class, 'storeFilm'])->name('films.store');
+        Route::post('{rtResult}/reshoots', [RadiographyController::class, 'storeReshoot'])->name('reshoots.store');
+        Route::post('{rtResult}/densities', [RadiographyController::class, 'storeDensity'])->name('densities.store');
+        Route::post('{rtResult}/archive-items', [RadiographyController::class, 'storeArchiveItem'])->name('archive-items.store');
+        Route::post('{rtFilm}/images', [RadiographyController::class, 'storeImage'])->name('images.store');
+        Route::post('{rtFilm}/exposures', [RadiographyController::class, 'storeExposure'])->name('exposures.store');
+    });
+
+Route::middleware(['auth', 'active.user'])
+    ->prefix('admin/shifts')
+    ->name('admin.shifts.')
+    ->scopeBindings()
+    ->group(function (): void {
+        Route::get('/', [ShiftController::class, 'index'])->name('index');
+        Route::post('/', [ShiftController::class, 'store'])->name('store');
+        Route::get('{shift}', [ShiftController::class, 'show'])->name('show');
+        Route::patch('{shift}/complete', [ShiftController::class, 'complete'])->name('complete');
+        Route::post('{shift}/lab/report', [ShiftController::class, 'storeLabReport'])->name('lab.reports.store');
+        Route::post('{shift}/lab/regulatory-works', [ShiftController::class, 'storeLabRegulatoryWork'])->name('lab.regulatory-works.store');
+        Route::post('{shift}/lab/film-transactions', [ShiftController::class, 'storeFilmTransaction'])->name('lab.film-transactions.store');
+        Route::post('{shift}/lab/chemical-transactions', [ShiftController::class, 'storeChemicalTransaction'])->name('lab.chemical-transactions.store');
+        Route::post('{shift}/lab/chemical-requests', [ShiftController::class, 'storeChemicalRequest'])->name('lab.chemical-requests.store');
+        Route::post('{shift}/decoder/report', [ShiftController::class, 'storeDecoderReport'])->name('decoder.reports.store');
+        Route::post('{shift}/decoder/film-groups', [ShiftController::class, 'storeDecoderFilmGroup'])->name('decoder.film-groups.store');
+        Route::post('{shift}/decoder/rejects', [ShiftController::class, 'storeDecoderReject'])->name('decoder.rejects.store');
+        Route::post('{shift}/decoder/forgery-suspicions', [ShiftController::class, 'storeDecoderForgerySuspicion'])->name('decoder.forgery-suspicions.store');
+        Route::post('{shift}/decoder/cleanups', [ShiftController::class, 'storeDecoderCleanup'])->name('decoder.cleanups.store');
+        Route::post('{shift}/decoder/decryptions', [ShiftController::class, 'storeDecoderDecryption'])->name('decoder.decryptions.store');
     });
 
 Route::middleware(['auth', 'active.user'])

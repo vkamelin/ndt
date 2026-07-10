@@ -10,6 +10,7 @@ use App\Modules\Employees\Models\Employee;
 use App\Modules\NdtResults\Enums\NdtResultStatus;
 use App\Modules\NdtTasks\Models\NdtMethod;
 use App\Modules\NdtTasks\Models\NdtTask;
+use App\Modules\Radiography\Models\RtResult;
 use App\Modules\Welds\Models\Weld;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -104,6 +105,11 @@ final class NdtResult extends Model
     public function utResult(): HasOne
     {
         return $this->hasOne(UtResult::class, 'ndt_result_id');
+    }
+
+    public function rtResult(): HasOne
+    {
+        return $this->hasOne(RtResult::class, 'ndt_result_id');
     }
 
     public function files(): MorphMany
