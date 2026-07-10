@@ -17,9 +17,11 @@ final class EnsureUserIsActive
         $user = $request->user();
 
         if ($user !== null && $user->isBlocked()) {
-            Auth::guard('web')->logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
+            if ($request->hasSession()) {
+                Auth::guard('web')->logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+            }
 
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Пользователь заблокирован.'], Response::HTTP_FORBIDDEN);

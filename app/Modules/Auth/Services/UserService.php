@@ -10,6 +10,7 @@ use App\Modules\Audit\DTO\AuditData;
 use App\Modules\Auth\Enums\UserStatus;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 final class UserService
@@ -133,6 +134,30 @@ final class UserService
         }
 
         return $authenticatedUser;
+    }
+
+    /**
+     * Authenticate credentials for token-based clients without starting a session.
+     */
+    public function authenticateForToken(string $email, string $password): User
+    {
+        $user = User::query()
+            ->where('email', $email)
+            ->first();
+
+        if ($user instanceof User && $user->isBlocked()) {
+            throw ValidationException::withMessages([
+                'email' => 'Пользователь заблокирован.',
+            ]);
+        }
+
+        if (! $user instanceof User || ! Hash::check($password, (string) $user->getAuthPassword())) {
+            throw ValidationException::withMessages([
+                'email' => 'Неверный email или пароль.',
+            ]);
+        }
+
+        return $user;
     }
 
     /**

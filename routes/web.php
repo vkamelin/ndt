@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PwaController;
 use App\Http\Controllers\WelcomeController;
 use App\Modules\Admin\Http\Controllers\ReferenceDictionaryController;
 use App\Modules\Audit\Http\Controllers\AuditLogController;
@@ -43,6 +44,16 @@ Route::middleware(['auth', 'active.user'])->group(function (): void {
         ->middleware('can:profile.view')
         ->name('profile.show');
 });
+
+Route::middleware(['auth', 'active.user'])
+    ->prefix('pwa')
+    ->name('pwa.')
+    ->group(function (): void {
+        Route::get('/tasks', [PwaController::class, 'tasks'])->name('tasks');
+        Route::get('/lab-shift', [PwaController::class, 'labShift'])->name('lab-shift');
+        Route::get('/decoder', [PwaController::class, 'decoder'])->name('decoder');
+        Route::get('/control', [PwaController::class, 'control'])->name('control');
+    });
 
 Route::middleware(['auth', 'active.user', 'can:users.view'])
     ->prefix('admin/users')

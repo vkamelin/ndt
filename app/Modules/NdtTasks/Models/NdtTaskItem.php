@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\NdtTasks\Models;
 
+use App\Modules\Documents\Models\File;
 use App\Modules\Welds\Models\Weld;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 final class NdtTaskItem extends Model
 {
@@ -30,5 +32,10 @@ final class NdtTaskItem extends Model
     public function weld(): BelongsTo
     {
         return $this->belongsTo(Weld::class);
+    }
+
+    public function files(): MorphMany
+    {
+        return $this->morphMany(File::class, 'related');
     }
 }
