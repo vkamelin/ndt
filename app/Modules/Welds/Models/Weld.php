@@ -13,11 +13,13 @@ use App\Modules\Admin\Models\PipelineCategory;
 use App\Modules\Admin\Models\Title;
 use App\Modules\Admin\Models\WeldType;
 use App\Modules\Admin\Models\WeldingProcess;
+use App\Modules\NdtTasks\Models\NdtMethod;
 use App\Modules\NdtRequests\Models\NdtRequest;
 use App\Modules\Objects\Models\NdtObject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -119,6 +121,11 @@ final class Weld extends Model
     public function requests(): BelongsToMany
     {
         return $this->belongsToMany(NdtRequest::class, 'ndt_request_items')->withTimestamps();
+    }
+
+    public function ndtMethods(): BelongsToMany
+    {
+        return $this->belongsToMany(NdtMethod::class, 'weld_ndt_methods')->withTimestamps();
     }
 
     public function statusHistory(): HasMany

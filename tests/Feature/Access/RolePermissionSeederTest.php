@@ -25,11 +25,15 @@ final class RolePermissionSeederTest extends TestCase
 
         $this->assertDatabaseHas('permissions', ['name' => 'users.manage', 'guard_name' => 'web']);
         $this->assertDatabaseHas('permissions', ['name' => 'dashboard.view', 'guard_name' => 'web']);
+        $this->assertDatabaseHas('permissions', ['name' => 'ndt_tasks.view_any', 'guard_name' => 'web']);
+        $this->assertDatabaseHas('permissions', ['name' => 'ndt_tasks.manage', 'guard_name' => 'web']);
+        $this->assertDatabaseHas('permissions', ['name' => 'weld_ndt_methods.manage', 'guard_name' => 'web']);
 
         $adminRole = Role::findByName('Администратор системы', 'web');
 
         $this->assertTrue($adminRole->hasPermissionTo('users.manage'));
         $this->assertTrue($adminRole->hasPermissionTo('roles.manage'));
+        $this->assertTrue($adminRole->hasPermissionTo('ndt_tasks.manage'));
         $this->assertNotNull(Permission::findByName('dashboard.view', 'web'));
     }
 }

@@ -38,6 +38,9 @@ final class RolePermissionSeeder extends Seeder
             'welds.manage',
             'ndt_requests.view_any',
             'ndt_requests.manage',
+            'ndt_tasks.view_any',
+            'ndt_tasks.manage',
+            'weld_ndt_methods.manage',
         ];
 
         foreach ($permissions as $permissionName) {
@@ -57,6 +60,9 @@ final class RolePermissionSeeder extends Seeder
                 'welds.manage',
                 'ndt_requests.view_any',
                 'ndt_requests.manage',
+                'ndt_tasks.view_any',
+                'ndt_tasks.manage',
+                'weld_ndt_methods.manage',
             ],
             'Инженер НК / Дешифровщик' => [
                 'dashboard.view',
@@ -64,6 +70,7 @@ final class RolePermissionSeeder extends Seeder
                 'organizations.view_any',
                 'welds.view_any',
                 'ndt_requests.view_any',
+                'ndt_tasks.view_any',
             ],
             'Дефектоскопист' => [
                 'dashboard.view',
@@ -71,6 +78,7 @@ final class RolePermissionSeeder extends Seeder
                 'organizations.view_any',
                 'welds.view_any',
                 'ndt_requests.view_any',
+                'ndt_tasks.view_any',
             ],
             'Лаборант' => [
                 'dashboard.view',
@@ -78,6 +86,7 @@ final class RolePermissionSeeder extends Seeder
                 'organizations.view_any',
                 'welds.view_any',
                 'ndt_requests.view_any',
+                'ndt_tasks.view_any',
             ],
         ];
 

@@ -17,6 +17,8 @@ use App\Modules\Objects\Policies\CityPolicy;
 use App\Modules\Objects\Policies\ObjectPolicy;
 use App\Modules\NdtRequests\Models\NdtRequest;
 use App\Modules\NdtRequests\Policies\NdtRequestPolicy;
+use App\Modules\NdtTasks\Models\NdtTask;
+use App\Modules\NdtTasks\Policies\NdtTaskPolicy;
 use App\Modules\Organizations\Models\Organization;
 use App\Modules\Organizations\Policies\OrganizationPolicy;
 use App\Modules\Welds\Models\Weld;
@@ -47,5 +49,6 @@ final class AppServiceProvider extends ServiceProvider
         Gate::policy(Organization::class, OrganizationPolicy::class);
         Gate::policy(Weld::class, WeldPolicy::class);
         Gate::policy(NdtRequest::class, NdtRequestPolicy::class);
+        Gate::policy(NdtTask::class, NdtTaskPolicy::class);
     }
 }

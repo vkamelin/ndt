@@ -6,6 +6,7 @@ namespace App\Modules\NdtRequests\Models;
 
 use App\Modules\Admin\Models\Title;
 use App\Modules\NdtRequests\Enums\NdtRequestStatus;
+use App\Modules\NdtTasks\Models\NdtTask;
 use App\Modules\Objects\Models\NdtObject;
 use App\Modules\Organizations\Models\Organization;
 use App\Modules\Welds\Models\Weld;
@@ -70,5 +71,10 @@ final class NdtRequest extends Model
     public function statusHistory(): HasMany
     {
         return $this->hasMany(NdtRequestStatusHistory::class);
+    }
+
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(NdtTask::class, 'ndt_request_id');
     }
 }

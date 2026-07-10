@@ -14,6 +14,9 @@ use App\Modules\Admin\Models\PipelineCategory;
 use App\Modules\Admin\Models\Title;
 use App\Modules\Admin\Models\WeldType;
 use App\Modules\Admin\Models\WeldingProcess;
+use App\Modules\NdtTasks\Http\Requests\SyncWeldNdtMethodsRequest;
+use App\Modules\NdtTasks\Models\NdtMethod;
+use App\Modules\NdtTasks\Services\NdtTaskService;
 use App\Modules\Objects\Models\NdtObject;
 use App\Modules\Welds\Enums\WeldStatus;
 use App\Modules\Welds\Http\Requests\StoreWeldRequest;
@@ -32,7 +35,7 @@ final class WeldController extends Controller
         $this->authorize('viewAny', Weld::class);
 
         $welds = Weld::query()
-            ->with(['object.city', 'title', 'drawing', 'line'])
+            ->with(['object.city', 'title', 'drawing', 'line', 'ndtMethods'])
             ->when(! $request->user()->can('welds.manage') && $request->user() !== null, function ($query) use ($request): void {
                 $query->where('object_id', $request->user()->objectId());
             })
@@ -62,6 +65,7 @@ final class WeldController extends Controller
             'pipelineCategories' => PipelineCategory::query()->orderBy('name')->get(),
             'media' => Medium::query()->orderBy('name')->get(),
             'normativeDocuments' => NormativeDocument::query()->orderBy('name')->get(),
+            'methods' => NdtMethod::query()->where('is_active', true)->orderBy('name')->get(),
         ]);
     }
 
@@ -69,7 +73,7 @@ final class WeldController extends Controller
     {
         $this->authorize('view', $weld);
 
-        $weld->load(['object.city', 'title', 'drawing', 'line', 'material1', 'material2', 'weldingProcess', 'weldType', 'pipelineCategory', 'medium', 'normativeDocument', 'statusHistory.changedBy']);
+        $weld->load(['object.city', 'title', 'drawing', 'line', 'material1', 'material2', 'weldingProcess', 'weldType', 'pipelineCategory', 'medium', 'normativeDocument', 'ndtMethods', 'statusHistory.changedBy']);
 
         return view('modules.welds.show', [
             'weld' => $weld,
@@ -83,6 +87,7 @@ final class WeldController extends Controller
             'pipelineCategories' => PipelineCategory::query()->orderBy('name')->get(),
             'media' => Medium::query()->orderBy('name')->get(),
             'normativeDocuments' => NormativeDocument::query()->orderBy('name')->get(),
+            'methods' => NdtMethod::query()->where('is_active', true)->orderBy('name')->get(),
         ]);
     }
 
@@ -129,4 +134,19 @@ final class WeldController extends Controller
         return back()->with('status', 'Статус стыка обновлен.');
     }
 
+    public function syncMethods(SyncWeldNdtMethodsRequest $request, Weld $weld, NdtTaskService $tasks): RedirectResponse
+    {
+        $this->authorize('manage', $weld);
+        $this->authorize('weld_ndt_methods.manage');
+
+        $tasks->syncWeldMethods(
+            weld: $weld,
+            methodIds: array_map(static fn (int|string $methodId): int => (int) $methodId, $request->validated('method_ids')),
+            actor: $request->user(),
+            ipAddress: $request->ip(),
+            userAgent: $request->userAgent(),
+        );
+
+        return back()->with('status', 'Методы контроля стыка обновлены.');
+    }
 }

@@ -14,6 +14,7 @@ use App\Modules\Employees\Http\Controllers\PositionController;
 use App\Modules\Objects\Http\Controllers\CityController;
 use App\Modules\Objects\Http\Controllers\ObjectController;
 use App\Modules\Organizations\Http\Controllers\OrganizationController;
+use App\Modules\NdtTasks\Http\Controllers\NdtTaskController;
 use App\Modules\Welds\Http\Controllers\WeldController;
 use App\Modules\NdtRequests\Http\Controllers\NdtRequestController;
 use Illuminate\Support\Facades\Route;
@@ -99,6 +100,7 @@ Route::middleware(['auth', 'active.user'])
         Route::get('{weld}', [WeldController::class, 'show'])->name('show');
         Route::patch('{weld}', [WeldController::class, 'update'])->name('update');
         Route::patch('{weld}/status', [WeldController::class, 'updateStatus'])->name('status.update');
+        Route::patch('{weld}/methods', [WeldController::class, 'syncMethods'])->name('methods.sync');
     });
 
 Route::middleware(['auth', 'active.user'])
@@ -112,6 +114,22 @@ Route::middleware(['auth', 'active.user'])
         Route::patch('{ndtRequest}/status', [NdtRequestController::class, 'updateStatus'])->name('status.update');
         Route::post('{ndtRequest}/welds', [NdtRequestController::class, 'attachWeld'])->name('welds.attach');
         Route::delete('{ndtRequest}/welds/{weld}', [NdtRequestController::class, 'detachWeld'])->name('welds.detach');
+    });
+
+Route::middleware(['auth', 'active.user'])
+    ->prefix('admin/ndt-tasks')
+    ->name('admin.ndt-tasks.')
+    ->group(function (): void {
+        Route::get('/', [NdtTaskController::class, 'index'])->name('index');
+        Route::post('/', [NdtTaskController::class, 'store'])->name('store');
+        Route::get('{ndtTask}', [NdtTaskController::class, 'show'])->name('show');
+        Route::patch('{ndtTask}', [NdtTaskController::class, 'update'])->name('update');
+        Route::patch('{ndtTask}/accept', [NdtTaskController::class, 'accept'])->name('status.accept');
+        Route::patch('{ndtTask}/start-work', [NdtTaskController::class, 'startWork'])->name('status.start');
+        Route::patch('{ndtTask}/complete', [NdtTaskController::class, 'complete'])->name('status.complete');
+        Route::patch('{ndtTask}/partial', [NdtTaskController::class, 'completePartial'])->name('status.partial');
+        Route::patch('{ndtTask}/return', [NdtTaskController::class, 'returnTask'])->name('status.return');
+        Route::patch('{ndtTask}/cancel', [NdtTaskController::class, 'cancel'])->name('status.cancel');
     });
 
 Route::middleware(['auth', 'active.user'])
