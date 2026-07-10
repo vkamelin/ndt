@@ -8,6 +8,8 @@ use App\Http\Controllers\Controller;
 use App\Modules\Admin\Models\DefectType;
 use App\Modules\Admin\Models\NormativeDocument;
 use App\Modules\Employees\Models\Employee;
+use App\Modules\Equipment\Enums\EquipmentStatus;
+use App\Modules\Equipment\Models\Equipment;
 use App\Modules\NdtResults\DTO\MagneticControlData;
 use App\Modules\NdtResults\DTO\NdtResultData;
 use App\Modules\NdtResults\DTO\PenetrantControlData;
@@ -132,6 +134,20 @@ final class NdtResultController extends Controller
                 })
                 ->orderBy('last_name')
                 ->get(),
+            'equipment' => Equipment::query()
+                ->with(['type', 'object.city'])
+                ->when(! $isAdmin, function ($query) use ($objectId): void {
+                    if ($objectId === null) {
+                        $query->whereRaw('1 = 0');
+
+                        return;
+                    }
+
+                    $query->where('object_id', $objectId);
+                })
+                ->whereIn('status', [EquipmentStatus::Available->value, EquipmentStatus::Issued->value])
+                ->orderBy('name')
+                ->get(),
             'normativeDocuments' => NormativeDocument::query()->orderBy('name')->get(),
         ]);
     }
@@ -171,6 +187,20 @@ final class NdtResultController extends Controller
                     $query->where('object_id', $objectId);
                 })
                 ->orderBy('last_name')
+                ->get(),
+            'equipment' => Equipment::query()
+                ->with(['type', 'object.city'])
+                ->when(! $isAdmin, function ($query) use ($objectId): void {
+                    if ($objectId === null) {
+                        $query->whereRaw('1 = 0');
+
+                        return;
+                    }
+
+                    $query->where('object_id', $objectId);
+                })
+                ->whereIn('status', [EquipmentStatus::Available->value, EquipmentStatus::Issued->value])
+                ->orderBy('name')
                 ->get(),
             'normativeDocuments' => NormativeDocument::query()->orderBy('name')->get(),
         ]);

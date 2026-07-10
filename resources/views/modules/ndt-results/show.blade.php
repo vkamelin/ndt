@@ -45,7 +45,12 @@
                         </div>
                         <div class="space-y-2">
                             <label class="text-sm font-medium text-slate-700" for="equipment_id">Оборудование</label>
-                            <input id="equipment_id" name="equipment_id" value="{{ old('equipment_id', $result->equipment_id) }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
+                            <select id="equipment_id" name="equipment_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
+                                <option value="">Не указано</option>
+                                @foreach ($equipment as $item)
+                                    <option value="{{ $item->id }}" @selected(old('equipment_id', $result->equipment_id) == $item->id)>{{ $item->name }} — {{ $item->inventory_number ?: $item->serial_number ?: $item->status->label() }}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="md:col-span-2 xl:col-span-3 space-y-2">
                             <label class="text-sm font-medium text-slate-700" for="result_text">Результат</label>

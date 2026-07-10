@@ -44,7 +44,14 @@ final class RolePermissionSeeder extends Seeder
             'ndt_results.manage',
             'ndt_results.analyze',
             'ndt_results.approve',
+            'equipment.view_any',
+            'equipment.manage',
             'weld_ndt_methods.manage',
+            'document.view_any',
+            'document.manage',
+            'file.create',
+            'file.download',
+            'file.delete',
         ];
 
         foreach ($permissions as $permissionName) {
@@ -70,7 +77,14 @@ final class RolePermissionSeeder extends Seeder
                 'ndt_results.manage',
                 'ndt_results.analyze',
                 'ndt_results.approve',
+                'equipment.view_any',
+                'equipment.manage',
                 'weld_ndt_methods.manage',
+                'document.view_any',
+                'document.manage',
+                'file.create',
+                'file.download',
+                'file.delete',
             ],
             'Инженер НК / Дешифровщик' => [
                 'dashboard.view',
@@ -82,6 +96,10 @@ final class RolePermissionSeeder extends Seeder
                 'ndt_results.view_any',
                 'ndt_results.manage',
                 'ndt_results.analyze',
+                'equipment.view_any',
+                'document.view_any',
+                'file.create',
+                'file.download',
             ],
             'Дефектоскопист' => [
                 'dashboard.view',
@@ -92,6 +110,9 @@ final class RolePermissionSeeder extends Seeder
                 'ndt_tasks.view_any',
                 'ndt_results.view_any',
                 'ndt_results.manage',
+                'equipment.view_any',
+                'document.view_any',
+                'file.download',
             ],
             'Лаборант' => [
                 'dashboard.view',
@@ -101,6 +122,10 @@ final class RolePermissionSeeder extends Seeder
                 'ndt_requests.view_any',
                 'ndt_tasks.view_any',
                 'ndt_results.view_any',
+                'equipment.view_any',
+                'document.view_any',
+                'file.create',
+                'file.download',
             ],
         ];
 

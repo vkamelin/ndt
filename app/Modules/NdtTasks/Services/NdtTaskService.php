@@ -7,6 +7,7 @@ namespace App\Modules\NdtTasks\Services;
 use App\Models\User;
 use App\Modules\Audit\Concerns\RecordsAuditLogs;
 use App\Modules\Audit\DTO\AuditData;
+use App\Modules\Equipment\Services\QualificationGuardService;
 use App\Modules\Employees\Enums\EmployeeStatus;
 use App\Modules\Employees\Models\Employee;
 use App\Modules\NdtTasks\DTO\AssignNdtTaskData;
@@ -23,6 +24,7 @@ final class NdtTaskService
 
     public function __construct(
         private readonly NdtTaskNotificationService $notifications,
+        private readonly QualificationGuardService $qualificationGuard,
     ) {
     }
 
@@ -415,6 +417,12 @@ final class NdtTaskService
             throw ValidationException::withMessages([
                 'assignee_employee_id' => 'У сотрудника должен быть активный пользователь с ролью исполнителя контроля.',
             ]);
+        }
+
+        $task->loadMissing('method');
+
+        if ($task->method?->code !== null) {
+            $this->qualificationGuard->ensureQualified($employee, $task->method->code);
         }
     }
 

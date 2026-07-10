@@ -13,6 +13,7 @@ use App\Modules\Admin\Models\PipelineCategory;
 use App\Modules\Admin\Models\Title;
 use App\Modules\Admin\Models\WeldType;
 use App\Modules\Admin\Models\WeldingProcess;
+use App\Modules\Documents\Models\File;
 use App\Modules\NdtTasks\Models\NdtMethod;
 use App\Modules\NdtRequests\Models\NdtRequest;
 use App\Modules\NdtResults\Models\NdtResult;
@@ -22,6 +23,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 final class Weld extends Model
@@ -137,5 +139,10 @@ final class Weld extends Model
     public function results(): HasMany
     {
         return $this->hasMany(NdtResult::class);
+    }
+
+    public function files(): MorphMany
+    {
+        return $this->morphMany(File::class, 'related');
     }
 }

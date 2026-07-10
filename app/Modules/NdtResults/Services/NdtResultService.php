@@ -7,6 +7,8 @@ namespace App\Modules\NdtResults\Services;
 use App\Models\User;
 use App\Modules\Audit\Concerns\RecordsAuditLogs;
 use App\Modules\Audit\DTO\AuditData;
+use App\Modules\Employees\Models\Employee;
+use App\Modules\Equipment\Services\QualificationGuardService;
 use App\Modules\NdtResults\DTO\NdtResultData;
 use App\Modules\NdtResults\Enums\NdtResultStatus;
 use App\Modules\NdtResults\Models\NdtResult;
@@ -23,7 +25,8 @@ final class NdtResultService
     use RecordsAuditLogs;
 
     public function __construct(
-        private readonly EquipmentAvailabilityServiceInterface $equipmentAvailability,
+        private readonly \App\Modules\NdtResults\Services\EquipmentAvailabilityServiceInterface $equipmentAvailability,
+        private readonly QualificationGuardService $qualificationGuard,
         private readonly WeldService $welds,
     ) {
     }
@@ -34,7 +37,7 @@ final class NdtResultService
     public function create(NdtResultData $data, ?User $actor = null, ?string $ipAddress = null, ?string $userAgent = null): NdtResult
     {
         return DB::transaction(function () use ($data, $actor, $ipAddress, $userAgent): NdtResult {
-            $task = NdtTask::query()->with('assigneeEmployee')->findOrFail($data->ndtTaskId);
+            $task = NdtTask::query()->with(['assigneeEmployee', 'method'])->findOrFail($data->ndtTaskId);
             $weld = Weld::query()->findOrFail($data->weldId);
 
             $this->assertTaskAndWeldMatch($task, $weld, $data->ndtMethodId);
@@ -47,6 +50,9 @@ final class NdtResultService
                     'executor_employee_id' => 'Для результата нужно указать исполнителя.',
                 ]);
             }
+
+            $executorEmployee = Employee::query()->with(['qualifications'])->findOrFail($executorEmployeeId);
+            $this->qualificationGuard->ensureQualified($executorEmployee, $task->method->code, $actor);
 
             $result = NdtResult::query()->create([
                 'ndt_task_id' => $task->getKey(),
@@ -92,6 +98,10 @@ final class NdtResultService
         return DB::transaction(function () use ($result, $data, $actor, $ipAddress, $userAgent): NdtResult {
             $before = $this->snapshot($result);
             $this->equipmentAvailability->ensureAvailable($data->equipmentId, $actor);
+
+            $result->loadMissing('method');
+            $executorEmployee = Employee::query()->with(['qualifications'])->findOrFail($data->executorEmployeeId ?? $result->executor_employee_id);
+            $this->qualificationGuard->ensureQualified($executorEmployee, $result->method->code, $actor);
 
             $result->fill([
                 'executor_employee_id' => $data->executorEmployeeId,

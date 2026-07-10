@@ -11,11 +11,14 @@ use App\Modules\Auth\Http\Controllers\ProfileController;
 use App\Modules\Auth\Http\Controllers\UserController as AdminUserController;
 use App\Modules\Employees\Http\Controllers\EmployeeController;
 use App\Modules\Employees\Http\Controllers\PositionController;
+use App\Modules\Equipment\Http\Controllers\EquipmentController;
 use App\Modules\Objects\Http\Controllers\CityController;
 use App\Modules\Objects\Http\Controllers\ObjectController;
 use App\Modules\Organizations\Http\Controllers\OrganizationController;
 use App\Modules\NdtTasks\Http\Controllers\NdtTaskController;
 use App\Modules\NdtResults\Http\Controllers\NdtResultController;
+use App\Modules\Documents\Http\Controllers\DocumentController;
+use App\Modules\Documents\Http\Controllers\FileController;
 use App\Modules\Welds\Http\Controllers\WeldController;
 use App\Modules\NdtRequests\Http\Controllers\NdtRequestController;
 use Illuminate\Support\Facades\Route;
@@ -175,6 +178,48 @@ Route::middleware(['auth', 'active.user'])
         Route::post('{employee}/qualifications', [EmployeeController::class, 'storeQualification'])->name('qualifications.store');
         Route::patch('{employee}/qualifications/{qualification}', [EmployeeController::class, 'updateQualification'])->name('qualifications.update');
         Route::delete('{employee}/qualifications/{qualification}', [EmployeeController::class, 'destroyQualification'])->name('qualifications.destroy');
+    });
+
+Route::middleware(['auth', 'active.user'])
+    ->prefix('admin/equipment')
+    ->name('admin.equipment.')
+    ->scopeBindings()
+    ->group(function (): void {
+        Route::get('/', [EquipmentController::class, 'index'])->name('index');
+        Route::post('/', [EquipmentController::class, 'store'])->name('store');
+        Route::get('{equipment}', [EquipmentController::class, 'show'])->name('show');
+        Route::patch('{equipment}', [EquipmentController::class, 'update'])->name('update');
+        Route::delete('{equipment}', [EquipmentController::class, 'destroy'])->name('destroy');
+        Route::post('{equipment}/verifications', [EquipmentController::class, 'storeVerification'])->name('verifications.store');
+        Route::post('{equipment}/calibrations', [EquipmentController::class, 'storeCalibration'])->name('calibrations.store');
+        Route::post('{equipment}/repairs', [EquipmentController::class, 'storeRepair'])->name('repairs.store');
+        Route::post('{equipment}/assignments', [EquipmentController::class, 'storeAssignment'])->name('assignments.store');
+        Route::patch('{equipment}/assignments/{assignment}/return', [EquipmentController::class, 'returnAssignment'])->name('assignments.return');
+        Route::post('{equipment}/movements', [EquipmentController::class, 'storeMovement'])->name('movements.store');
+        Route::post('{equipment}/defects', [EquipmentController::class, 'storeDefect'])->name('defects.store');
+        Route::post('{equipment}/documents', [EquipmentController::class, 'storeDocument'])->name('documents.store');
+    });
+
+Route::middleware(['auth', 'active.user'])
+    ->prefix('admin/documents')
+    ->name('admin.documents.')
+    ->scopeBindings()
+    ->group(function (): void {
+        Route::get('/', [DocumentController::class, 'index'])->name('index');
+        Route::post('/', [DocumentController::class, 'store'])->name('store');
+        Route::get('{document}', [DocumentController::class, 'show'])->name('show');
+        Route::patch('{document}', [DocumentController::class, 'update'])->name('update');
+        Route::post('{document}/versions', [DocumentController::class, 'storeVersion'])->name('versions.store');
+    });
+
+Route::middleware(['auth', 'active.user'])
+    ->prefix('admin/files')
+    ->name('admin.files.')
+    ->scopeBindings()
+    ->group(function (): void {
+        Route::post('/', [FileController::class, 'store'])->name('store');
+        Route::get('{file}/download', [FileController::class, 'download'])->name('download');
+        Route::delete('{file}', [FileController::class, 'destroy'])->name('destroy');
     });
 
 Route::middleware(['auth', 'active.user'])

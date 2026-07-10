@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace App\Modules\Employees\Models;
 
 use App\Models\User;
+use App\Modules\Documents\Models\File;
 use App\Modules\Employees\Enums\EmployeeStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 final class Employee extends Model
@@ -60,6 +62,11 @@ final class Employee extends Model
     {
         return $this->belongsToMany(User::class, 'employee_user')
             ->withTimestamps();
+    }
+
+    public function files(): MorphMany
+    {
+        return $this->morphMany(File::class, 'related');
     }
 
     public function fullName(): string

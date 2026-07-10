@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\NdtResults\Models;
 
-use App\Modules\Employees\Models\Employee;
 use App\Modules\Admin\Models\NormativeDocument;
+use App\Modules\Documents\Models\File;
+use App\Modules\Employees\Models\Employee;
 use App\Modules\NdtResults\Enums\NdtResultStatus;
 use App\Modules\NdtTasks\Models\NdtMethod;
 use App\Modules\NdtTasks\Models\NdtTask;
@@ -15,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 final class NdtResult extends Model
@@ -102,5 +104,10 @@ final class NdtResult extends Model
     public function utResult(): HasOne
     {
         return $this->hasOne(UtResult::class, 'ndt_result_id');
+    }
+
+    public function files(): MorphMany
+    {
+        return $this->morphMany(File::class, 'related');
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\NdtRequests\Models;
 
 use App\Modules\Admin\Models\Title;
+use App\Modules\Documents\Models\File;
 use App\Modules\NdtRequests\Enums\NdtRequestStatus;
 use App\Modules\NdtTasks\Models\NdtTask;
 use App\Modules\Objects\Models\NdtObject;
@@ -15,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 final class NdtRequest extends Model
@@ -76,5 +78,10 @@ final class NdtRequest extends Model
     public function tasks(): HasMany
     {
         return $this->hasMany(NdtTask::class, 'ndt_request_id');
+    }
+
+    public function files(): MorphMany
+    {
+        return $this->morphMany(File::class, 'related');
     }
 }
