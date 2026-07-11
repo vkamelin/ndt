@@ -6,7 +6,7 @@ namespace App\Modules\Admin\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-final class StoreDictionaryEntryRequest extends FormRequest
+class StoreDictionaryEntryRequest extends FormRequest
 {
     public function authorize(): bool
     {

@@ -6,7 +6,7 @@ namespace App\Modules\Welds\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-final class StoreWeldRequest extends FormRequest
+class StoreWeldRequest extends FormRequest
 {
     public function authorize(): bool
     {

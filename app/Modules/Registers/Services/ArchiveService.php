@@ -78,7 +78,8 @@ final class ArchiveService
                 return $existing;
             }
 
-            $item = $archiveCase->items()->create([
+            $item = ArchiveCaseItem::query()->create([
+                'archive_case_id' => $archiveCase->getKey(),
                 'related_type' => $data['related_type'],
                 'related_id' => $data['related_id'],
                 'file_id' => $data['file_id'] ?? null,

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Feature\Dashboard;
 
 use App\Models\User;
-use App\Modules\Auth\Enums\UserStatus;
 use App\Modules\Admin\Models\Drawing;
 use App\Modules\Admin\Models\Line;
 use App\Modules\Admin\Models\Material;
@@ -15,6 +14,7 @@ use App\Modules\Admin\Models\PipelineCategory;
 use App\Modules\Admin\Models\Title;
 use App\Modules\Admin\Models\WeldingProcess;
 use App\Modules\Admin\Models\WeldType;
+use App\Modules\Auth\Enums\UserStatus;
 use App\Modules\Employees\Enums\EmployeeStatus;
 use App\Modules\Employees\Models\Employee;
 use App\Modules\Employees\Models\Position;
@@ -31,6 +31,7 @@ use App\Modules\Welds\Enums\WeldStatus;
 use App\Modules\Welds\Models\Weld;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 final class DashboardOverviewTest extends TestCase

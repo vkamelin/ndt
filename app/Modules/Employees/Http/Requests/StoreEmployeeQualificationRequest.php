@@ -6,7 +6,7 @@ namespace App\Modules\Employees\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-final class StoreEmployeeQualificationRequest extends FormRequest
+class StoreEmployeeQualificationRequest extends FormRequest
 {
     public function authorize(): bool
     {

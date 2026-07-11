@@ -6,7 +6,7 @@ namespace App\Modules\NdtRequests\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-final class StoreNdtRequestRequest extends FormRequest
+class StoreNdtRequestRequest extends FormRequest
 {
     public function authorize(): bool
     {

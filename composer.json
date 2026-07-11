@@ -51,7 +51,7 @@
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ],
         "analyse": [
-            "@php vendor/bin/phpstan analyse"
+            "@php -d memory_limit=-1 vendor/bin/phpstan analyse"
         ],
         "test": [
             "@php artisan test"
@@ -69,4 +69,3 @@
         }
     }
 }
-

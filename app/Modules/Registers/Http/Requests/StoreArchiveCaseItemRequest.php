@@ -14,7 +14,11 @@ final class StoreArchiveCaseItemRequest extends FormRequest
         /** @var ArchiveCase|null $archiveCase */
         $archiveCase = $this->route('archiveCase');
 
-        return $archiveCase !== null && $this->user()?->can('manage', $archiveCase) === true;
+        return $archiveCase !== null
+            && (
+                $this->user()?->hasRole('Администратор системы') === true
+                || $this->user()?->can('manage', $archiveCase) === true
+            );
     }
 
     /**

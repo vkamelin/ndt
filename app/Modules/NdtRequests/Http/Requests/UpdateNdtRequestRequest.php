@@ -7,7 +7,7 @@ namespace App\Modules\NdtRequests\Http\Requests;
 use App\Modules\NdtRequests\Models\NdtRequest;
 use Illuminate\Validation\Rule;
 
-final class UpdateNdtRequestRequest extends StoreNdtRequestRequest
+class UpdateNdtRequestRequest extends StoreNdtRequestRequest
 {
     /**
      * @return array<string, list<string>|string>

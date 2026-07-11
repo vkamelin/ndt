@@ -73,7 +73,14 @@ final class MobileFilesController extends ApiController
 
             /** @var Model $related */
             $related = $relatedClass::query()->findOrFail($relatedId);
-            Gate::authorize('manage', $related);
+            if (
+                ! (
+                    ($request->user()?->can('welds.manage') ?? false)
+                    || ($request->user()?->hasRole('Администратор системы') ?? false)
+                )
+            ) {
+                Gate::authorize('manage', $related);
+            }
 
             return $related;
         }

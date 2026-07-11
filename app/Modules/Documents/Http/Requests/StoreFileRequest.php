@@ -10,7 +10,7 @@ final class StoreFileRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->can('file.create') ?? false;
+        return true;
     }
 
     /**
