@@ -50,23 +50,39 @@ final class OrganizationController extends Controller
         ]);
     }
 
+    public function create(): View
+    {
+        $this->authorize('organizations.manage');
+
+        return view('modules.organizations.create');
+    }
+
+    public function edit(Organization $organization): View
+    {
+        $this->authorize('manage', $organization);
+
+        return view('modules.organizations.edit', [
+            'organization' => $organization,
+        ]);
+    }
+
     public function store(StoreOrganizationRequest $request, OrganizationService $organizations): RedirectResponse
     {
-        $organizations->create(
+        $organization = $organizations->create(
             data: $request->validated(),
             actor: $request->user(),
             ipAddress: $request->ip(),
             userAgent: $request->userAgent(),
         );
 
-        return back()->with('status', 'Организация создана.');
+        return redirect()->route('admin.organizations.show', $organization)->with('status', 'Организация создана.');
     }
 
     public function update(UpdateOrganizationRequest $request, Organization $organization, OrganizationService $organizations): RedirectResponse
     {
         $this->authorize('manage', $organization);
 
-        $organizations->update(
+        $updatedOrganization = $organizations->update(
             organization: $organization,
             data: $request->validated(),
             actor: $request->user(),
@@ -74,7 +90,7 @@ final class OrganizationController extends Controller
             userAgent: $request->userAgent(),
         );
 
-        return back()->with('status', 'Организация обновлена.');
+        return redirect()->route('admin.organizations.show', $updatedOrganization)->with('status', 'Организация обновлена.');
     }
 
     public function destroy(Request $request, Organization $organization, OrganizationService $organizations): RedirectResponse

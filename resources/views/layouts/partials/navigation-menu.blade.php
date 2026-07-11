@@ -58,6 +58,9 @@
             @can('users.view')
                 <a href="{{ route('admin.users.index') }}" @click="menuOpen = false" class="nav-link">Пользователи</a>
             @endcan
+            @can('employees.view_any')
+                <a href="{{ route('admin.employees.index') }}" @click="menuOpen = false" class="nav-link">Сотрудники</a>
+            @endcan
             @can('cities.view_any')
                 <a href="{{ route('admin.cities.index') }}" @click="menuOpen = false" class="nav-link">Города</a>
             @endcan

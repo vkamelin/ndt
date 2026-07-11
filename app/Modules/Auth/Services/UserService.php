@@ -8,7 +8,10 @@ use App\Models\User;
 use App\Modules\Audit\Concerns\RecordsAuditLogs;
 use App\Modules\Audit\DTO\AuditData;
 use App\Modules\Auth\Enums\UserStatus;
+use App\Modules\Employees\Models\Employee;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -16,6 +19,45 @@ use Illuminate\Validation\ValidationException;
 final class UserService
 {
     use RecordsAuditLogs;
+
+    /**
+     * @param  array{name: string, email: string, status: string, password?: string|null, employee_id?: int|null}  $data
+     */
+    public function update(User $user, array $data, ?User $actor = null, ?string $ipAddress = null, ?string $userAgent = null): User
+    {
+        return DB::transaction(function () use ($user, $data, $actor, $ipAddress, $userAgent): User {
+            $before = $this->snapshot($user);
+
+            $payload = [
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'status' => UserStatus::from($data['status']),
+            ];
+
+            if (isset($data['password']) && $data['password'] !== null && $data['password'] !== '') {
+                $payload['password'] = $data['password'];
+            }
+
+            $user->fill($payload)->save();
+            $this->syncEmployee($user, $data['employee_id'] ?? null);
+            $user->refresh();
+
+            $this->recordAudit(
+                AuditData::forModelChange(
+                    entityType: $user::class,
+                    entityId: $user->getKey(),
+                    operation: 'user.profile.updated',
+                    before: $before,
+                    after: $this->snapshot($user),
+                    actor: $actor,
+                    ipAddress: $ipAddress,
+                    userAgent: $userAgent,
+                ),
+            );
+
+            return $user;
+        });
+    }
 
     /**
      * @param  list<string>  $roleNames
@@ -40,6 +82,39 @@ final class UserService
                 userAgent: $userAgent,
             ),
         );
+
+        return $user;
+    }
+
+    /**
+     * @throws ValidationException
+     */
+    public function syncEmployee(User $user, ?int $employeeId): User
+    {
+        $currentEmployeeId = $user->employees()->value('employees.id');
+        $currentEmployeeId = $currentEmployeeId === null ? null : (int) $currentEmployeeId;
+
+        if ($currentEmployeeId === $employeeId) {
+            return $user;
+        }
+
+        if ($employeeId !== null) {
+            $conflict = Employee::query()
+                ->whereKey($employeeId)
+                ->whereHas('users', function (Builder $query) use ($user): void {
+                    $query->whereKeyNot($user->getKey());
+                })
+                ->exists();
+
+            if ($conflict) {
+                throw ValidationException::withMessages([
+                    'employee_id' => 'Выбранный сотрудник уже связан с другим пользователем.',
+                ]);
+            }
+        }
+
+        $user->employees()->sync($employeeId === null ? [] : [$employeeId]);
+        $user->refresh();
 
         return $user;
     }
@@ -170,6 +245,7 @@ final class UserService
             'name' => $user->name,
             'email' => $user->email,
             'status' => $user->status?->value ?? null,
+            'employee_id' => $user->primaryEmployee()?->getKey(),
             'roles' => $user->getRoleNames()->values()->all(),
         ];
     }

@@ -23,6 +23,11 @@ final class UserPolicy
         return $user->can('users.manage') && ! $user->is($target);
     }
 
+    public function update(User $user, User $target): bool
+    {
+        return $user->can('users.manage') && ! $user->is($target);
+    }
+
     public function block(User $user, User $target): bool
     {
         return $user->can('users.manage') && ! $user->is($target);

@@ -33,6 +33,20 @@ final class CityController extends Controller
         ]);
     }
 
+    public function create(Request $request): RedirectResponse
+    {
+        $this->authorize('cities.manage');
+
+        return redirect()->route('admin.cities.index');
+    }
+
+    public function edit(Request $request, City $city): RedirectResponse
+    {
+        $this->authorize('cities.manage');
+
+        return redirect()->route('admin.cities.index');
+    }
+
     public function store(StoreCityRequest $request, CityService $cities): RedirectResponse
     {
         $this->authorize('cities.manage');

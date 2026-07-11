@@ -19,69 +19,15 @@
         <div class="grid gap-6 xl:grid-cols-[1.6fr,1fr]">
             @can('employees.manage')
                 <div class="panel p-6 space-y-6">
-                    <form method="post" action="{{ route('admin.employees.update', $employee) }}" class="grid gap-4 md:grid-cols-2">
-                        @csrf
-                        @method('patch')
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="object_id">Объект/участок</label>
-                            <select id="object_id" name="object_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                                @foreach ($objects as $object)
-                                    <option value="{{ $object->id }}" @selected(old('object_id', $employee->object_id) == $object->id)>{{ $object->name }}</option>
-                                @endforeach
-                            </select>
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                        <div class="flex flex-wrap items-center justify-between gap-3">
+                            <div>
+                                <p class="text-sm font-medium text-slate-900">Редактирование сотрудника</p>
+                                <p class="mt-1 text-sm text-slate-600">Основная форма перенесена на отдельную страницу.</p>
+                            </div>
+                            <a href="{{ route('admin.employees.edit', $employee) }}" class="rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">Редактировать сотрудника</a>
                         </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="position_id">Должность</label>
-                            <select id="position_id" name="position_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                                @foreach ($positions as $position)
-                                    <option value="{{ $position->id }}" @selected(old('position_id', $employee->position_id) == $position->id)>{{ $position->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="user_id">Пользователь</label>
-                            <select id="user_id" name="user_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                                <option value="">Не привязан</option>
-                                @foreach ($users as $user)
-                                    <option value="{{ $user->id }}" @selected(old('user_id', $employee->users->first()?->id) == $user->id)>{{ $user->name }} ({{ $user->email }})</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="personnel_number">Табельный номер</label>
-                            <input id="personnel_number" name="personnel_number" value="{{ old('personnel_number', $employee->personnel_number) }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="last_name">Фамилия</label>
-                            <input id="last_name" name="last_name" value="{{ old('last_name', $employee->last_name) }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="first_name">Имя</label>
-                            <input id="first_name" name="first_name" value="{{ old('first_name', $employee->first_name) }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="middle_name">Отчество</label>
-                            <input id="middle_name" name="middle_name" value="{{ old('middle_name', $employee->middle_name) }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="phone">Телефон</label>
-                            <input id="phone" name="phone" value="{{ old('phone', $employee->phone) }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="email">Email</label>
-                            <input id="email" name="email" type="email" value="{{ old('email', $employee->email) }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="status">Статус</label>
-                            <select id="status" name="status" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                                <option value="active" @selected(old('status', $employee->status->value) === 'active')>Активен</option>
-                                <option value="inactive" @selected(old('status', $employee->status->value) === 'inactive')>Не активен</option>
-                            </select>
-                        </div>
-                        <div class="md:col-span-2">
-                            <button type="submit" class="rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">Сохранить сотрудника</button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
             @else
                 <div class="panel p-6">

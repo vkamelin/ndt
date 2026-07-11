@@ -18,7 +18,7 @@ final class ProfileResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $employee = $this->employees->first();
+        $employee = $this->primaryEmployee();
 
         return [
             'user' => new UserResource($this),

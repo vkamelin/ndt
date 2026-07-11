@@ -70,8 +70,17 @@ final class User extends Authenticatable
             ->withTimestamps();
     }
 
+    public function employee(): ?Employee
+    {
+        return $this->primaryEmployee();
+    }
+
     public function primaryEmployee(): ?Employee
     {
+        if ($this->relationLoaded('employees')) {
+            return $this->employees->first();
+        }
+
         return $this->employees()->first();
     }
 

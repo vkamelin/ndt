@@ -30,24 +30,13 @@
 
         @can('organizations.manage')
             <div class="panel p-6">
-                <form method="post" action="{{ route('admin.organizations.store') }}" class="grid gap-4 md:grid-cols-2">
-                    @csrf
-                    <div class="space-y-2 md:col-span-2">
-                        <label class="text-sm font-medium text-slate-700" for="name">Наименование организации</label>
-                        <input id="name" name="name" value="{{ old('name') }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
+                <div class="flex items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-semibold text-slate-900">Создание организации</h2>
+                        <p class="mt-2 text-sm text-slate-600">Форма вынесена на отдельную страницу.</p>
                     </div>
-                    <div class="space-y-2 md:col-span-2">
-                        <label class="text-sm font-medium text-slate-700" for="comment">Комментарий</label>
-                        <textarea id="comment" name="comment" rows="2" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">{{ old('comment') }}</textarea>
-                    </div>
-                    <label class="flex items-center gap-3 text-sm text-slate-600 md:col-span-2">
-                        <input type="checkbox" name="is_active" value="1" class="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-100" @checked(old('is_active', true))>
-                        Активно
-                    </label>
-                    <div class="md:col-span-2">
-                        <button type="submit" class="rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">Добавить организацию</button>
-                    </div>
-                </form>
+                    <a href="{{ route('admin.organizations.create') }}" class="rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">Добавить организацию</a>
+                </div>
             </div>
         @endcan
 

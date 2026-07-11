@@ -77,6 +77,7 @@ Route::middleware(['auth', 'active.user', 'can:users.view'])
     ->group(function (): void {
         Route::get('/', [AdminUserController::class, 'index'])->name('index');
         Route::get('{user}', [AdminUserController::class, 'show'])->name('show');
+        Route::patch('{user}', [AdminUserController::class, 'update'])->name('update');
         Route::patch('{user}/roles', [AdminUserController::class, 'updateRoles'])->name('roles.update');
         Route::patch('{user}/block', [AdminUserController::class, 'block'])->name('block');
         Route::patch('{user}/unblock', [AdminUserController::class, 'unblock'])->name('unblock');
@@ -94,7 +95,9 @@ Route::middleware(['auth', 'active.user'])
     ->name('admin.cities.')
     ->group(function (): void {
         Route::get('/', [CityController::class, 'index'])->name('index');
+        Route::get('create', [CityController::class, 'create'])->name('create');
         Route::post('/', [CityController::class, 'store'])->name('store');
+        Route::get('{city}/edit', [CityController::class, 'edit'])->name('edit');
         Route::patch('{city}', [CityController::class, 'update'])->name('update');
         Route::delete('{city}', [CityController::class, 'destroy'])->name('destroy');
     });
@@ -104,7 +107,9 @@ Route::middleware(['auth', 'active.user'])
     ->name('admin.objects.')
     ->group(function (): void {
         Route::get('/', [ObjectController::class, 'index'])->name('index');
+        Route::get('create', [ObjectController::class, 'create'])->name('create');
         Route::post('/', [ObjectController::class, 'store'])->name('store');
+        Route::get('{object}/edit', [ObjectController::class, 'edit'])->name('edit');
         Route::patch('{object}', [ObjectController::class, 'update'])->name('update');
         Route::delete('{object}', [ObjectController::class, 'destroy'])->name('destroy');
     });
@@ -115,8 +120,10 @@ Route::middleware(['auth', 'active.user'])
     ->scopeBindings()
     ->group(function (): void {
         Route::get('/', [OrganizationController::class, 'index'])->name('index');
+        Route::get('create', [OrganizationController::class, 'create'])->name('create');
         Route::post('/', [OrganizationController::class, 'store'])->name('store');
         Route::get('{organization}', [OrganizationController::class, 'show'])->name('show');
+        Route::get('{organization}/edit', [OrganizationController::class, 'edit'])->name('edit');
         Route::patch('{organization}', [OrganizationController::class, 'update'])->name('update');
         Route::delete('{organization}', [OrganizationController::class, 'destroy'])->name('destroy');
         Route::post('{organization}/contacts', [OrganizationController::class, 'storeContact'])->name('contacts.store');
@@ -299,8 +306,10 @@ Route::middleware(['auth', 'active.user'])
     ->name('admin.employees.')
     ->group(function (): void {
         Route::get('/', [EmployeeController::class, 'index'])->name('index');
+        Route::get('create', [EmployeeController::class, 'create'])->name('create');
         Route::post('/', [EmployeeController::class, 'store'])->name('store');
         Route::get('{employee}', [EmployeeController::class, 'show'])->name('show');
+        Route::get('{employee}/edit', [EmployeeController::class, 'edit'])->name('edit');
         Route::patch('{employee}', [EmployeeController::class, 'update'])->name('update');
         Route::delete('{employee}', [EmployeeController::class, 'destroy'])->name('destroy');
         Route::post('{employee}/qualifications', [EmployeeController::class, 'storeQualification'])->name('qualifications.store');

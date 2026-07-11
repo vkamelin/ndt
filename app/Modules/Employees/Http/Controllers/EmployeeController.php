@@ -51,6 +51,17 @@ final class EmployeeController extends Controller
         ]);
     }
 
+    public function create(Request $request): View
+    {
+        $this->authorize('employees.manage');
+
+        return view('modules.employees.create', [
+            'objects' => NdtObject::query()->with('city')->orderBy('name')->get(),
+            'positions' => Position::query()->orderBy('name')->get(),
+            'users' => User::query()->whereDoesntHave('employees')->orderBy('name')->get(),
+        ]);
+    }
+
     public function show(Employee $employee): View
     {
         $this->authorize('view', $employee);
@@ -73,25 +84,46 @@ final class EmployeeController extends Controller
         ]);
     }
 
+    public function edit(Employee $employee): View
+    {
+        $this->authorize('employees.manage');
+
+        $employee->load(['object.city', 'position', 'users', 'qualifications']);
+        $linkedUserIds = $employee->users()->pluck('users.id')->all();
+
+        return view('modules.employees.edit', [
+            'employee' => $employee,
+            'objects' => NdtObject::query()->with('city')->orderBy('name')->get(),
+            'positions' => Position::query()->orderBy('name')->get(),
+            'users' => User::query()
+                ->whereDoesntHave('employees')
+                ->when($linkedUserIds !== [], function ($query) use ($linkedUserIds): void {
+                    $query->orWhereKey($linkedUserIds);
+                })
+                ->orderBy('name')
+                ->get(),
+        ]);
+    }
+
     public function store(StoreEmployeeRequest $request, EmployeeService $employees): RedirectResponse
     {
         $this->authorize('employees.manage');
 
-        $employees->create(
+        $employee = $employees->create(
             data: $request->validated(),
             actor: $request->user(),
             ipAddress: $request->ip(),
             userAgent: $request->userAgent(),
         );
 
-        return back()->with('status', 'Сотрудник создан.');
+        return redirect()->route('admin.employees.show', $employee)->with('status', 'Сотрудник создан.');
     }
 
     public function update(UpdateEmployeeRequest $request, Employee $employee, EmployeeService $employees): RedirectResponse
     {
         $this->authorize('employees.manage');
 
-        $employees->update(
+        $updatedEmployee = $employees->update(
             employee: $employee,
             data: $request->validated(),
             actor: $request->user(),
@@ -99,7 +131,7 @@ final class EmployeeController extends Controller
             userAgent: $request->userAgent(),
         );
 
-        return back()->with('status', 'Сотрудник обновлен.');
+        return redirect()->route('admin.employees.show', $updatedEmployee)->with('status', 'Сотрудник обновлен.');
     }
 
     public function destroy(Request $request, Employee $employee, EmployeeService $employees): RedirectResponse

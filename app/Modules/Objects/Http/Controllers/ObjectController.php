@@ -40,6 +40,20 @@ final class ObjectController extends Controller
         ]);
     }
 
+    public function create(Request $request): RedirectResponse
+    {
+        $this->authorize('objects.manage');
+
+        return redirect()->route('admin.objects.index');
+    }
+
+    public function edit(Request $request, NdtObject $object): RedirectResponse
+    {
+        $this->authorize('objects.manage');
+
+        return redirect()->route('admin.objects.index');
+    }
+
     public function store(StoreObjectRequest $request, ObjectService $objects): RedirectResponse
     {
         $this->authorize('objects.manage');
