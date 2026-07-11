@@ -101,6 +101,90 @@ final class DocumentManagementTest extends TestCase
         ]);
     }
 
+    public function test_chief_document_form_uses_scoped_city_and_object(): void
+    {
+        $this->seed(DatabaseSeeder::class);
+
+        $chief = User::factory()->create([
+            'name' => 'Начальник участка',
+            'email' => 'chief-document@example.test',
+            'password' => 'password',
+            'status' => UserStatus::Active,
+        ]);
+        $chief->assignRole(Role::findByName('Начальник участка', 'web'));
+
+        $city = City::query()->create([
+            'name' => 'Пермь',
+            'is_active' => true,
+            'comment' => null,
+        ]);
+        $otherCity = City::query()->create([
+            'name' => 'Казань',
+            'is_active' => true,
+            'comment' => null,
+        ]);
+        $object = NdtObject::query()->create([
+            'city_id' => $city->id,
+            'name' => 'Участок A',
+            'code' => null,
+            'is_active' => true,
+            'comment' => null,
+        ]);
+        $otherObject = NdtObject::query()->create([
+            'city_id' => $otherCity->id,
+            'name' => 'Участок B',
+            'code' => null,
+            'is_active' => true,
+            'comment' => null,
+        ]);
+        $position = Position::query()->create([
+            'name' => 'Дефектоскопист',
+            'is_active' => true,
+            'comment' => null,
+        ]);
+        $employee = Employee::query()->create([
+            'object_id' => $object->id,
+            'position_id' => $position->id,
+            'last_name' => 'Иванов',
+            'first_name' => 'Иван',
+            'middle_name' => null,
+            'phone' => null,
+            'email' => null,
+            'status' => EmployeeStatus::Active,
+            'personnel_number' => '201',
+        ]);
+        $employee->users()->sync([$chief->id]);
+
+        $documentType = DocumentType::query()->create([
+            'name' => 'Акт',
+            'is_active' => true,
+            'comment' => null,
+        ]);
+
+        $this->actingAs($chief)
+            ->post(route('admin.documents.store'), [
+                'document_type_id' => $documentType->id,
+                'number' => 'DOC-004',
+                'document_date' => '2026-07-11',
+                'organization_id' => null,
+                'city_id' => $otherCity->id,
+                'object_id' => $otherObject->id,
+                'employee_id' => $employee->id,
+                'equipment_id' => null,
+                'ndt_request_id' => null,
+                'valid_until' => '2026-12-31',
+                'status' => DocumentStatus::Draft->value,
+                'comment' => 'Подмена контекста',
+            ])
+            ->assertRedirect();
+
+        $document = Document::query()->where('number', 'DOC-004')->firstOrFail();
+
+        $this->assertSame($object->id, $document->object_id);
+        $this->assertSame($city->id, $document->city_id);
+        $this->assertSame($employee->id, $document->employee_id);
+    }
+
     public function test_user_from_other_object_cannot_download_document_file(): void
     {
         $this->seed(DatabaseSeeder::class);

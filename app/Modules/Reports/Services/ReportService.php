@@ -18,6 +18,7 @@ use App\Modules\Notifications\Services\NotificationService;
 use App\Modules\Radiography\Models\RtResult;
 use App\Modules\Registers\Models\Act;
 use App\Modules\Registers\Models\TransferRegister;
+use App\Modules\Objects\Models\NdtObject;
 use App\Modules\Reports\Enums\ReportFormat;
 use App\Modules\Reports\Enums\ReportStatus;
 use App\Modules\Reports\Enums\ReportType;
@@ -60,7 +61,7 @@ final class ReportService
                 'title' => $this->reportTitle($reportType, $entity),
                 'entity_type' => $entity === null ? null : $entity::class,
                 'entity_id' => $entity?->getKey(),
-                'city_id' => $this->resolveCityId($entity, $data),
+                'city_id' => $this->resolveCityId($entity, $data, $actor),
                 'object_id' => $this->resolveObjectId($entity, $data, $actor),
                 'requested_by_user_id' => $actor->getKey(),
                 'filters' => $this->filters($data),
@@ -189,20 +190,29 @@ final class ReportService
             return $this->objectIdFromEntity($entity);
         }
 
-        if ($actor->hasRole('Администратор системы')) {
-            return isset($data['object_id']) ? (int) $data['object_id'] : null;
+        if (! $actor->hasRole('Администратор системы')) {
+            return $actor->objectId();
         }
 
-        return $actor->objectId();
+        return isset($data['object_id']) ? (int) $data['object_id'] : null;
     }
 
     /**
      * @param  array<string, mixed>  $data
      */
-    private function resolveCityId(?Model $entity, array $data): ?int
+    private function resolveCityId(?Model $entity, array $data, User $actor): ?int
     {
         if ($entity !== null) {
             return $this->cityIdFromEntity($entity);
+        }
+
+        if (! $actor->hasRole('Администратор системы')) {
+            return NdtObject::query()->whereKey($actor->objectId())->value('city_id');
+        }
+
+        $objectId = isset($data['object_id']) ? (int) $data['object_id'] : null;
+        if ($objectId !== null) {
+            return NdtObject::query()->whereKey($objectId)->value('city_id');
         }
 
         return isset($data['city_id']) ? (int) $data['city_id'] : null;

@@ -9,6 +9,8 @@ use App\Modules\Audit\Concerns\RecordsAuditLogs;
 use App\Modules\Audit\DTO\AuditData;
 use App\Modules\Registers\Models\ArchiveCase;
 use App\Modules\Registers\Models\ArchiveCaseItem;
+use App\Modules\Registers\Models\TransferRegister;
+use App\Modules\Objects\Models\NdtObject;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -30,12 +32,20 @@ final class ArchiveService
     public function create(array $data, ?User $actor = null, ?string $ipAddress = null, ?string $userAgent = null): ArchiveCase
     {
         return DB::transaction(function () use ($data, $actor, $ipAddress, $userAgent): ArchiveCase {
+            $register = isset($data['transfer_register_id']) ? TransferRegister::query()->find($data['transfer_register_id']) : null;
+            $objectId = $register?->object_id ?? ($actor !== null && ! $actor->hasRole('Администратор системы') ? $actor->objectId() : null);
+            $cityId = $register?->city_id ?? null;
+
+            if ($objectId !== null && $cityId === null) {
+                $cityId = NdtObject::query()->whereKey($objectId)->value('city_id');
+            }
+
             $archiveCase = ArchiveCase::query()->create([
                 'transfer_register_id' => $data['transfer_register_id'] ?? null,
                 'number' => $data['number'],
                 'date' => $data['date'],
-                'city_id' => $data['city_id'],
-                'object_id' => $data['object_id'],
+                'city_id' => $cityId ?? $data['city_id'],
+                'object_id' => $objectId ?? $data['object_id'],
                 'comment' => $data['comment'] ?? null,
             ]);
 

@@ -66,22 +66,31 @@
                         <label class="text-sm font-medium text-slate-700" for="date">Дата</label>
                         <input id="date" type="date" name="date" value="{{ old('date', today()->toDateString()) }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="city_id">Город</label>
-                        <select id="city_id" name="city_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                            @foreach ($cities as $city)
-                                <option value="{{ $city->id }}">{{ $city->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="object_id">Объект/участок</label>
-                        <select id="object_id" name="object_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                            @foreach ($objects as $object)
-                                <option value="{{ $object->id }}">{{ $object->name }} @if ($object->city) ({{ $object->city->name }}) @endif</option>
-                            @endforeach
-                        </select>
-                    </div>
+                    @if ($isAdmin)
+                        <div class="space-y-2">
+                            <label class="text-sm font-medium text-slate-700" for="city_id">Город</label>
+                            <select id="city_id" name="city_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
+                                @foreach ($cities as $city)
+                                    <option value="{{ $city->id }}">{{ $city->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm font-medium text-slate-700" for="object_id">Объект/участок</label>
+                            <select id="object_id" name="object_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
+                                @foreach ($objects as $object)
+                                    <option value="{{ $object->id }}">{{ $object->name }} @if ($object->city) ({{ $object->city->name }}) @endif</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @else
+                        <input type="hidden" name="city_id" value="{{ $scopeCity?->id }}">
+                        <input type="hidden" name="object_id" value="{{ $scopeObject?->id }}">
+                        <div class="md:col-span-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+                            <p class="font-medium text-slate-900">Контекст реестра</p>
+                            <p class="mt-1">{{ $scopeObject?->name }} @if ($scopeCity) · {{ $scopeCity->name }} @endif</p>
+                        </div>
+                    @endif
                     <div class="space-y-2">
                         <label class="text-sm font-medium text-slate-700" for="sender_employee_id">Отправитель</label>
                         <select id="sender_employee_id" name="sender_employee_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">

@@ -41,13 +41,15 @@ final class TransferRegisterController extends Controller
         $this->authorize('viewAny', TransferRegister::class);
 
         $user = $request->user();
-        $objectId = $user?->objectId();
         $isAdmin = $user?->hasRole('Администратор системы') ?? false;
+        $scopeObject = $this->scopeObject($user);
+        $scopeCity = $scopeObject?->city;
 
         $registers = TransferRegister::query()
             ->with(['type', 'city', 'object.city', 'senderEmployee.object.city', 'receiverEmployee.object.city'])
             ->withCount(['items', 'acts', 'archiveCases', 'files'])
-            ->when(! $isAdmin, function ($query) use ($objectId): void {
+            ->when(! $isAdmin, function ($query) use ($scopeObject): void {
+                $objectId = $scopeObject?->getKey();
                 if ($objectId === null) {
                     $query->whereRaw('1 = 0');
 
@@ -74,9 +76,14 @@ final class TransferRegisterController extends Controller
             'registers' => $registers->orderByDesc('date')->orderByDesc('id')->paginate(15)->withQueryString(),
             'registerTypes' => RegisterType::query()->where('is_active', true)->orderBy('name')->get(),
             'statuses' => TransferRegisterStatus::options(),
-            'cities' => City::query()->orderBy('name')->get(),
-            'objects' => NdtObject::query()->with('city')->orderBy('name')->get(),
-            'employees' => Employee::query()->with('object.city')->orderBy('last_name')->get(),
+            'cities' => $isAdmin ? City::query()->orderBy('name')->get() : collect([$scopeCity])->filter(),
+            'objects' => $isAdmin ? NdtObject::query()->with('city')->orderBy('name')->get() : collect([$scopeObject])->filter(),
+            'employees' => $isAdmin
+                ? Employee::query()->with('object.city')->orderBy('last_name')->get()
+                : Employee::query()->with('object.city')->where('object_id', $scopeObject?->getKey())->orderBy('last_name')->get(),
+            'isAdmin' => $isAdmin,
+            'scopeCity' => $scopeCity,
+            'scopeObject' => $scopeObject,
         ]);
     }
 
@@ -104,10 +111,19 @@ final class TransferRegisterController extends Controller
             'register' => $transferRegister,
             'registerTypes' => RegisterType::query()->where('is_active', true)->orderBy('name')->get(),
             'statuses' => TransferRegisterStatus::options(),
-            'cities' => City::query()->orderBy('name')->get(),
-            'objects' => NdtObject::query()->with('city')->orderBy('name')->get(),
-            'employees' => Employee::query()->with('object.city')->orderBy('last_name')->get(),
+            'cities' => $request->user()?->hasRole('Администратор системы')
+                ? City::query()->orderBy('name')->get()
+                : collect([$this->scopeObject($request->user())?->city])->filter(),
+            'objects' => $request->user()?->hasRole('Администратор системы')
+                ? NdtObject::query()->with('city')->orderBy('name')->get()
+                : collect([$this->scopeObject($request->user())])->filter(),
+            'employees' => $request->user()?->hasRole('Администратор системы')
+                ? Employee::query()->with('object.city')->orderBy('last_name')->get()
+                : Employee::query()->with('object.city')->where('object_id', $this->scopeObject($request->user())?->getKey())->orderBy('last_name')->get(),
             'actTypes' => ActType::query()->where('is_active', true)->orderBy('name')->get(),
+            'isAdmin' => $request->user()?->hasRole('Администратор системы') ?? false,
+            'scopeCity' => $this->scopeObject($request->user())?->city,
+            'scopeObject' => $this->scopeObject($request->user()),
         ]);
     }
 
@@ -285,5 +301,19 @@ final class TransferRegisterController extends Controller
         );
 
         return back()->with('status', 'Excel акта поставлен в очередь.');
+    }
+
+    private function scopeObject(?\App\Models\User $user): ?NdtObject
+    {
+        if ($user === null || $user->hasRole('Администратор системы')) {
+            return null;
+        }
+
+        $objectId = $user->objectId();
+        if ($objectId === null) {
+            return null;
+        }
+
+        return NdtObject::query()->with('city')->find($objectId);
     }
 }

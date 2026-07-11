@@ -14,6 +14,7 @@ use App\Modules\Documents\Models\DocumentFile;
 use App\Modules\Documents\Models\DocumentRelation;
 use App\Modules\Documents\Models\DocumentVersion;
 use App\Modules\Documents\Models\File;
+use App\Modules\Objects\Models\NdtObject;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -45,7 +46,7 @@ final class DocumentService
     public function create(array $data, ?User $actor = null, ?string $ipAddress = null, ?string $userAgent = null): Document
     {
         return DB::transaction(function () use ($data, $actor, $ipAddress, $userAgent): Document {
-            $document = Document::query()->create($this->normalize($data));
+            $document = Document::query()->create($this->normalize($data, $actor));
 
             $this->recordAudit(
                 AuditData::forModelChange(
@@ -83,7 +84,7 @@ final class DocumentService
     {
         return DB::transaction(function () use ($document, $data, $actor, $ipAddress, $userAgent): Document {
             $before = $this->snapshot($document);
-            $document->fill($this->normalize($data, false))->save();
+            $document->fill($this->normalize($data, $actor, false))->save();
             $document->refresh();
 
             $this->recordAudit(
@@ -211,15 +212,26 @@ final class DocumentService
      * @param  array<string, mixed>  $data
      * @return array<string, mixed>
      */
-    private function normalize(array $data, bool $creating = true): array
+    private function normalize(array $data, ?User $actor = null, bool $creating = true): array
     {
+        $objectId = $data['object_id'] ?? null;
+
+        if ($objectId === null && $actor !== null && ! $actor->hasRole('Администратор системы')) {
+            $objectId = $actor->objectId();
+        }
+
+        $cityId = $data['city_id'] ?? null;
+        if ($objectId !== null) {
+            $cityId = NdtObject::query()->whereKey($objectId)->value('city_id') ?? $cityId;
+        }
+
         $normalized = [
             'document_type_id' => $data['document_type_id'],
             'number' => $data['number'] ?? null,
             'document_date' => $data['document_date'],
             'organization_id' => $data['organization_id'] ?? null,
-            'city_id' => $data['city_id'] ?? null,
-            'object_id' => $data['object_id'] ?? null,
+            'city_id' => $cityId,
+            'object_id' => $objectId,
             'employee_id' => $data['employee_id'] ?? null,
             'equipment_id' => $data['equipment_id'] ?? null,
             'ndt_request_id' => $data['ndt_request_id'] ?? null,

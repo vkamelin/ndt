@@ -33,11 +33,21 @@ final class WeldController extends Controller
     public function index(Request $request): View
     {
         $this->authorize('viewAny', Weld::class);
+        $user = $request->user();
+        $isAdmin = $user?->hasRole('Администратор системы') ?? false;
+        $currentObject = $this->currentObject($user);
+        $objectId = $currentObject?->getKey();
 
         $welds = Weld::query()
             ->with(['object.city', 'title', 'drawing', 'line', 'ndtMethods'])
-            ->when(! $request->user()->can('welds.manage') && $request->user() !== null, function ($query) use ($request): void {
-                $query->where('object_id', $request->user()->objectId());
+            ->when(! $isAdmin, function ($query) use ($objectId): void {
+                if ($objectId === null) {
+                    $query->whereRaw('1 = 0');
+
+                    return;
+                }
+
+                $query->where('object_id', $objectId);
             })
             ->when($request->string('search')->toString() !== '', function ($query) use ($request): void {
                 $search = $request->string('search')->toString();
@@ -55,7 +65,9 @@ final class WeldController extends Controller
 
         return view('modules.welds.index', [
             'welds' => $welds,
-            'objects' => NdtObject::query()->with('city')->orderBy('name')->get(),
+            'objects' => $isAdmin
+                ? NdtObject::query()->with('city')->orderBy('name')->get()
+                : collect([$currentObject])->filter(),
             'titles' => Title::query()->orderBy('name')->get(),
             'drawings' => Drawing::query()->orderBy('name')->get(),
             'lines' => Line::query()->orderBy('name')->get(),
@@ -72,9 +84,16 @@ final class WeldController extends Controller
     public function create(Request $request): View
     {
         $this->authorize('create', Weld::class);
+        $user = $request->user();
+        $isAdmin = $user?->hasRole('Администратор системы') ?? false;
+        $currentObject = $this->currentObject($user);
 
         return view('modules.welds.create', [
-            'objects' => NdtObject::query()->with('city')->orderBy('name')->get(),
+            'isAdmin' => $isAdmin,
+            'currentObject' => $currentObject,
+            'objects' => $isAdmin
+                ? NdtObject::query()->with('city')->orderBy('name')->get()
+                : collect([$currentObject])->filter(),
             'titles' => Title::query()->orderBy('name')->get(),
             'drawings' => Drawing::query()->orderBy('name')->get(),
             'lines' => Line::query()->orderBy('name')->get(),
@@ -91,12 +110,19 @@ final class WeldController extends Controller
     public function show(Weld $weld): View
     {
         $this->authorize('view', $weld);
+        $user = request()->user();
+        $isAdmin = $user?->hasRole('Администратор системы') ?? false;
+        $currentObject = $this->currentObject($user);
 
         $weld->load(['object.city', 'title', 'drawing', 'line', 'material1', 'material2', 'weldingProcess', 'weldType', 'pipelineCategory', 'medium', 'normativeDocument', 'ndtMethods', 'statusHistory.changedBy']);
 
         return view('modules.welds.show', [
             'weld' => $weld,
-            'objects' => NdtObject::query()->with('city')->orderBy('name')->get(),
+            'isAdmin' => $isAdmin,
+            'currentObject' => $currentObject,
+            'objects' => $isAdmin
+                ? NdtObject::query()->with('city')->orderBy('name')->get()
+                : collect([$currentObject])->filter(),
             'titles' => Title::query()->orderBy('name')->get(),
             'drawings' => Drawing::query()->orderBy('name')->get(),
             'lines' => Line::query()->orderBy('name')->get(),
@@ -113,12 +139,19 @@ final class WeldController extends Controller
     public function edit(Weld $weld): View
     {
         $this->authorize('manage', $weld);
+        $user = request()->user();
+        $isAdmin = $user?->hasRole('Администратор системы') ?? false;
+        $currentObject = $this->currentObject($user);
 
         $weld->load(['object.city', 'title', 'drawing', 'line', 'material1', 'material2', 'weldingProcess', 'weldType', 'pipelineCategory', 'medium', 'normativeDocument', 'ndtMethods', 'statusHistory.changedBy']);
 
         return view('modules.welds.edit', [
             'weld' => $weld,
-            'objects' => NdtObject::query()->with('city')->orderBy('name')->get(),
+            'isAdmin' => $isAdmin,
+            'currentObject' => $currentObject,
+            'objects' => $isAdmin
+                ? NdtObject::query()->with('city')->orderBy('name')->get()
+                : collect([$currentObject])->filter(),
             'titles' => Title::query()->orderBy('name')->get(),
             'drawings' => Drawing::query()->orderBy('name')->get(),
             'lines' => Line::query()->orderBy('name')->get(),
@@ -190,5 +223,15 @@ final class WeldController extends Controller
         );
 
         return back()->with('status', 'Методы контроля стыка обновлены.');
+    }
+
+    private function currentObject(?\App\Models\User $user): ?NdtObject
+    {
+        $objectId = $user?->objectId();
+        if ($objectId === null) {
+            return null;
+        }
+
+        return NdtObject::query()->with('city')->find($objectId);
     }
 }

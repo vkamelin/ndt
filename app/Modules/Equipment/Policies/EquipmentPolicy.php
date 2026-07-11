@@ -16,11 +16,7 @@ final class EquipmentPolicy
 
     public function view(User $user, Equipment $equipment): bool
     {
-        if ($user->can('equipment.manage')) {
-            return true;
-        }
-
-        return $user->objectId() === $equipment->object_id;
+        return $user->can('equipment.view_any') || $user->can('equipment.manage');
     }
 
     public function manage(User $user, Equipment $equipment): bool

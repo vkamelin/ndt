@@ -143,6 +143,23 @@ final class EquipmentManagementTest extends TestCase
         ]);
     }
 
+    public function test_chief_cannot_access_equipment_section_anymore(): void
+    {
+        $this->seed(DatabaseSeeder::class);
+
+        $chief = User::factory()->create([
+            'name' => 'Начальник участка',
+            'email' => 'chief-equipment@example.test',
+            'password' => 'password',
+            'status' => UserStatus::Active,
+        ]);
+        $chief->assignRole(Role::findByName('Начальник участка', 'web'));
+
+        $this->actingAs($chief)
+            ->get(route('admin.equipment.index'))
+            ->assertForbidden();
+    }
+
     public function test_strict_guard_blocks_unqualified_executor_in_task_service(): void
     {
         $this->seed(DatabaseSeeder::class);

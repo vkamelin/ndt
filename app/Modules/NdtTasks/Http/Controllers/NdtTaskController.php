@@ -26,6 +26,10 @@ final class NdtTaskController extends Controller
     public function index(Request $request): View
     {
         $this->authorize('viewAny', NdtTask::class);
+        $user = $request->user();
+        $isAdmin = $user?->hasRole('Администратор системы') ?? false;
+        $currentObject = $this->currentObject($user);
+        $objectId = $currentObject?->getKey();
 
         $query = NdtTask::query()
             ->with(['object.city', 'request', 'method', 'assigneeEmployee.users', 'welds'])
@@ -34,7 +38,7 @@ final class NdtTaskController extends Controller
                     ->whereNotIn('status', [NdtTaskStatus::Completed->value, NdtTaskStatus::Cancelled->value]);
             })
             ->when(
-                $request->string('scope')->toString() === 'mine' || (! $request->user()->can('ndt_tasks.manage') && $request->user() !== null),
+                $request->string('scope')->toString() === 'mine' || (! $isAdmin && $user !== null),
                 function ($query) use ($request): void {
                     $employeeId = $request->user()?->primaryEmployee()?->getKey();
                     $query->where('assignee_employee_id', $employeeId);
@@ -47,7 +51,13 @@ final class NdtTaskController extends Controller
             ->when($request->filled('status'), function ($query) use ($request): void {
                 $query->where('status', $request->string('status')->toString());
             })
-            ->when($request->filled('object_id'), function ($query) use ($request): void {
+            ->when($request->filled('object_id'), function ($query) use ($request, $isAdmin, $objectId): void {
+                if (! $isAdmin && $objectId !== null && (int) $request->input('object_id') !== $objectId) {
+                    $query->whereRaw('1 = 0');
+
+                    return;
+                }
+
                 $query->where('object_id', (int) $request->input('object_id'));
             })
             ->when($request->filled('assignee_employee_id'), function ($query) use ($request): void {
@@ -59,32 +69,57 @@ final class NdtTaskController extends Controller
 
         return view('modules.ndt-tasks.index', [
             'tasks' => $query->orderByDesc('planned_date')->orderByDesc('id')->paginate(15)->withQueryString(),
-            'objects' => NdtObject::query()->with('city')->orderBy('name')->get(),
-            'employees' => Employee::query()->with(['object.city', 'users'])->orderBy('last_name')->get(),
+            'objects' => $isAdmin
+                ? NdtObject::query()->with('city')->orderBy('name')->get()
+                : collect([$currentObject])->filter(),
+            'employees' => $isAdmin
+                ? Employee::query()->with(['object.city', 'users'])->orderBy('last_name')->get()
+                : Employee::query()->with(['object.city', 'users'])->where('object_id', $objectId)->orderBy('last_name')->get(),
             'methods' => NdtMethod::query()->where('is_active', true)->orderBy('name')->get(),
-            'requests' => NdtRequest::query()->orderByDesc('id')->get(),
+            'requests' => $isAdmin
+                ? NdtRequest::query()->orderByDesc('id')->get()
+                : NdtRequest::query()->where('object_id', $objectId)->orderByDesc('id')->get(),
             'statuses' => NdtTaskStatus::options(),
             'welds' => Weld::query()
                 ->with(['object.city', 'ndtMethods'])
-                ->when($request->filled('object_id'), function ($query) use ($request): void {
+                ->when($isAdmin && $request->filled('object_id'), function ($query) use ($request): void {
                     $query->where('object_id', (int) $request->input('object_id'));
+                })
+                ->when(! $isAdmin, function ($query) use ($objectId): void {
+                    if ($objectId === null) {
+                        $query->whereRaw('1 = 0');
+
+                        return;
+                    }
+
+                    $query->where('object_id', $objectId);
                 })
                 ->orderByDesc('id')
                 ->get(),
+            'currentObject' => $currentObject,
+            'isAdmin' => $isAdmin,
         ]);
     }
 
     public function create(Request $request): View
     {
         $this->authorize('create', NdtTask::class);
-
-        $objectId = $request->user()?->objectId();
+        $user = $request->user();
+        $isAdmin = $user?->hasRole('Администратор системы') ?? false;
+        $currentObject = $this->currentObject($user);
+        $objectId = $currentObject?->getKey();
 
         return view('modules.ndt-tasks.create', [
-            'objects' => NdtObject::query()->with('city')->orderBy('name')->get(),
-            'employees' => Employee::query()->with(['object.city', 'users'])->orderBy('last_name')->get(),
+            'objects' => $isAdmin
+                ? NdtObject::query()->with('city')->orderBy('name')->get()
+                : collect([$currentObject])->filter(),
+            'employees' => $isAdmin
+                ? Employee::query()->with(['object.city', 'users'])->orderBy('last_name')->get()
+                : Employee::query()->with(['object.city', 'users'])->where('object_id', $objectId)->orderBy('last_name')->get(),
             'methods' => NdtMethod::query()->where('is_active', true)->orderBy('name')->get(),
-            'requests' => NdtRequest::query()->orderByDesc('id')->get(),
+            'requests' => $isAdmin
+                ? NdtRequest::query()->orderByDesc('id')->get()
+                : NdtRequest::query()->where('object_id', $objectId)->orderByDesc('id')->get(),
             'welds' => Weld::query()
                 ->with(['object.city', 'ndtMethods'])
                 ->when($objectId !== null, function ($query) use ($objectId): void {
@@ -92,47 +127,73 @@ final class NdtTaskController extends Controller
                 })
                 ->orderByDesc('id')
                 ->get(),
+            'currentObject' => $currentObject,
+            'isAdmin' => $isAdmin,
         ]);
     }
 
     public function show(NdtTask $ndtTask): View
     {
         $this->authorize('view', $ndtTask);
+        $user = request()->user();
+        $isAdmin = $user?->hasRole('Администратор системы') ?? false;
+        $currentObject = $this->currentObject($user);
+        $objectId = $currentObject?->getKey();
 
         $ndtTask->load(['object.city', 'request', 'method', 'assigneeEmployee.object.city', 'assigneeEmployee.users', 'items.weld.object.city', 'items.weld.ndtMethods', 'statusHistory.changedBy']);
 
         return view('modules.ndt-tasks.show', [
             'task' => $ndtTask,
-            'objects' => NdtObject::query()->with('city')->orderBy('name')->get(),
-            'employees' => Employee::query()->with(['object.city', 'users'])->orderBy('last_name')->get(),
+            'objects' => $isAdmin
+                ? NdtObject::query()->with('city')->orderBy('name')->get()
+                : collect([$currentObject])->filter(),
+            'employees' => $isAdmin
+                ? Employee::query()->with(['object.city', 'users'])->orderBy('last_name')->get()
+                : Employee::query()->with(['object.city', 'users'])->where('object_id', $objectId)->orderBy('last_name')->get(),
             'methods' => NdtMethod::query()->where('is_active', true)->orderBy('name')->get(),
-            'requests' => NdtRequest::query()->orderByDesc('id')->get(),
+            'requests' => $isAdmin
+                ? NdtRequest::query()->orderByDesc('id')->get()
+                : NdtRequest::query()->where('object_id', $objectId)->orderByDesc('id')->get(),
             'welds' => Weld::query()
                 ->with(['object.city', 'ndtMethods'])
                 ->where('object_id', $ndtTask->object_id)
                 ->orderByDesc('id')
                 ->get(),
             'statuses' => NdtTaskStatus::options(),
+            'currentObject' => $currentObject,
+            'isAdmin' => $isAdmin,
         ]);
     }
 
     public function edit(NdtTask $ndtTask): View
     {
         $this->authorize('update', $ndtTask);
+        $user = request()->user();
+        $isAdmin = $user?->hasRole('Администратор системы') ?? false;
+        $currentObject = $this->currentObject($user);
+        $objectId = $currentObject?->getKey();
 
         $ndtTask->load(['object.city', 'request', 'method', 'assigneeEmployee.object.city', 'assigneeEmployee.users', 'items.weld.object.city', 'items.weld.ndtMethods', 'statusHistory.changedBy']);
 
         return view('modules.ndt-tasks.edit', [
             'task' => $ndtTask,
-            'objects' => NdtObject::query()->with('city')->orderBy('name')->get(),
-            'employees' => Employee::query()->with(['object.city', 'users'])->orderBy('last_name')->get(),
+            'objects' => $isAdmin
+                ? NdtObject::query()->with('city')->orderBy('name')->get()
+                : collect([$currentObject])->filter(),
+            'employees' => $isAdmin
+                ? Employee::query()->with(['object.city', 'users'])->orderBy('last_name')->get()
+                : Employee::query()->with(['object.city', 'users'])->where('object_id', $objectId)->orderBy('last_name')->get(),
             'methods' => NdtMethod::query()->where('is_active', true)->orderBy('name')->get(),
-            'requests' => NdtRequest::query()->orderByDesc('id')->get(),
+            'requests' => $isAdmin
+                ? NdtRequest::query()->orderByDesc('id')->get()
+                : NdtRequest::query()->where('object_id', $objectId)->orderByDesc('id')->get(),
             'welds' => Weld::query()
                 ->with(['object.city', 'ndtMethods'])
                 ->where('object_id', $ndtTask->object_id)
                 ->orderByDesc('id')
                 ->get(),
+            'currentObject' => $currentObject,
+            'isAdmin' => $isAdmin,
         ]);
     }
 
@@ -251,5 +312,15 @@ final class NdtTaskController extends Controller
         );
 
         return back()->with('status', 'Задание отменено.');
+    }
+
+    private function currentObject(?\App\Models\User $user): ?NdtObject
+    {
+        $objectId = $user?->objectId();
+        if ($objectId === null) {
+            return null;
+        }
+
+        return NdtObject::query()->with('city')->find($objectId);
     }
 }

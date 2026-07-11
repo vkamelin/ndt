@@ -53,24 +53,33 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="space-y-2">
-                    <label class="text-sm font-medium text-slate-700" for="city_id">Город</label>
-                    <select id="city_id" name="city_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                        <option value="">Не указано</option>
-                        @foreach ($cities as $city)
-                            <option value="{{ $city->id }}" @selected(old('city_id') == $city->id)>{{ $city->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="space-y-2">
-                    <label class="text-sm font-medium text-slate-700" for="object_id">Объект/участок</label>
-                    <select id="object_id" name="object_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                        <option value="">Не указано</option>
-                        @foreach ($objects as $object)
-                            <option value="{{ $object->id }}" @selected(old('object_id') == $object->id)>{{ $object->name }} @if ($object->city) ({{ $object->city->name }}) @endif</option>
-                        @endforeach
-                    </select>
-                </div>
+                @if ($isAdmin)
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium text-slate-700" for="city_id">Город</label>
+                        <select id="city_id" name="city_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
+                            <option value="">Не указано</option>
+                            @foreach ($cities as $city)
+                                <option value="{{ $city->id }}" @selected(old('city_id') == $city->id)>{{ $city->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium text-slate-700" for="object_id">Объект/участок</label>
+                        <select id="object_id" name="object_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
+                            <option value="">Не указано</option>
+                            @foreach ($objects as $object)
+                                <option value="{{ $object->id }}" @selected(old('object_id') == $object->id)>{{ $object->name }} @if ($object->city) ({{ $object->city->name }}) @endif</option>
+                            @endforeach
+                        </select>
+                    </div>
+                @else
+                    <input type="hidden" name="city_id" value="{{ $scopeCity?->id }}">
+                    <input type="hidden" name="object_id" value="{{ $scopeObject?->id }}">
+                    <div class="md:col-span-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+                        <p class="font-medium text-slate-900">Контекст документа</p>
+                        <p class="mt-1">{{ $scopeObject?->name }} @if ($scopeCity) · {{ $scopeCity->name }} @endif</p>
+                    </div>
+                @endif
                 <div class="space-y-2">
                     <label class="text-sm font-medium text-slate-700" for="employee_id">Сотрудник</label>
                     <select id="employee_id" name="employee_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">

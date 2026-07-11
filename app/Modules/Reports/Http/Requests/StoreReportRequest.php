@@ -28,9 +28,7 @@ final class StoreReportRequest extends FormRequest
         }
 
         if (! $reportType->isEntityReport()) {
-            $objectId = $this->filled('object_id') ? (int) $this->input('object_id') : $user->objectId();
-
-            if (! $user->hasRole('Администратор системы') && ($objectId === null || $user->objectId() !== $objectId)) {
+            if (! $user->hasRole('Администратор системы') && $user->objectId() === null) {
                 return false;
             }
 

@@ -25,24 +25,33 @@
             <form method="post" action="{{ route('admin.reports.store') }}" class="panel p-6 space-y-6">
                 @csrf
                 <div class="grid gap-4 md:grid-cols-4">
-                    <div class="space-y-2">
-                        <label for="queue_city_id" class="text-sm font-medium text-slate-700">Город</label>
-                        <select id="queue_city_id" name="city_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                            <option value="">Без фильтра</option>
-                            @foreach ($cities as $city)
-                                <option value="{{ $city->id }}" @selected((string) old('city_id') === (string) $city->id)>{{ $city->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="space-y-2">
-                        <label for="queue_object_id" class="text-sm font-medium text-slate-700">Объект/участок</label>
-                        <select id="queue_object_id" name="object_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                            <option value="">Без фильтра</option>
-                            @foreach ($objects as $object)
-                                <option value="{{ $object->id }}" @selected((string) old('object_id') === (string) $object->id)>{{ $object->name }} @if ($object->city) ({{ $object->city->name }}) @endif</option>
-                            @endforeach
-                        </select>
-                    </div>
+                    @if ($isAdmin)
+                        <div class="space-y-2">
+                            <label for="queue_city_id" class="text-sm font-medium text-slate-700">Город</label>
+                            <select id="queue_city_id" name="city_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
+                                <option value="">Без фильтра</option>
+                                @foreach ($cities as $city)
+                                    <option value="{{ $city->id }}" @selected((string) old('city_id') === (string) $city->id)>{{ $city->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="space-y-2">
+                            <label for="queue_object_id" class="text-sm font-medium text-slate-700">Объект/участок</label>
+                            <select id="queue_object_id" name="object_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
+                                <option value="">Без фильтра</option>
+                                @foreach ($objects as $object)
+                                    <option value="{{ $object->id }}" @selected((string) old('object_id') === (string) $object->id)>{{ $object->name }} @if ($object->city) ({{ $object->city->name }}) @endif</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @else
+                        <input type="hidden" name="city_id" value="{{ $scopeCity?->id }}">
+                        <input type="hidden" name="object_id" value="{{ $scopeObject?->id }}">
+                        <div class="md:col-span-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+                            <p class="font-medium text-slate-900">Контекст заявки</p>
+                            <p class="mt-1">{{ $scopeObject?->name }} @if ($scopeCity) · {{ $scopeCity->name }} @endif</p>
+                        </div>
+                    @endif
                     <div class="space-y-2">
                         <label for="queue_search" class="text-sm font-medium text-slate-700">Поиск</label>
                         <input id="queue_search" name="search" value="{{ old('search') }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">

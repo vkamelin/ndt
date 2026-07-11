@@ -24,14 +24,23 @@
         <div class="panel p-6">
             <form method="post" action="{{ route('admin.welds.store') }}" class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                 @csrf
-                <div class="space-y-2">
-                    <label class="text-sm font-medium text-slate-700" for="object_id">Объект/участок</label>
-                    <select id="object_id" name="object_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                        @foreach ($objects as $object)
-                            <option value="{{ $object->id }}" @selected(old('object_id') == $object->id)>{{ $object->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
+                @if ($isAdmin)
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium text-slate-700" for="object_id">Объект/участок</label>
+                        <select id="object_id" name="object_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
+                            @foreach ($objects as $object)
+                                <option value="{{ $object->id }}" @selected(old('object_id') == $object->id)>{{ $object->name }} @if($object->city)({{ $object->city->name }})@endif</option>
+                            @endforeach
+                        </select>
+                    </div>
+                @else
+                    <input type="hidden" name="object_id" value="{{ $currentObject?->id }}">
+                    <div class="md:col-span-2 xl:col-span-3 rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+                        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Контекст объекта</p>
+                        <p class="mt-1 font-medium text-slate-900">{{ $currentObject?->name }}</p>
+                        <p class="mt-1 text-slate-500">{{ $currentObject?->city?->name }}</p>
+                    </div>
+                @endif
                 <div class="space-y-2">
                     <label class="text-sm font-medium text-slate-700" for="weld_number">Номер стыка</label>
                     <input id="weld_number" name="weld_number" value="{{ old('weld_number') }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">

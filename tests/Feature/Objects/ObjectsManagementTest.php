@@ -58,7 +58,7 @@ final class ObjectsManagementTest extends TestCase
             ->assertSee('Екатеринбург');
     }
 
-    public function test_chief_sees_only_assigned_object_and_cannot_edit_other_objects(): void
+    public function test_chief_cannot_view_or_edit_objects_anymore(): void
     {
         $this->seed(DatabaseSeeder::class);
 
@@ -122,9 +122,7 @@ final class ObjectsManagementTest extends TestCase
 
         $this->actingAs($chief)
             ->get(route('admin.objects.index', ['search' => 'Участок']))
-            ->assertOk()
-            ->assertSee('Участок А')
-            ->assertDontSee('Участок Б');
+            ->assertForbidden();
 
         $this->actingAs($chief)
             ->patch(route('admin.objects.update', $objectB), [

@@ -67,26 +67,29 @@ final class ReportsWorkflowTest extends TestCase
         ]);
     }
 
-    public function test_user_cannot_queue_report_for_foreign_object(): void
+    public function test_user_cannot_override_object_scope_when_queueing_report(): void
     {
         $this->seed(DatabaseSeeder::class);
 
         $foreignUser = $this->createScopedUser('foreign-reports@example.test', 'Начальник участка', 'Чужой участок');
         $foreignObject = $foreignUser->objectId();
+        $foreignObjectModel = NdtObject::query()->findOrFail($foreignObject);
         $otherObject = $this->createObjectWithCity('Чужой объект');
 
         $this->actingAs($foreignUser)
             ->post(route('admin.reports.store'), [
                 'report_type' => 'welds',
                 'object_id' => $otherObject->id,
+                'city_id' => $otherObject->city_id,
                 'search' => 'W-1',
             ])
-            ->assertForbidden();
+            ->assertRedirect(route('admin.reports.index'));
 
-        $this->assertDatabaseMissing('report_jobs', [
-            'requested_by_user_id' => $foreignUser->id,
-            'object_id' => $otherObject->id,
-        ]);
+        $reportJob = ReportJob::query()->firstOrFail();
+
+        $this->assertSame($foreignObjectModel->id, $reportJob->object_id);
+        $this->assertSame($foreignObjectModel->city_id, $reportJob->city_id);
+
         $this->assertNotNull($foreignObject);
     }
 

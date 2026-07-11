@@ -29,13 +29,15 @@ final class DocumentController extends Controller
         $this->authorize('viewAny', Document::class);
 
         $user = $request->user();
-        $objectId = $user?->objectId();
         $isAdmin = $user?->hasRole('Администратор системы') ?? false;
+        $scopeObject = $this->scopeObject($user);
+        $scopeCity = $scopeObject?->city;
 
         $documents = Document::query()
             ->with(['type', 'organization', 'city', 'object.city', 'employee.object.city', 'equipment.object.city', 'request'])
             ->withCount(['versions', 'files'])
-            ->when(! $isAdmin, function ($query) use ($objectId): void {
+            ->when(! $isAdmin, function ($query) use ($scopeObject): void {
+                $objectId = $scopeObject?->getKey();
                 if ($objectId === null) {
                     $query->whereRaw('1 = 0');
 
@@ -69,13 +71,26 @@ final class DocumentController extends Controller
         return view('modules.documents.index', [
             'documents' => $documents->orderByDesc('document_date')->orderByDesc('id')->paginate(15)->withQueryString(),
             'documentTypes' => DocumentType::query()->where('is_active', true)->orderBy('name')->get(),
-            'objects' => NdtObject::query()->with('city')->orderBy('name')->get(),
+            'objects' => $isAdmin
+                ? NdtObject::query()->with('city')->orderBy('name')->get()
+                : collect([$scopeObject])->filter(),
             'organizations' => Organization::query()->orderBy('name')->get(),
-            'cities' => City::query()->orderBy('name')->get(),
-            'employees' => Employee::query()->with('object.city')->orderBy('last_name')->get(),
-            'equipment' => Equipment::query()->with('object.city')->orderBy('name')->get(),
-            'requests' => NdtRequest::query()->with('object.city')->orderByDesc('request_date')->get(),
+            'cities' => $isAdmin
+                ? City::query()->orderBy('name')->get()
+                : collect([$scopeCity])->filter(),
+            'employees' => $isAdmin
+                ? Employee::query()->with('object.city')->orderBy('last_name')->get()
+                : Employee::query()->with('object.city')->where('object_id', $scopeObject?->getKey())->orderBy('last_name')->get(),
+            'equipment' => $isAdmin
+                ? Equipment::query()->with('object.city')->orderBy('name')->get()
+                : Equipment::query()->with('object.city')->where('object_id', $scopeObject?->getKey())->orderBy('name')->get(),
+            'requests' => $isAdmin
+                ? NdtRequest::query()->with('object.city')->orderByDesc('request_date')->get()
+                : NdtRequest::query()->with('object.city')->where('object_id', $scopeObject?->getKey())->orderByDesc('request_date')->get(),
             'statuses' => DocumentStatus::options(),
+            'isAdmin' => $isAdmin,
+            'scopeCity' => $scopeCity,
+            'scopeObject' => $scopeObject,
         ]);
     }
 
@@ -84,30 +99,32 @@ final class DocumentController extends Controller
         $this->authorize('create', Document::class);
 
         $user = $request->user();
-        $objectId = $user?->objectId();
         $isAdmin = $user?->hasRole('Администратор системы') ?? false;
+        $scopeObject = $this->scopeObject($user);
+        $scopeCity = $scopeObject?->city;
 
         return view('modules.documents.create', [
             'documentTypes' => DocumentType::query()->where('is_active', true)->orderBy('name')->get(),
-            'objects' => NdtObject::query()
-                ->with('city')
-                ->when(! $isAdmin, function ($query) use ($objectId): void {
-                    if ($objectId === null) {
-                        $query->whereRaw('1 = 0');
-
-                        return;
-                    }
-
-                    $query->whereKey($objectId);
-                })
-                ->orderBy('name')
-                ->get(),
+            'objects' => $isAdmin
+                ? NdtObject::query()->with('city')->orderBy('name')->get()
+                : collect([$scopeObject])->filter(),
             'organizations' => Organization::query()->orderBy('name')->get(),
-            'cities' => City::query()->orderBy('name')->get(),
-            'employees' => Employee::query()->with('object.city')->orderBy('last_name')->get(),
-            'equipment' => Equipment::query()->with('object.city')->orderBy('name')->get(),
-            'requests' => NdtRequest::query()->with('object.city')->orderByDesc('request_date')->get(),
+            'cities' => $isAdmin
+                ? City::query()->orderBy('name')->get()
+                : collect([$scopeCity])->filter(),
+            'employees' => $isAdmin
+                ? Employee::query()->with('object.city')->orderBy('last_name')->get()
+                : Employee::query()->with('object.city')->where('object_id', $scopeObject?->getKey())->orderBy('last_name')->get(),
+            'equipment' => $isAdmin
+                ? Equipment::query()->with('object.city')->orderBy('name')->get()
+                : Equipment::query()->with('object.city')->where('object_id', $scopeObject?->getKey())->orderBy('name')->get(),
+            'requests' => $isAdmin
+                ? NdtRequest::query()->with('object.city')->orderByDesc('request_date')->get()
+                : NdtRequest::query()->with('object.city')->where('object_id', $scopeObject?->getKey())->orderByDesc('request_date')->get(),
             'statuses' => DocumentStatus::options(),
+            'isAdmin' => $isAdmin,
+            'scopeCity' => $scopeCity,
+            'scopeObject' => $scopeObject,
         ]);
     }
 
@@ -133,12 +150,25 @@ final class DocumentController extends Controller
             'document' => $document,
             'documentTypes' => DocumentType::query()->where('is_active', true)->orderBy('name')->get(),
             'organizations' => Organization::query()->orderBy('name')->get(),
-            'cities' => City::query()->orderBy('name')->get(),
-            'objects' => NdtObject::query()->with('city')->orderBy('name')->get(),
-            'employees' => Employee::query()->with('object.city')->orderBy('last_name')->get(),
-            'equipment' => Equipment::query()->with('object.city')->orderBy('name')->get(),
-            'requests' => NdtRequest::query()->with('object.city')->orderByDesc('request_date')->get(),
+            'cities' => $request->user()?->hasRole('Администратор системы')
+                ? City::query()->orderBy('name')->get()
+                : collect([$this->scopeObject($request->user())?->city])->filter(),
+            'objects' => $request->user()?->hasRole('Администратор системы')
+                ? NdtObject::query()->with('city')->orderBy('name')->get()
+                : collect([$this->scopeObject($request->user())])->filter(),
+            'employees' => $request->user()?->hasRole('Администратор системы')
+                ? Employee::query()->with('object.city')->orderBy('last_name')->get()
+                : Employee::query()->with('object.city')->where('object_id', $this->scopeObject($request->user())?->getKey())->orderBy('last_name')->get(),
+            'equipment' => $request->user()?->hasRole('Администратор системы')
+                ? Equipment::query()->with('object.city')->orderBy('name')->get()
+                : Equipment::query()->with('object.city')->where('object_id', $this->scopeObject($request->user())?->getKey())->orderBy('name')->get(),
+            'requests' => $request->user()?->hasRole('Администратор системы')
+                ? NdtRequest::query()->with('object.city')->orderByDesc('request_date')->get()
+                : NdtRequest::query()->with('object.city')->where('object_id', $this->scopeObject($request->user())?->getKey())->orderByDesc('request_date')->get(),
             'statuses' => DocumentStatus::options(),
+            'isAdmin' => $request->user()?->hasRole('Администратор системы') ?? false,
+            'scopeCity' => $this->scopeObject($request->user())?->city,
+            'scopeObject' => $this->scopeObject($request->user()),
         ]);
     }
 
@@ -164,12 +194,25 @@ final class DocumentController extends Controller
             'document' => $document,
             'documentTypes' => DocumentType::query()->where('is_active', true)->orderBy('name')->get(),
             'organizations' => Organization::query()->orderBy('name')->get(),
-            'cities' => City::query()->orderBy('name')->get(),
-            'objects' => NdtObject::query()->with('city')->orderBy('name')->get(),
-            'employees' => Employee::query()->with('object.city')->orderBy('last_name')->get(),
-            'equipment' => Equipment::query()->with('object.city')->orderBy('name')->get(),
-            'requests' => NdtRequest::query()->with('object.city')->orderByDesc('request_date')->get(),
+            'cities' => $request->user()?->hasRole('Администратор системы')
+                ? City::query()->orderBy('name')->get()
+                : collect([$this->scopeObject($request->user())?->city])->filter(),
+            'objects' => $request->user()?->hasRole('Администратор системы')
+                ? NdtObject::query()->with('city')->orderBy('name')->get()
+                : collect([$this->scopeObject($request->user())])->filter(),
+            'employees' => $request->user()?->hasRole('Администратор системы')
+                ? Employee::query()->with('object.city')->orderBy('last_name')->get()
+                : Employee::query()->with('object.city')->where('object_id', $this->scopeObject($request->user())?->getKey())->orderBy('last_name')->get(),
+            'equipment' => $request->user()?->hasRole('Администратор системы')
+                ? Equipment::query()->with('object.city')->orderBy('name')->get()
+                : Equipment::query()->with('object.city')->where('object_id', $this->scopeObject($request->user())?->getKey())->orderBy('name')->get(),
+            'requests' => $request->user()?->hasRole('Администратор системы')
+                ? NdtRequest::query()->with('object.city')->orderByDesc('request_date')->get()
+                : NdtRequest::query()->with('object.city')->where('object_id', $this->scopeObject($request->user())?->getKey())->orderByDesc('request_date')->get(),
             'statuses' => DocumentStatus::options(),
+            'isAdmin' => $request->user()?->hasRole('Администратор системы') ?? false,
+            'scopeCity' => $this->scopeObject($request->user())?->city,
+            'scopeObject' => $this->scopeObject($request->user()),
         ]);
     }
 
@@ -210,5 +253,19 @@ final class DocumentController extends Controller
         );
 
         return back()->with('status', 'Версия документа добавлена.');
+    }
+
+    private function scopeObject(?\App\Models\User $user): ?NdtObject
+    {
+        if ($user === null || $user->hasRole('Администратор системы')) {
+            return null;
+        }
+
+        $objectId = $user->objectId();
+        if ($objectId === null) {
+            return null;
+        }
+
+        return NdtObject::query()->with('city')->find($objectId);
     }
 }

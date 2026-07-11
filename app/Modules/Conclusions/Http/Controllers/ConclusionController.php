@@ -38,6 +38,8 @@ final class ConclusionController extends Controller
         $user = $request->user();
         $objectId = $user?->objectId();
         $isAdmin = $user?->hasRole('Администратор системы') ?? false;
+        $currentObject = $this->currentObject($user);
+        $scopedObjectId = $currentObject?->getKey();
 
         $conclusions = Conclusion::query()
             ->with(['object.city', 'method', 'request', 'preparedBy', 'checkedBy', 'approvedBy', 'latestVersion.file'])
@@ -66,6 +68,15 @@ final class ConclusionController extends Controller
             ->when($request->filled('object_id'), function ($query) use ($request): void {
                 $query->where('object_id', (int) $request->input('object_id'));
             })
+            ->when(! $isAdmin, function ($query) use ($scopedObjectId): void {
+                if ($scopedObjectId === null) {
+                    $query->whereRaw('1 = 0');
+
+                    return;
+                }
+
+                $query->where('object_id', $scopedObjectId);
+            })
             ->when($request->filled('ndt_method_id'), function ($query) use ($request): void {
                 $query->where('ndt_method_id', (int) $request->input('ndt_method_id'));
             });
@@ -73,9 +84,13 @@ final class ConclusionController extends Controller
         return view('modules.conclusions.index', [
             'conclusions' => $conclusions->orderByDesc('date')->orderByDesc('id')->paginate(15)->withQueryString(),
             'statuses' => ConclusionStatus::options(),
-            'objects' => NdtObject::query()->with('city')->orderBy('name')->get(),
+            'objects' => $isAdmin
+                ? NdtObject::query()->with('city')->orderBy('name')->get()
+                : collect([$currentObject])->filter(),
             'methods' => NdtMethod::query()->where('is_active', true)->orderBy('name')->get(),
-            'requests' => NdtRequest::query()->with('object.city')->orderByDesc('request_date')->get(),
+            'requests' => $isAdmin
+                ? NdtRequest::query()->with('object.city')->orderByDesc('request_date')->get()
+                : NdtRequest::query()->with('object.city')->where('object_id', $scopedObjectId)->orderByDesc('request_date')->get(),
             'readyResults' => NdtResult::query()
                 ->with(['weld.object.city', 'task.request', 'method', 'executorEmployee.object.city'])
                 ->where('status', NdtResultStatus::ReadyForConclusion)
@@ -93,7 +108,9 @@ final class ConclusionController extends Controller
                 ->orderByDesc('control_date')
                 ->orderByDesc('id')
                 ->get(),
-            'employees' => Employee::query()->with('object.city')->orderBy('last_name')->get(),
+            'employees' => $isAdmin
+                ? Employee::query()->with('object.city')->orderBy('last_name')->get()
+                : Employee::query()->with('object.city')->where('object_id', $scopedObjectId)->orderBy('last_name')->get(),
         ]);
     }
 
@@ -104,10 +121,14 @@ final class ConclusionController extends Controller
         $user = $request->user();
         $objectId = $user?->objectId();
         $isAdmin = $user?->hasRole('Администратор системы') ?? false;
+        $currentObject = $this->currentObject($user);
+        $scopedObjectId = $currentObject?->getKey();
 
         return view('modules.conclusions.create', [
             'statuses' => ConclusionStatus::options(),
-            'objects' => NdtObject::query()->with('city')->orderBy('name')->get(),
+            'objects' => $isAdmin
+                ? NdtObject::query()->with('city')->orderBy('name')->get()
+                : collect([$currentObject])->filter(),
             'methods' => NdtMethod::query()->where('is_active', true)->orderBy('name')->get(),
             'readyResults' => NdtResult::query()
                 ->with(['weld.object.city', 'task.request', 'method', 'executorEmployee.object.city'])
@@ -207,6 +228,16 @@ final class ConclusionController extends Controller
                 ->orderByDesc('id')
                 ->get(),
         ]);
+    }
+
+    private function currentObject(?\App\Models\User $user): ?NdtObject
+    {
+        $objectId = $user?->objectId();
+        if ($objectId === null) {
+            return null;
+        }
+
+        return NdtObject::query()->with('city')->find($objectId);
     }
 
     public function store(StoreConclusionRequest $request, ConclusionService $service): RedirectResponse

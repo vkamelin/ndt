@@ -11,6 +11,7 @@ use App\Modules\Registers\Enums\TransferRegisterStatus;
 use App\Modules\Registers\Models\Act;
 use App\Modules\Registers\Models\TransferRegister;
 use App\Modules\Registers\Models\TransferRegisterItem;
+use App\Modules\Objects\Models\NdtObject;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -35,7 +36,7 @@ final class TransferRegisterService
     public function create(array $data, ?User $actor = null, ?string $ipAddress = null, ?string $userAgent = null): TransferRegister
     {
         return DB::transaction(function () use ($data, $actor, $ipAddress, $userAgent): TransferRegister {
-            $register = TransferRegister::query()->create($this->normalize($data));
+            $register = TransferRegister::query()->create($this->normalize($data, $actor));
 
             $this->recordAudit(
                 AuditData::forModelChange(
@@ -72,7 +73,7 @@ final class TransferRegisterService
 
         return DB::transaction(function () use ($register, $data, $actor, $ipAddress, $userAgent): TransferRegister {
             $before = $this->snapshot($register);
-            $register->fill($this->normalize($data))->save();
+            $register->fill($this->normalize($data, $actor, $register))->save();
             $register->refresh();
 
             $this->recordAudit(
@@ -185,7 +186,7 @@ final class TransferRegisterService
     public function createAct(TransferRegister $register, array $data, ?User $actor = null, ?string $ipAddress = null, ?string $userAgent = null): Act
     {
         return DB::transaction(function () use ($register, $data, $actor, $ipAddress, $userAgent): Act {
-            $act = $register->acts()->create($this->normalizeAct($data));
+            $act = $register->acts()->create($this->normalizeAct($data, $register));
 
             $this->recordAudit(
                 AuditData::forModelChange(
@@ -207,14 +208,25 @@ final class TransferRegisterService
      * @param  array<string, mixed>  $data
      * @return array<string, mixed>
      */
-    private function normalize(array $data): array
+    private function normalize(array $data, ?User $actor = null, ?TransferRegister $currentRegister = null): array
     {
+        $objectId = $data['object_id'] ?? $currentRegister?->object_id;
+
+        if ($objectId === null && $actor !== null && ! $actor->hasRole('Администратор системы')) {
+            $objectId = $actor->objectId();
+        }
+
+        $cityId = $data['city_id'] ?? $currentRegister?->city_id;
+        if ($objectId !== null) {
+            $cityId = NdtObject::query()->whereKey($objectId)->value('city_id') ?? $cityId;
+        }
+
         return [
             'register_type_id' => $data['register_type_id'],
             'number' => $data['number'],
             'date' => $data['date'],
-            'city_id' => $data['city_id'],
-            'object_id' => $data['object_id'],
+            'city_id' => $cityId,
+            'object_id' => $objectId,
             'sender_employee_id' => $data['sender_employee_id'],
             'receiver_employee_id' => $data['receiver_employee_id'],
             'status' => TransferRegisterStatus::from($data['status']),
@@ -226,14 +238,14 @@ final class TransferRegisterService
      * @param  array<string, mixed>  $data
      * @return array<string, mixed>
      */
-    private function normalizeAct(array $data): array
+    private function normalizeAct(array $data, TransferRegister $register): array
     {
         return [
             'act_type_id' => $data['act_type_id'],
             'number' => $data['number'],
             'date' => $data['date'],
-            'city_id' => $data['city_id'],
-            'object_id' => $data['object_id'],
+            'city_id' => $register->city_id,
+            'object_id' => $register->object_id,
             'comment' => $data['comment'] ?? null,
         ];
     }

@@ -36,24 +36,33 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="space-y-2">
-                    <label for="city_id" class="text-sm font-medium text-slate-700">Город</label>
-                    <select id="city_id" name="city_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                        <option value="">Все</option>
-                        @foreach ($cities as $city)
-                            <option value="{{ $city->id }}" @selected((string) request('city_id') === (string) $city->id)>{{ $city->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="space-y-2">
-                    <label for="object_id" class="text-sm font-medium text-slate-700">Объект/участок</label>
-                    <select id="object_id" name="object_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                        <option value="">Все</option>
-                        @foreach ($objects as $object)
-                            <option value="{{ $object->id }}" @selected((string) request('object_id') === (string) $object->id)>{{ $object->name }} @if ($object->city) ({{ $object->city->name }}) @endif</option>
-                        @endforeach
-                    </select>
-                </div>
+                @if ($isAdmin)
+                    <div class="space-y-2">
+                        <label for="city_id" class="text-sm font-medium text-slate-700">Город</label>
+                        <select id="city_id" name="city_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
+                            <option value="">Все</option>
+                            @foreach ($cities as $city)
+                                <option value="{{ $city->id }}" @selected((string) request('city_id') === (string) $city->id)>{{ $city->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="space-y-2">
+                        <label for="object_id" class="text-sm font-medium text-slate-700">Объект/участок</label>
+                        <select id="object_id" name="object_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
+                            <option value="">Все</option>
+                            @foreach ($objects as $object)
+                                <option value="{{ $object->id }}" @selected((string) request('object_id') === (string) $object->id)>{{ $object->name }} @if ($object->city) ({{ $object->city->name }}) @endif</option>
+                            @endforeach
+                        </select>
+                    </div>
+                @else
+                    <input type="hidden" name="city_id" value="{{ $scopeCity?->id }}">
+                    <input type="hidden" name="object_id" value="{{ $scopeObject?->id }}">
+                    <div class="md:col-span-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+                        <p class="font-medium text-slate-900">Фиксированный контекст</p>
+                        <p class="mt-1">{{ $scopeObject?->name }} @if ($scopeCity) · {{ $scopeCity->name }} @endif</p>
+                    </div>
+                @endif
                 <div class="md:col-span-4 flex items-end">
                     <button type="submit" class="rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white">Применить</button>
                 </div>

@@ -23,18 +23,20 @@ final class ReportController extends Controller
         $this->authorize('viewAny', ReportJob::class);
 
         $user = $request->user();
-        $objectId = $user?->objectId();
+        $isAdmin = $user?->hasRole('Администратор системы') ?? false;
+        $scopeObject = $this->scopeObject($user);
+        $scopeCity = $scopeObject?->city;
 
         $reportJobs = ReportJob::query()
             ->with(['requestedBy', 'city', 'object', 'file'])
-            ->when(! $user?->hasRole('Администратор системы'), function ($query) use ($objectId): void {
-                if ($objectId === null) {
+            ->when(! $isAdmin, function ($query) use ($scopeObject): void {
+                if ($scopeObject === null) {
                     $query->whereRaw('1 = 0');
 
                     return;
                 }
 
-                $query->where('object_id', $objectId);
+                $query->where('object_id', $scopeObject->getKey());
             })
             ->when($request->filled('status'), function ($query) use ($request): void {
                 $query->where('status', $request->string('status')->toString());
@@ -49,20 +51,22 @@ final class ReportController extends Controller
                 $query->where('object_id', (int) $request->input('object_id'));
             });
 
-        $cities = City::query()->orderBy('name');
-        $objects = NdtObject::query()->with('city')->orderBy('name');
-
-        if (! $user?->hasRole('Администратор системы') && $objectId !== null) {
-            $cities->whereHas('objects', fn ($query) => $query->where('id', $objectId));
-            $objects->where('id', $objectId);
-        }
+        $cities = $isAdmin
+            ? City::query()->orderBy('name')->get()
+            : collect([$scopeCity])->filter();
+        $objects = $isAdmin
+            ? NdtObject::query()->with('city')->orderBy('name')->get()
+            : collect([$scopeObject])->filter();
 
         return view('modules.reports.index', [
             'reportJobs' => $reportJobs->orderByDesc('id')->paginate(15)->withQueryString(),
             'reportTypes' => ReportType::cases(),
             'statuses' => ReportStatus::options(),
-            'cities' => $cities->get(),
-            'objects' => $objects->get(),
+            'cities' => $cities,
+            'objects' => $objects,
+            'isAdmin' => $isAdmin,
+            'scopeCity' => $scopeCity,
+            'scopeObject' => $scopeObject,
         ]);
     }
 
@@ -71,21 +75,25 @@ final class ReportController extends Controller
         $this->authorize('create', ReportJob::class);
 
         $user = $request->user();
-        $objectId = $user?->objectId();
+        $isAdmin = $user?->hasRole('Администратор системы') ?? false;
+        $scopeObject = $this->scopeObject($user);
+        $scopeCity = $scopeObject?->city;
 
-        $cities = City::query()->orderBy('name');
-        $objects = NdtObject::query()->with('city')->orderBy('name');
-
-        if (! $user?->hasRole('Администратор системы') && $objectId !== null) {
-            $cities->whereHas('objects', fn ($query) => $query->where('id', $objectId));
-            $objects->where('id', $objectId);
-        }
+        $cities = $isAdmin
+            ? City::query()->orderBy('name')->get()
+            : collect([$scopeCity])->filter();
+        $objects = $isAdmin
+            ? NdtObject::query()->with('city')->orderBy('name')->get()
+            : collect([$scopeObject])->filter();
 
         return view('modules.reports.create', [
             'reportTypes' => ReportType::cases(),
             'statuses' => ReportStatus::options(),
-            'cities' => $cities->get(),
-            'objects' => $objects->get(),
+            'cities' => $cities,
+            'objects' => $objects,
+            'isAdmin' => $isAdmin,
+            'scopeCity' => $scopeCity,
+            'scopeObject' => $scopeObject,
         ]);
     }
 
@@ -102,5 +110,19 @@ final class ReportController extends Controller
             ->route('admin.reports.index')
             ->withInput()
             ->with('status', 'Отчет "'.$reportJob->title.'" поставлен в очередь.');
+    }
+
+    private function scopeObject(?\App\Models\User $user): ?NdtObject
+    {
+        if ($user === null || $user->hasRole('Администратор системы')) {
+            return null;
+        }
+
+        $objectId = $user->objectId();
+        if ($objectId === null) {
+            return null;
+        }
+
+        return NdtObject::query()->with('city')->find($objectId);
     }
 }

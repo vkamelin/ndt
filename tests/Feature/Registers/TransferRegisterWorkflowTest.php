@@ -216,6 +216,91 @@ final class TransferRegisterWorkflowTest extends TestCase
         ]);
     }
 
+    public function test_chief_register_form_uses_scoped_city_and_object(): void
+    {
+        $this->seed(DatabaseSeeder::class);
+
+        $chief = User::factory()->create([
+            'name' => 'Начальник участка',
+            'email' => 'chief-register@example.test',
+            'password' => 'password',
+            'status' => UserStatus::Active,
+        ]);
+        $chief->assignRole(Role::findByName('Начальник участка', 'web'));
+
+        $city = City::query()->create([
+            'name' => 'Самара',
+            'is_active' => true,
+            'comment' => null,
+        ]);
+        $otherCity = City::query()->create([
+            'name' => 'Уфа',
+            'is_active' => true,
+            'comment' => null,
+        ]);
+        $object = NdtObject::query()->create([
+            'city_id' => $city->id,
+            'name' => 'Участок A',
+            'code' => null,
+            'is_active' => true,
+            'comment' => null,
+        ]);
+        $otherObject = NdtObject::query()->create([
+            'city_id' => $otherCity->id,
+            'name' => 'Участок B',
+            'code' => null,
+            'is_active' => true,
+            'comment' => null,
+        ]);
+        $position = Position::query()->create([
+            'name' => 'Лаборант',
+            'is_active' => true,
+            'comment' => null,
+        ]);
+        $sender = Employee::query()->create([
+            'object_id' => $object->id,
+            'position_id' => $position->id,
+            'last_name' => 'Иванов',
+            'first_name' => 'Иван',
+            'middle_name' => null,
+            'phone' => null,
+            'email' => null,
+            'status' => EmployeeStatus::Active,
+            'personnel_number' => '103',
+        ]);
+        $receiver = Employee::query()->create([
+            'object_id' => $object->id,
+            'position_id' => $position->id,
+            'last_name' => 'Петров',
+            'first_name' => 'Петр',
+            'middle_name' => null,
+            'phone' => null,
+            'email' => null,
+            'status' => EmployeeStatus::Active,
+            'personnel_number' => '104',
+        ]);
+        $registerType = RegisterType::query()->orderBy('id')->firstOrFail();
+
+        $this->actingAs($chief)
+            ->post(route('admin.registers.store'), [
+                'register_type_id' => $registerType->id,
+                'number' => 'REG-002',
+                'date' => '2026-07-11',
+                'city_id' => $otherCity->id,
+                'object_id' => $otherObject->id,
+                'sender_employee_id' => $sender->id,
+                'receiver_employee_id' => $receiver->id,
+                'status' => TransferRegisterStatus::Draft->value,
+                'comment' => 'Подмена контекста',
+            ])
+            ->assertRedirect();
+
+        $register = TransferRegister::query()->where('number', 'REG-002')->firstOrFail();
+
+        $this->assertSame($object->id, $register->object_id);
+        $this->assertSame($city->id, $register->city_id);
+    }
+
     public function test_user_from_other_object_cannot_view_register(): void
     {
         $this->seed(DatabaseSeeder::class);

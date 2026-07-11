@@ -16,11 +16,7 @@ final class ObjectPolicy
 
     public function view(User $user, NdtObject $object): bool
     {
-        if ($user->can('objects.manage')) {
-            return true;
-        }
-
-        return $user->objectId() === $object->getKey();
+        return $user->can('objects.view_any') || $user->can('objects.manage');
     }
 
     public function manage(User $user, NdtObject $object): bool

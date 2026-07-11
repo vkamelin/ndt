@@ -34,13 +34,15 @@ final class NdtRequestController extends Controller
     public function index(Request $request): View
     {
         $this->authorize('viewAny', NdtRequest::class);
+        $user = $request->user();
+        $isAdmin = $user?->hasRole('Администратор системы') ?? false;
+        $currentObject = $this->currentObject($request);
+        $objectId = $currentObject?->getKey();
 
         $requests = NdtRequest::query()
             ->with(['organization', 'object.city', 'title'])
             ->withCount('welds')
-            ->when(! ($request->user()?->hasRole('Администратор системы') ?? false), function ($query) use ($request): void {
-                $objectId = $request->user()?->objectId();
-
+            ->when(! $isAdmin, function ($query) use ($objectId): void {
                 if ($objectId === null) {
                     $query->whereRaw('1 = 0');
 
@@ -65,7 +67,9 @@ final class NdtRequestController extends Controller
         return view('modules.ndt-requests.index', [
             'requests' => $requests,
             'statuses' => NdtRequestStatus::options(),
-            'objects' => NdtObject::query()->with('city')->orderBy('name')->get(),
+            'objects' => $isAdmin
+                ? NdtObject::query()->with('city')->orderBy('name')->get()
+                : collect([$currentObject])->filter(),
         ]);
     }
 
@@ -74,10 +78,11 @@ final class NdtRequestController extends Controller
         abort_unless($request->user()?->can('ndt_requests.manage') ?? false, 403);
 
         $currentObject = $this->currentObject($request);
+        $isAdmin = $request->user()?->hasRole('Администратор системы') ?? false;
 
         return view('modules.ndt-requests.create', [
             'currentObject' => $currentObject,
-            'objects' => $request->user()?->hasRole('Администратор системы') ? NdtObject::query()->with(['city', 'organization'])->orderBy('name')->get() : collect([$currentObject])->filter(),
+            'objects' => $isAdmin ? NdtObject::query()->with(['city', 'organization'])->orderBy('name')->get() : collect([$currentObject])->filter(),
             'organizations' => Organization::query()->orderBy('name')->get(),
             'titles' => Title::query()->orderBy('name')->get(),
         ]);
@@ -100,6 +105,7 @@ final class NdtRequestController extends Controller
         abort_unless($request->user()?->can('ndt_requests.manage') ?? false, 403);
 
         $currentObject = $this->currentObject($request);
+        $isAdmin = $request->user()?->hasRole('Администратор системы') ?? false;
         $preview = null;
         $importToken = null;
 
@@ -150,7 +156,7 @@ final class NdtRequestController extends Controller
 
         return view('modules.ndt-requests.import', [
             'currentObject' => $this->currentObject($request),
-            'objects' => $request->user()?->hasRole('Администратор системы') ? NdtObject::query()->with(['city', 'organization'])->orderBy('name')->get() : collect([$this->currentObject($request)])->filter(),
+            'objects' => $isAdmin ? NdtObject::query()->with(['city', 'organization'])->orderBy('name')->get() : collect([$currentObject])->filter(),
             'organizations' => Organization::query()->orderBy('name')->get(),
             'titles' => Title::query()->orderBy('name')->get(),
             'preview' => $payload,
@@ -209,13 +215,16 @@ final class NdtRequestController extends Controller
     public function show(NdtRequest $ndtRequest): View
     {
         $this->authorize('view', $ndtRequest);
+        $user = request()->user();
+        $isAdmin = $user?->hasRole('Администратор системы') ?? false;
+        $currentObject = $this->currentObject(request());
 
         $ndtRequest->load(['organization', 'object.city', 'title', 'welds.object.city', 'statusHistory.changedBy']);
 
         return view('modules.ndt-requests.show', [
             'request' => $ndtRequest,
             'organizations' => Organization::query()->orderBy('name')->get(),
-            'objects' => NdtObject::query()->with('city')->orderBy('name')->get(),
+            'objects' => $isAdmin ? NdtObject::query()->with('city')->orderBy('name')->get() : collect([$currentObject])->filter(),
             'titles' => Title::query()->orderBy('name')->get(),
             'welds' => Weld::query()
                 ->with(['object.city'])
@@ -223,6 +232,8 @@ final class NdtRequestController extends Controller
                 ->orderByDesc('id')
                 ->get(),
             'statuses' => NdtRequestStatus::options(),
+            'currentObject' => $currentObject,
+            'isAdmin' => $isAdmin,
         ]);
     }
 
