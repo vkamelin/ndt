@@ -35,6 +35,15 @@
                     <input id="name" name="name" value="{{ old('name') }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
                 </div>
                 <div class="space-y-2">
+                    <label class="text-sm font-medium text-slate-700" for="organization_id">Заказчик</label>
+                    <select id="organization_id" name="organization_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
+                        <option value="">Не выбран</option>
+                        @foreach ($organizations as $organization)
+                            <option value="{{ $organization->id }}" @selected(old('organization_id') == $organization->id)>{{ $organization->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="space-y-2">
                     <label class="text-sm font-medium text-slate-700" for="code">Код</label>
                     <input id="code" name="code" value="{{ old('code') }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
                 </div>
@@ -59,6 +68,7 @@
                         <tr>
                             <th class="px-6 py-4">Название</th>
                             <th class="px-6 py-4">Город</th>
+                            <th class="px-6 py-4">Заказчик</th>
                             <th class="px-6 py-4">Код</th>
                             <th class="px-6 py-4">Статус</th>
                             <th class="px-6 py-4">Действия</th>
@@ -77,6 +87,14 @@
                                     <select name="city_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
                                         @foreach ($cities as $city)
                                             <option value="{{ $city->id }}" @selected(old('city_id', $object->city_id) == $city->id)>{{ $city->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td class="px-6 py-5">
+                                    <select name="organization_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
+                                        <option value="">Не выбран</option>
+                                        @foreach ($organizations as $organization)
+                                            <option value="{{ $organization->id }}" @selected(old('organization_id', $object->organization_id) == $organization->id)>{{ $organization->name }}</option>
                                         @endforeach
                                     </select>
                                 </td>

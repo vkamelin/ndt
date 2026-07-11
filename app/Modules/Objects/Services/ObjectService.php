@@ -14,7 +14,7 @@ final class ObjectService
     use RecordsAuditLogs;
 
     /**
-     * @param  array{city_id: int, name: string, code?: string|null, comment?: string|null, is_active?: bool}  $data
+     * @param  array{city_id: int, organization_id?: int|null, name: string, code?: string|null, comment?: string|null, is_active?: bool}  $data
      */
     public function create(array $data, ?User $actor = null, ?string $ipAddress = null, ?string $userAgent = null): NdtObject
     {
@@ -36,7 +36,7 @@ final class ObjectService
     }
 
     /**
-     * @param  array{city_id?: int, name?: string, code?: string|null, comment?: string|null, is_active?: bool}  $data
+     * @param  array{city_id?: int, organization_id?: int|null, name?: string, code?: string|null, comment?: string|null, is_active?: bool}  $data
      */
     public function update(NdtObject $object, array $data, ?User $actor = null, ?string $ipAddress = null, ?string $userAgent = null): NdtObject
     {
@@ -86,6 +86,7 @@ final class ObjectService
         return [
             'id' => $object->getKey(),
             'city_id' => $object->city_id,
+            'organization_id' => $object->organization_id,
             'name' => $object->name,
             'code' => $object->code,
             'is_active' => $object->is_active,

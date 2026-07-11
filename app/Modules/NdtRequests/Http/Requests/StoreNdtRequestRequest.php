@@ -8,13 +8,34 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreNdtRequestRequest extends FormRequest
 {
+    protected function prepareForValidation(): void
+    {
+        if ($this->input('object_id') !== null) {
+            return;
+        }
+
+        $objectId = $this->user()?->objectId();
+
+        if ($objectId === null || $this->user()?->hasRole('Администратор системы')) {
+            return;
+        }
+
+        $this->merge([
+            'object_id' => $objectId,
+        ]);
+    }
+
     public function authorize(): bool
     {
         if (! ($this->user()?->can('ndt_requests.manage') ?? false)) {
             return false;
         }
 
-        return $this->user()?->hasRole('Администратор системы') || (int) $this->input('object_id') === (int) $this->user()?->objectId();
+        if ($this->user()?->hasRole('Администратор системы')) {
+            return true;
+        }
+
+        return (int) $this->input('object_id') === (int) $this->user()?->objectId();
     }
 
     /**

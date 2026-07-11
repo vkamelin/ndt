@@ -143,7 +143,13 @@ Route::middleware(['auth', 'active.user'])
     ->name('admin.ndt-requests.')
     ->group(function (): void {
         Route::get('/', [NdtRequestController::class, 'index'])->name('index');
+        Route::get('create', [NdtRequestController::class, 'create'])->name('create');
         Route::post('/', [NdtRequestController::class, 'store'])->name('store');
+        Route::get('import', [NdtRequestController::class, 'import'])->name('import');
+        Route::post('import/preview', [NdtRequestController::class, 'previewImport'])->name('import.preview');
+        Route::post('import', [NdtRequestController::class, 'storeImport'])->name('import.store');
+        Route::get('template.csv', [NdtRequestController::class, 'sampleCsv'])->name('template.csv');
+        Route::get('template.xlsx', [NdtRequestController::class, 'sampleXlsx'])->name('template.xlsx');
         Route::get('{ndtRequest}', [NdtRequestController::class, 'show'])->name('show');
         Route::patch('{ndtRequest}', [NdtRequestController::class, 'update'])->name('update');
         Route::patch('{ndtRequest}/status', [NdtRequestController::class, 'updateStatus'])->name('status.update');

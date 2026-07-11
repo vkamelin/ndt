@@ -11,95 +11,130 @@
     @livewireStyles
 </head>
 <body class="bg-slate-50 text-slate-900">
-    <div class="min-h-screen">
-        <header class="border-b border-slate-200/70 bg-white/90 backdrop-blur">
-            <div class="app-shell flex items-center justify-between gap-6 py-4">
-                <div>
-                    <p class="text-sm font-semibold uppercase tracking-[0.24em] text-slate-500">NDT</p>
-                    <p class="text-lg font-semibold text-slate-900">Web Application</p>
+    <div
+        class="min-h-screen"
+        x-data="{ menuOpen: false }"
+        x-effect="document.documentElement.classList.toggle('overflow-hidden', menuOpen)"
+        @keydown.escape.window="menuOpen = false"
+    >
+        @auth
+            <aside class="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-30 lg:flex lg:w-80 lg:flex-col lg:border-r lg:border-slate-200/70 lg:bg-white/90 lg:backdrop-blur">
+                <div class="border-b border-slate-200/70 px-6 py-5">
+                    <a href="{{ route('dashboard') }}" class="block">
+                        <p class="text-sm font-semibold uppercase tracking-[0.24em] text-slate-500">NDT</p>
+                        <p class="mt-1 text-xl font-semibold text-slate-900">Web Application</p>
+                    </a>
                 </div>
 
-                <nav class="flex items-center gap-3 text-sm font-medium text-slate-600">
-                    <a href="{{ route('home') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Главная</a>
-                    @auth
-                        <a href="{{ route('dashboard') }}" class="rounded-full bg-brand-50 px-4 py-2 text-brand-700 transition hover:bg-brand-100">Рабочий стол</a>
-                        @can('notifications.view_own')
-                            <a href="{{ route('notifications.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">
-                                Уведомления
-                                <span class="ml-1 rounded-full bg-slate-200 px-2 py-0.5 text-xs text-slate-700">
-                                    {{ auth()->user()->systemNotifications()->whereNull('read_at')->count() }}
-                                </span>
-                            </a>
-                        @endcan
-                        <a href="{{ route('profile.show') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Профиль</a>
-                        @can('users.view')
-                            <a href="{{ route('admin.users.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Пользователи</a>
-                        @endcan
-                        @can('cities.view_any')
-                            <a href="{{ route('admin.cities.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Города</a>
-                        @endcan
-                        @can('objects.view_any')
-                            <a href="{{ route('admin.objects.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Объекты</a>
-                        @endcan
-                        @can('employees.view_any')
-                            <a href="{{ route('admin.employees.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Сотрудники</a>
-                        @endcan
-                        @can('organizations.view_any')
-                            <a href="{{ route('admin.organizations.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Организации</a>
-                        @endcan
-                        @can('welds.view_any')
-                            <a href="{{ route('admin.welds.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Стыки</a>
-                        @endcan
-                        @can('ndt_requests.view_any')
-                            <a href="{{ route('admin.ndt-requests.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Заявки НК</a>
-                        @endcan
-                        @can('ndt_tasks.view_any')
-                            <a href="{{ route('admin.ndt-tasks.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Задания НК</a>
-                        @endcan
-                        @can('ndt_results.view_any')
-                            <a href="{{ route('admin.ndt-results.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Результаты</a>
-                        @endcan
-                        @can('conclusions.view_any')
-                            <a href="{{ route('admin.conclusions.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Заключения</a>
-                        @endcan
-                        @can('radiography.view_any')
-                            <a href="{{ route('admin.radiography.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">РК</a>
-                        @endcan
-                        @can('shifts.view_any')
-                            <a href="{{ route('admin.shifts.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Смены</a>
-                        @endcan
-                        @can('equipment.view_any')
-                            <a href="{{ route('admin.equipment.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Оборудование</a>
-                        @endcan
-                        @can('document.view_any')
-                            <a href="{{ route('admin.documents.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Документы</a>
-                        @endcan
-                        @can('reports.view_any')
-                            <a href="{{ route('admin.reports.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Отчеты</a>
-                        @endcan
-                        @can('positions.manage')
-                            <a href="{{ route('admin.positions.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Должности</a>
-                        @endcan
-                        @can('directories.manage')
-                            <a href="{{ route('admin.dictionaries.overview') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Справочники</a>
-                        @endcan
-                        @can('viewAny', \App\Modules\Audit\Models\AuditLog::class)
-                            <a href="{{ route('admin.audit-logs.index') }}" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Журнал аудита</a>
-                        @endcan
-                        <form method="post" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-900">Выйти</button>
-                        </form>
-                    @else
-                        <a href="{{ route('login') }}" class="rounded-full bg-brand-50 px-4 py-2 text-brand-700 transition hover:bg-brand-100">Войти</a>
-                    @endauth
-                </nav>
-            </div>
-        </header>
+                <div class="min-h-0 flex-1 overflow-y-auto px-4 py-5">
+                    @include('layouts.partials.navigation-menu')
+                </div>
+            </aside>
+        @endauth
 
-        <main class="app-shell py-8">
-            @yield('content')
-        </main>
+        <div class="min-h-screen lg:pl-80">
+            <header class="sticky top-0 z-20 border-b border-slate-200/70 bg-white/90 backdrop-blur">
+                <div class="app-shell flex items-center justify-between gap-3 py-4">
+                    <div class="flex min-w-0 items-center gap-3">
+                        @auth
+                            <button
+                                type="button"
+                                @click="menuOpen = true"
+                                class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 lg:hidden"
+                                aria-controls="mobile-navigation"
+                                :aria-expanded="menuOpen.toString()"
+                                aria-label="Открыть меню"
+                            >
+                                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                                    <path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                        @endauth
+
+                        <a href="{{ route('home') }}" class="min-w-0">
+                            <p class="text-sm font-semibold uppercase tracking-[0.24em] text-slate-500">NDT</p>
+                            <p class="truncate text-lg font-semibold text-slate-900">Web Application</p>
+                        </a>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        @auth
+                            <div class="hidden items-center gap-2 sm:flex">
+                                @can('notifications.view_own')
+                                    <a href="{{ route('notifications.index') }}" class="rounded-full px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900">
+                                        Уведомления
+                                        <span class="ml-1 rounded-full bg-slate-200 px-2 py-0.5 text-xs text-slate-700">
+                                            {{ auth()->user()->systemNotifications()->whereNull('read_at')->count() }}
+                                        </span>
+                                    </a>
+                                @endcan
+                                <a href="{{ route('profile.show') }}" class="rounded-full px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900">Профиль</a>
+                            </div>
+                        @else
+                            <a href="{{ route('login') }}" class="rounded-full bg-brand-50 px-4 py-2 text-sm font-medium text-brand-700 transition hover:bg-brand-100">
+                                Войти
+                            </a>
+                        @endauth
+                    </div>
+                </div>
+            </header>
+
+            @auth
+                <div
+                    x-cloak
+                    x-show="menuOpen"
+                    x-transition.opacity
+                    class="fixed inset-0 z-40 lg:hidden"
+                    aria-hidden="true"
+                >
+                    <button
+                        type="button"
+                        class="absolute inset-0 bg-slate-950/40"
+                        @click="menuOpen = false"
+                        aria-label="Закрыть меню"
+                    ></button>
+
+                    <aside
+                        id="mobile-navigation"
+                        x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="-translate-x-full"
+                        x-transition:enter-end="translate-x-0"
+                        x-transition:leave="transition ease-in duration-150"
+                        x-transition:leave-start="translate-x-0"
+                        x-transition:leave-end="-translate-x-full"
+                        class="absolute inset-y-0 left-0 flex h-full w-[min(100%-1rem,20rem)] flex-col overflow-hidden border-r border-slate-200 bg-white shadow-2xl"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label="Основное меню"
+                    >
+                        <div class="flex items-center justify-between border-b border-slate-200/70 px-4 py-4">
+                            <div class="min-w-0">
+                                <p class="panel-title">Навигация</p>
+                                <p class="mt-1 truncate text-lg font-semibold text-slate-900">Меню</p>
+                            </div>
+                            <button
+                                type="button"
+                                @click="menuOpen = false"
+                                class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
+                                aria-label="Закрыть меню"
+                            >
+                                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                                    <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div class="min-h-0 flex-1 overflow-y-auto px-4 py-5">
+                            @include('layouts.partials.navigation-menu')
+                        </div>
+                    </aside>
+                </div>
+            @endauth
+
+            <main class="app-shell py-8">
+                @yield('content')
+            </main>
+        </div>
     </div>
     @livewireScripts
 </body>

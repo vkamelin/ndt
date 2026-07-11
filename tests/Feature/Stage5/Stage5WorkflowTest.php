@@ -34,14 +34,6 @@ final class Stage5WorkflowTest extends TestCase
             'is_active' => true,
             'comment' => null,
         ]);
-        $object = NdtObject::query()->create([
-            'city_id' => $city->id,
-            'name' => 'Участок 5',
-            'code' => 'U5',
-            'is_active' => true,
-            'comment' => null,
-        ]);
-
         $this->actingAs($admin)
             ->post(route('admin.organizations.store'), [
                 'name' => 'ООО Контроль',
@@ -51,6 +43,14 @@ final class Stage5WorkflowTest extends TestCase
             ->assertRedirect();
 
         $organization = Organization::query()->where('name', 'ООО Контроль')->firstOrFail();
+        $object = NdtObject::query()->create([
+            'city_id' => $city->id,
+            'organization_id' => $organization->id,
+            'name' => 'Участок 5',
+            'code' => 'U5',
+            'is_active' => true,
+            'comment' => null,
+        ]);
 
         $this->actingAs($admin)
             ->post(route('admin.organizations.contacts.store', $organization), [
@@ -81,47 +81,38 @@ final class Stage5WorkflowTest extends TestCase
         ]);
 
         $this->actingAs($admin)
-            ->post(route('admin.welds.store'), [
-                'object_id' => $object->id,
-                'weld_number' => '1-01',
-                'title_id' => null,
-                'drawing_id' => null,
-                'line_id' => null,
-                'diameter' => '325',
-                'thickness' => '12',
-                'material_1_id' => null,
-                'material_2_id' => null,
-                'welded_at' => '2026-07-09',
-            ])
-            ->assertRedirect();
-
-        $weld = Weld::query()->where('weld_number', '1-01')->firstOrFail();
-
-        $this->actingAs($admin)
             ->post(route('admin.ndt-requests.store'), [
                 'request_number' => 'NR-001',
                 'request_date' => '2026-07-09',
-                'organization_id' => $organization->id,
                 'object_id' => $object->id,
                 'title_id' => null,
                 'priority' => 'Высокий',
                 'due_date' => '2026-07-15',
                 'basis' => 'Плановый контроль',
                 'comment' => 'Первичная заявка',
+                'welds' => [
+                    [
+                        'weld_number' => '1-01',
+                        'diameter' => '325',
+                        'thickness' => '12',
+                        'welded_at' => '2026-07-09',
+                        'pwht' => false,
+                    ],
+                ],
             ])
             ->assertRedirect();
 
         $requestRecord = NdtRequest::query()->where('request_number', 'NR-001')->firstOrFail();
 
-        $this->actingAs($admin)
-            ->post(route('admin.ndt-requests.welds.attach', $requestRecord), [
-                'weld_id' => $weld->id,
-            ])
-            ->assertRedirect();
-
         $this->assertDatabaseHas('ndt_request_items', [
             'ndt_request_id' => $requestRecord->id,
-            'weld_id' => $weld->id,
+            'weld_id' => Weld::query()->where('object_id', $object->id)->where('weld_number', '1-01')->value('id'),
+        ]);
+        $this->assertDatabaseHas('welds', [
+            'object_id' => $object->id,
+            'weld_number' => '1-01',
+            'diameter' => '325.00',
+            'thickness' => '12.00',
         ]);
 
         $this->actingAs($admin)

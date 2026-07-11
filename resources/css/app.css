@@ -14,6 +14,7 @@
     }
 
     html {
+        scrollbar-gutter: stable;
         background:
             radial-gradient(circle at top left, rgba(37, 99, 235, 0.12), transparent 35%),
             linear-gradient(180deg, #f8fbff 0%, #f1f5f9 100%);
@@ -32,6 +33,14 @@
 @layer components {
     .app-shell {
         @apply mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8;
+    }
+
+    .nav-link {
+        @apply block rounded-lg px-3 py-2 text-slate-700 transition hover:bg-slate-100 hover:text-slate-900;
+    }
+
+    .nav-link-active {
+        @apply bg-brand-50 text-brand-700 hover:bg-brand-100 hover:text-brand-700;
     }
 
     .panel {

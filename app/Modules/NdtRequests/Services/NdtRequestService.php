@@ -7,9 +7,13 @@ namespace App\Modules\NdtRequests\Services;
 use App\Models\User;
 use App\Modules\Audit\Concerns\RecordsAuditLogs;
 use App\Modules\Audit\DTO\AuditData;
+use App\Modules\NdtRequests\DTO\NdtRequestFormData;
+use App\Modules\NdtRequests\DTO\NdtRequestWeldData;
 use App\Modules\NdtRequests\Enums\NdtRequestStatus;
 use App\Modules\NdtRequests\Models\NdtRequest;
+use App\Modules\Objects\Models\NdtObject;
 use App\Modules\Welds\Models\Weld;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 final class NdtRequestService
@@ -31,22 +35,55 @@ final class NdtRequestService
      */
     public function create(array $data, ?User $actor = null, ?string $ipAddress = null, ?string $userAgent = null): NdtRequest
     {
-        $request = NdtRequest::query()->create($this->normalize($data + ['status' => NdtRequestStatus::Draft->value]));
-
-        $this->recordStatusHistory($request, null, NdtRequestStatus::Draft, $actor);
-        $this->recordAudit(
-            AuditData::forModelChange(
-                entityType: NdtRequest::class,
-                entityId: $request->getKey(),
-                operation: 'ndt_request.created',
-                after: $this->snapshot($request),
-                actor: $actor,
-                ipAddress: $ipAddress,
-                userAgent: $userAgent,
-            ),
+        return $this->createWithWelds(
+            NdtRequestFormData::fromArray($data + ['welds' => []]),
+            $actor,
+            $ipAddress,
+            $userAgent,
         );
+    }
 
-        return $request;
+    public function createWithWelds(NdtRequestFormData $requestData, ?User $actor = null, ?string $ipAddress = null, ?string $userAgent = null): NdtRequest
+    {
+        return DB::transaction(function () use ($requestData, $actor, $ipAddress, $userAgent): NdtRequest {
+            $object = NdtObject::query()->with('organization')->findOrFail($requestData->objectId);
+            $organizationId = $object->organization_id ?? $requestData->organizationId;
+
+            $request = NdtRequest::query()->create($this->normalize([
+                'request_number' => $requestData->requestNumber,
+                'request_date' => $requestData->requestDate,
+                'organization_id' => $organizationId,
+                'object_id' => $requestData->objectId,
+                'title_id' => $requestData->titleId,
+                'priority' => $requestData->priority,
+                'due_date' => $requestData->dueDate,
+                'basis' => $requestData->basis,
+                'comment' => $requestData->comment,
+                'status' => NdtRequestStatus::Draft->value,
+            ]));
+
+            $this->recordStatusHistory($request, null, NdtRequestStatus::Draft, $actor);
+
+            foreach ($requestData->welds as $weldData) {
+                $this->attachResolvedWeld($request, $weldData, $actor, $ipAddress, $userAgent);
+            }
+
+            $request->loadCount('welds');
+
+            $this->recordAudit(
+                AuditData::forModelChange(
+                    entityType: NdtRequest::class,
+                    entityId: $request->getKey(),
+                    operation: 'ndt_request.created',
+                    after: $this->snapshot($request),
+                    actor: $actor,
+                    ipAddress: $ipAddress,
+                    userAgent: $userAgent,
+                ),
+            );
+
+            return $request;
+        });
     }
 
     /**
@@ -64,9 +101,10 @@ final class NdtRequestService
      */
     public function update(NdtRequest $request, array $data, ?User $actor = null, ?string $ipAddress = null, ?string $userAgent = null): NdtRequest
     {
-        $before = $this->snapshot($request);
+        $before = $this->snapshot($request->loadCount('welds'));
         $request->fill($this->normalize($data))->save();
         $request->refresh();
+        $request->loadCount('welds');
 
         $this->recordAudit(
             AuditData::forModelChange(
@@ -96,11 +134,12 @@ final class NdtRequestService
             return $request;
         }
 
-        $before = $this->snapshot($request);
+        $before = $this->snapshot($request->loadCount('welds'));
         $previousStatus = $request->status;
         $request->status = $status;
         $request->save();
         $request->refresh();
+        $request->loadCount('welds');
 
         $this->recordStatusHistory($request, $previousStatus, $status, $actor, $comment);
         $this->recordAudit(
@@ -150,6 +189,20 @@ final class NdtRequestService
         );
     }
 
+    public function attachResolvedWeld(
+        NdtRequest $request,
+        NdtRequestWeldData $weldData,
+        ?User $actor = null,
+        ?string $ipAddress = null,
+        ?string $userAgent = null,
+    ): Weld {
+        $weld = $this->resolveOrCreateWeld($request->object_id, $weldData, $actor, $ipAddress, $userAgent);
+
+        $this->attachWeld($request, $weld, $actor, $ipAddress, $userAgent);
+
+        return $weld;
+    }
+
     public function detachWeld(NdtRequest $request, Weld $weld, ?User $actor = null, ?string $ipAddress = null, ?string $userAgent = null): void
     {
         $request->welds()->detach($weld->getKey());
@@ -190,7 +243,9 @@ final class NdtRequestService
             'organization_id' => $request->organization_id,
             'object_id' => $request->object_id,
             'title_id' => $request->title_id,
+            'priority' => $request->priority,
             'status' => $request->status->value,
+            'welds_count' => $request->welds_count ?? null,
         ];
     }
 
@@ -202,5 +257,43 @@ final class NdtRequestService
             'changed_by_user_id' => $actor?->getKey(),
             'comment' => $comment,
         ]);
+    }
+
+    private function resolveOrCreateWeld(
+        int $objectId,
+        NdtRequestWeldData $weldData,
+        ?User $actor = null,
+        ?string $ipAddress = null,
+        ?string $userAgent = null,
+    ): Weld {
+        $weld = Weld::query()
+            ->where('object_id', $objectId)
+            ->where('weld_number', $weldData->weldNumber)
+            ->first();
+
+        if ($weld !== null) {
+            return $weld;
+        }
+
+        $weld = Weld::query()->create($this->normalize($weldData->toRequestPayload($objectId) + [
+            'status' => 'created',
+        ]));
+
+        $this->recordAudit(
+            AuditData::forModelChange(
+                entityType: Weld::class,
+                entityId: $weld->getKey(),
+                operation: 'weld.created_from_ndt_request',
+                after: [
+                    'object_id' => $weld->object_id,
+                    'weld_number' => $weld->weld_number,
+                ],
+                actor: $actor,
+                ipAddress: $ipAddress,
+                userAgent: $userAgent,
+            ),
+        );
+
+        return $weld;
     }
 }

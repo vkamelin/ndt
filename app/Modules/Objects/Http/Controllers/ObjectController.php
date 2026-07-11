@@ -10,6 +10,7 @@ use App\Modules\Objects\Http\Requests\UpdateObjectRequest;
 use App\Modules\Objects\Models\City;
 use App\Modules\Objects\Models\NdtObject;
 use App\Modules\Objects\Services\ObjectService;
+use App\Modules\Organizations\Models\Organization;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -35,6 +36,7 @@ final class ObjectController extends Controller
         return view('modules.objects.objects.index', [
             'objects' => $objects,
             'cities' => City::query()->orderBy('name')->get(),
+            'organizations' => Organization::query()->orderBy('name')->get(),
         ]);
     }
 

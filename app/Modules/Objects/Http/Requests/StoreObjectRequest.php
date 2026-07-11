@@ -20,6 +20,7 @@ class StoreObjectRequest extends FormRequest
     {
         return [
             'city_id' => ['required', 'integer', 'exists:cities,id'],
+            'organization_id' => ['nullable', 'integer', 'exists:organizations,id'],
             'name' => ['required', 'string', 'max:255'],
             'code' => ['nullable', 'string', 'max:255'],
             'comment' => ['nullable', 'string'],

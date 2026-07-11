@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Objects\Models;
 
+use App\Modules\Organizations\Models\Organization;
 use App\Modules\Employees\Models\Employee;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -21,6 +22,7 @@ final class NdtObject extends Model
      */
     protected $fillable = [
         'city_id',
+        'organization_id',
         'name',
         'code',
         'is_active',
@@ -37,6 +39,11 @@ final class NdtObject extends Model
     public function city(): BelongsTo
     {
         return $this->belongsTo(City::class, 'city_id');
+    }
+
+    public function organization(): BelongsTo
+    {
+        return $this->belongsTo(Organization::class);
     }
 
     public function employees(): HasMany
