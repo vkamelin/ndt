@@ -25,6 +25,7 @@
 | `08-files-documents-audit.md` | Правила для файлов, документов, версий, audit log и критичных действий. |
 | `09-testing-strategy.md` | Тестовая стратегия и обязательные сценарии. |
 | `10-devops-and-operations.md` | Эксплуатация, очереди, scheduler, backup, логи и production-инфраструктура. |
+| `operations/README.md` | Операционные инструкции: backup, restore и production-checklist. |
 | `11-codex-task-templates.md` | Шаблоны задач для Codex. |
 | `12-glossary.md` | Глоссарий терминов проекта. |
 

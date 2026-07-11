@@ -16,6 +16,7 @@ use App\Modules\Notifications\Console\Commands\CheckExpiringQualificationsComman
 use App\Modules\Notifications\Console\Commands\CheckNotificationQueueCommand;
 use App\Modules\Notifications\Console\Commands\CheckOpenShiftsCommand;
 use App\Modules\Notifications\Console\Commands\CheckOverdueTasksCommand;
+use App\Modules\System\Console\Commands\CleanupTemporaryFilesCommand;
 use App\Modules\Employees\Models\Employee;
 use App\Modules\Employees\Policies\EmployeePolicy;
 use App\Modules\Documents\Models\Document;
@@ -75,6 +76,7 @@ final class AppServiceProvider extends ServiceProvider
                 CheckExpiringEquipmentCommand::class,
                 CheckExpiringQualificationsCommand::class,
                 CheckNotificationQueueCommand::class,
+                CleanupTemporaryFilesCommand::class,
             ]);
         }
     }

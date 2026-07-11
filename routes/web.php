@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\DashboardController;
+use App\Modules\System\Http\Controllers\HealthController;
 use App\Http\Controllers\PwaController;
 use App\Http\Controllers\WelcomeController;
 use App\Modules\Admin\Http\Controllers\ReferenceDictionaryController;
@@ -31,6 +32,7 @@ use App\Modules\NdtRequests\Http\Controllers\NdtRequestController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', WelcomeController::class)->name('home');
+Route::get('/health', HealthController::class)->name('health');
 
 Route::middleware('guest')->group(function (): void {
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');

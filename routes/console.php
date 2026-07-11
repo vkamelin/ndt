@@ -17,3 +17,5 @@ Schedule::command('notifications:check-open-shifts')->everyThirtyMinutes();
 Schedule::command('notifications:check-expiring-equipment')->hourly();
 Schedule::command('notifications:check-expiring-qualifications')->dailyAt('07:00');
 Schedule::command('notifications:check-queue')->everyFifteenMinutes();
+Schedule::command('system:cleanup-temporary-files', ['--hours' => (int) config('system.cleanup.default_hours', 24)])
+    ->dailyAt('02:30');
