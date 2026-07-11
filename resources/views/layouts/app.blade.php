@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('app.name', 'NDT Web Application') }}</title>
+    <title>{{ config('app.name', 'NDT') }}</title>
     @if (is_file(public_path('build/manifest.json')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @endif
@@ -19,13 +19,6 @@
     >
         @auth
             <aside class="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-30 lg:flex lg:w-80 lg:flex-col lg:border-r lg:border-slate-200/70 lg:bg-white/90 lg:backdrop-blur">
-                <div class="border-b border-slate-200/70 px-6 py-5">
-                    <a href="{{ route('dashboard') }}" class="block">
-                        <p class="text-sm font-semibold uppercase tracking-[0.24em] text-slate-500">NDT</p>
-                        <p class="mt-1 text-xl font-semibold text-slate-900">Web Application</p>
-                    </a>
-                </div>
-
                 <div class="min-h-0 flex-1 overflow-y-auto px-4 py-5">
                     @include('layouts.partials.navigation-menu')
                 </div>
@@ -53,7 +46,6 @@
 
                         <a href="{{ route('home') }}" class="min-w-0">
                             <p class="text-sm font-semibold uppercase tracking-[0.24em] text-slate-500">NDT</p>
-                            <p class="truncate text-lg font-semibold text-slate-900">Web Application</p>
                         </a>
                     </div>
 
