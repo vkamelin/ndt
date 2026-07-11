@@ -331,13 +331,14 @@ API используется для мобильных/PWA-сценариев и
 
 Рекомендуемые документы:
 
-- `docs/architecture.md`;
-- `docs/database.md`;
-- `docs/roles-and-permissions.md`;
-- `docs/business-processes.md`;
-- `docs/api.md`;
-- `docs/deployment.md`;
-- `docs/testing.md`.
+- `docs/01-architecture.md`;
+- `docs/03-data-model.md`;
+- `docs/04-roles-and-access.md`;
+- `docs/05-business-workflows.md`;
+- `docs/07-api-guidelines.md`;
+- `docs/09-testing-strategy.md`;
+- `docs/10-devops-and-operations.md`;
+- `docs/operations/README.md`.
 
 ## Production-критерии
 
