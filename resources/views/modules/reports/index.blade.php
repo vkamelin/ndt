@@ -61,71 +61,15 @@
         </div>
 
         @can('create', \App\Modules\Reports\Models\ReportJob::class)
-            <form method="post" action="{{ route('admin.reports.store') }}" class="panel p-6 space-y-6">
-                @csrf
-                <div class="grid gap-4 md:grid-cols-4">
-                    <div class="space-y-2">
-                        <label for="queue_city_id" class="text-sm font-medium text-slate-700">Город</label>
-                        <select id="queue_city_id" name="city_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                            <option value="">Без фильтра</option>
-                            @foreach ($cities as $city)
-                                <option value="{{ $city->id }}" @selected((string) old('city_id', request('city_id')) === (string) $city->id)>{{ $city->name }}</option>
-                            @endforeach
-                        </select>
+            <div class="panel p-6">
+                <div class="flex items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-semibold text-slate-900">Постановка отчета</h2>
+                        <p class="mt-2 text-sm text-slate-600">Большая форма перенесена на отдельную страницу.</p>
                     </div>
-                    <div class="space-y-2">
-                        <label for="queue_object_id" class="text-sm font-medium text-slate-700">Объект/участок</label>
-                        <select id="queue_object_id" name="object_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                            <option value="">Без фильтра</option>
-                            @foreach ($objects as $object)
-                                <option value="{{ $object->id }}" @selected((string) old('object_id', request('object_id')) === (string) $object->id)>{{ $object->name }} @if ($object->city) ({{ $object->city->name }}) @endif</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="space-y-2">
-                        <label for="queue_search" class="text-sm font-medium text-slate-700">Поиск</label>
-                        <input id="queue_search" name="search" value="{{ old('search', request('search')) }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                    </div>
-                    <div class="space-y-2">
-                        <label for="queue_status" class="text-sm font-medium text-slate-700">Статус</label>
-                        <select id="queue_status" name="status" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                            <option value="">Без фильтра</option>
-                            @foreach ($statuses as $value => $label)
-                                <option value="{{ $value }}" @selected(old('status', request('status')) === $value)>{{ $label }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="space-y-2">
-                        <label for="queue_date_from" class="text-sm font-medium text-slate-700">С даты</label>
-                        <input id="queue_date_from" type="date" name="date_from" value="{{ old('date_from', request('date_from')) }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                    </div>
-                    <div class="space-y-2">
-                        <label for="queue_date_to" class="text-sm font-medium text-slate-700">По дату</label>
-                        <input id="queue_date_to" type="date" name="date_to" value="{{ old('date_to', request('date_to')) }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                    </div>
-                    <div class="flex items-end gap-3 md:col-span-2">
-                        <label class="flex items-center gap-2 text-sm text-slate-700">
-                            <input type="checkbox" name="include_defects" value="1" @checked(old('include_defects', request('include_defects')))>
-                            Включить дефекты
-                        </label>
-                    </div>
+                    <a href="{{ route('admin.reports.create') }}" class="rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">Создать отчет</a>
                 </div>
-
-                <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                    @foreach ($reportTypes as $reportType)
-                        <button type="submit" name="report_type" value="{{ $reportType->value }}" class="rounded-3xl border border-slate-200 bg-slate-50 p-4 text-left transition hover:border-brand-300 hover:bg-brand-50">
-                            <div class="flex items-center justify-between gap-4">
-                                <div>
-                                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">{{ $reportType->format()->label() }}</p>
-                                    <h2 class="mt-2 text-lg font-semibold text-slate-900">{{ $reportType->label() }}</h2>
-                                </div>
-                                <span class="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-600">{{ $reportType->format()->label() }}</span>
-                            </div>
-                            <p class="mt-3 text-sm leading-6 text-slate-600">{{ $reportType->description() }}</p>
-                        </button>
-                    @endforeach
-                </div>
-            </form>
+            </div>
         @endcan
 
         <div class="panel overflow-hidden">

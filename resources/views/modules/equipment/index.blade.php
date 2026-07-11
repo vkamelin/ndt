@@ -18,64 +18,13 @@
 
         @can('equipment.manage')
             <div class="panel p-6">
-                <form method="post" action="{{ route('admin.equipment.store') }}" class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                    @csrf
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="equipment_type_id">Тип</label>
-                        <select id="equipment_type_id" name="equipment_type_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                            @foreach ($equipmentTypes as $type)
-                                <option value="{{ $type->id }}">{{ $type->name }}</option>
-                            @endforeach
-                        </select>
+                <div class="flex items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-semibold text-slate-900">Добавление оборудования</h2>
+                        <p class="mt-2 text-sm text-slate-600">Большая форма перенесена на отдельную страницу.</p>
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="object_id">Объект/участок</label>
-                        <select id="object_id" name="object_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                            @foreach ($objects as $object)
-                                <option value="{{ $object->id }}">{{ $object->name }} @if ($object->city) ({{ $object->city->name }}) @endif</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="name">Наименование</label>
-                        <input id="name" name="name" value="{{ old('name') }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="inventory_number">Инвентарный номер</label>
-                        <input id="inventory_number" name="inventory_number" value="{{ old('inventory_number') }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="serial_number">Серийный номер</label>
-                        <input id="serial_number" name="serial_number" value="{{ old('serial_number') }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="status">Статус</label>
-                        <select id="status" name="status" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                            @foreach ($statuses as $value => $label)
-                                <option value="{{ $value }}">{{ $label }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="manufacturer">Производитель</label>
-                        <input id="manufacturer" name="manufacturer" value="{{ old('manufacturer') }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="model">Модель</label>
-                        <input id="model" name="model" value="{{ old('model') }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="purchased_at">Дата покупки</label>
-                        <input id="purchased_at" type="date" name="purchased_at" value="{{ old('purchased_at') }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                    </div>
-                    <div class="md:col-span-2 xl:col-span-3 space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="comment">Комментарий</label>
-                        <textarea id="comment" name="comment" rows="2" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">{{ old('comment') }}</textarea>
-                    </div>
-                    <div class="md:col-span-2 xl:col-span-3">
-                        <button type="submit" class="rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white">Добавить оборудование</button>
-                    </div>
-                </form>
+                    <a href="{{ route('admin.equipment.create') }}" class="rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">Добавить оборудование</a>
+                </div>
             </div>
         @endcan
 

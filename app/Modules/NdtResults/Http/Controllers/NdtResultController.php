@@ -153,6 +153,87 @@ final class NdtResultController extends Controller
         ]);
     }
 
+    public function create(Request $request): View
+    {
+        $this->authorize('create', NdtResult::class);
+
+        $user = $request->user();
+        $isAdmin = $user?->hasRole('Администратор системы') ?? false;
+        $objectId = $user?->objectId();
+
+        return view('modules.ndt-results.create', [
+            'tasks' => NdtTask::query()
+                ->with(['object.city', 'method', 'assigneeEmployee'])
+                ->when(! $isAdmin, function ($query) use ($objectId): void {
+                    if ($objectId === null) {
+                        $query->whereRaw('1 = 0');
+
+                        return;
+                    }
+
+                    $query->where('object_id', $objectId);
+                })
+                ->orderByDesc('id')
+                ->get(),
+            'welds' => Weld::query()
+                ->with(['object.city', 'ndtMethods'])
+                ->when(! $isAdmin, function ($query) use ($objectId): void {
+                    if ($objectId === null) {
+                        $query->whereRaw('1 = 0');
+
+                        return;
+                    }
+
+                    $query->where('object_id', $objectId);
+                })
+                ->orderByDesc('id')
+                ->get(),
+            'methods' => NdtMethod::query()->where('is_active', true)->orderBy('name')->get(),
+            'objects' => NdtObject::query()
+                ->with('city')
+                ->when(! $isAdmin, function ($query) use ($objectId): void {
+                    if ($objectId === null) {
+                        $query->whereRaw('1 = 0');
+
+                        return;
+                    }
+
+                    $query->whereKey($objectId);
+                })
+                ->orderBy('name')
+                ->get(),
+            'employees' => Employee::query()
+                ->with(['object.city'])
+                ->when(! $isAdmin, function ($query) use ($objectId): void {
+                    if ($objectId === null) {
+                        $query->whereRaw('1 = 0');
+
+                        return;
+                    }
+
+                    $query->where('object_id', $objectId);
+                })
+                ->orderBy('last_name')
+                ->get(),
+            'equipment' => Equipment::query()
+                ->with(['type', 'object.city'])
+                ->when(! $isAdmin, function ($query) use ($objectId): void {
+                    if ($objectId === null) {
+                        $query->whereRaw('1 = 0');
+
+                        return;
+                    }
+
+                    $query->where('object_id', $objectId);
+                })
+                ->whereIn('status', [EquipmentStatus::Available->value, EquipmentStatus::Issued->value])
+                ->orderBy('name')
+                ->get(),
+            'normativeDocuments' => NormativeDocument::query()->orderBy('name')->get(),
+            'statuses' => NdtResultStatus::options(),
+        ]);
+    }
+
     public function show(Request $request, NdtResult $ndtResult): View
     {
         $this->authorize('view', $ndtResult);
@@ -207,12 +288,66 @@ final class NdtResultController extends Controller
         ]);
     }
 
+    public function edit(Request $request, NdtResult $ndtResult): View
+    {
+        $this->authorize('update', $ndtResult);
+        $user = $request->user();
+        $isAdmin = $user?->hasRole('Администратор системы') ?? false;
+        $objectId = $user?->objectId();
+
+        $ndtResult->load([
+            'task.object.city',
+            'weld.object.city',
+            'method',
+            'executorEmployee.object.city',
+            'defects.defectType',
+            'statusHistory.changedBy',
+            'vtResult',
+            'ptResult',
+            'mtResult',
+            'utResult',
+        ]);
+
+        return view('modules.ndt-results.edit', [
+            'result' => $ndtResult,
+            'defectTypes' => DefectType::query()->where('is_active', true)->orderBy('name')->get(),
+            'employees' => Employee::query()
+                ->with(['object.city'])
+                ->when(! $isAdmin, function ($query) use ($objectId): void {
+                    if ($objectId === null) {
+                        $query->whereRaw('1 = 0');
+
+                        return;
+                    }
+
+                    $query->where('object_id', $objectId);
+                })
+                ->orderBy('last_name')
+                ->get(),
+            'equipment' => Equipment::query()
+                ->with(['type', 'object.city'])
+                ->when(! $isAdmin, function ($query) use ($objectId): void {
+                    if ($objectId === null) {
+                        $query->whereRaw('1 = 0');
+
+                        return;
+                    }
+
+                    $query->where('object_id', $objectId);
+                })
+                ->whereIn('status', [EquipmentStatus::Available->value, EquipmentStatus::Issued->value])
+                ->orderBy('name')
+                ->get(),
+            'normativeDocuments' => NormativeDocument::query()->orderBy('name')->get(),
+        ]);
+    }
+
     public function store(StoreNdtResultRequest $request, NdtResultService $results): RedirectResponse
     {
         $ndtTask = NdtTask::query()->with('assigneeEmployee')->findOrFail((int) $request->validated('ndt_task_id'));
         $this->authorize('create', [NdtResult::class, $ndtTask]);
 
-        $results->create(
+        $result = $results->create(
             data: NdtResultData::fromArray([
                 'ndt_task_id' => $ndtTask->getKey(),
                 'weld_id' => (int) $request->validated('weld_id'),
@@ -229,14 +364,14 @@ final class NdtResultController extends Controller
             userAgent: $request->userAgent(),
         );
 
-        return back()->with('status', 'Результат создан.');
+        return redirect()->route('admin.ndt-results.show', $result)->with('status', 'Результат создан.');
     }
 
     public function update(UpdateNdtResultRequest $request, NdtResult $ndtResult, NdtResultService $results): RedirectResponse
     {
         $this->authorize('update', $ndtResult);
 
-        $results->update(
+        $result = $results->update(
             result: $ndtResult,
             data: NdtResultData::fromArray([
                 'ndt_task_id' => $ndtResult->ndt_task_id,
@@ -254,7 +389,7 @@ final class NdtResultController extends Controller
             userAgent: $request->userAgent(),
         );
 
-        return back()->with('status', 'Результат обновлен.');
+        return redirect()->route('admin.ndt-results.show', $result)->with('status', 'Результат обновлен.');
     }
 
     public function sendToAnalysis(UpdateNdtResultStatusRequest $request, NdtResult $ndtResult, NdtResultService $results): RedirectResponse

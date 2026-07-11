@@ -18,6 +18,18 @@
 
         <div class="grid gap-6 xl:grid-cols-[1.25fr,1fr]">
             <div class="panel p-6 space-y-6">
+                @can('manage', $result)
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                        <div class="flex flex-wrap items-center justify-between gap-3">
+                            <div>
+                                <p class="text-sm font-medium text-slate-900">Редактирование карты РК</p>
+                                <p class="mt-1 text-sm text-slate-600">Основная форма перенесена на отдельную страницу.</p>
+                            </div>
+                            <a href="{{ route('admin.radiography.edit', $result) }}" class="rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">Редактировать карту РК</a>
+                        </div>
+                    </div>
+                @endcan
+
                 <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                     <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                         <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Тип пленки</p>

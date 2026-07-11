@@ -74,6 +74,27 @@ final class NdtTaskController extends Controller
         ]);
     }
 
+    public function create(Request $request): View
+    {
+        $this->authorize('create', NdtTask::class);
+
+        $objectId = $request->user()?->objectId();
+
+        return view('modules.ndt-tasks.create', [
+            'objects' => NdtObject::query()->with('city')->orderBy('name')->get(),
+            'employees' => Employee::query()->with(['object.city', 'users'])->orderBy('last_name')->get(),
+            'methods' => NdtMethod::query()->where('is_active', true)->orderBy('name')->get(),
+            'requests' => NdtRequest::query()->orderByDesc('id')->get(),
+            'welds' => Weld::query()
+                ->with(['object.city', 'ndtMethods'])
+                ->when($objectId !== null, function ($query) use ($objectId): void {
+                    $query->where('object_id', $objectId);
+                })
+                ->orderByDesc('id')
+                ->get(),
+        ]);
+    }
+
     public function show(NdtTask $ndtTask): View
     {
         $this->authorize('view', $ndtTask);
@@ -95,23 +116,43 @@ final class NdtTaskController extends Controller
         ]);
     }
 
+    public function edit(NdtTask $ndtTask): View
+    {
+        $this->authorize('update', $ndtTask);
+
+        $ndtTask->load(['object.city', 'request', 'method', 'assigneeEmployee.object.city', 'assigneeEmployee.users', 'items.weld.object.city', 'items.weld.ndtMethods', 'statusHistory.changedBy']);
+
+        return view('modules.ndt-tasks.edit', [
+            'task' => $ndtTask,
+            'objects' => NdtObject::query()->with('city')->orderBy('name')->get(),
+            'employees' => Employee::query()->with(['object.city', 'users'])->orderBy('last_name')->get(),
+            'methods' => NdtMethod::query()->where('is_active', true)->orderBy('name')->get(),
+            'requests' => NdtRequest::query()->orderByDesc('id')->get(),
+            'welds' => Weld::query()
+                ->with(['object.city', 'ndtMethods'])
+                ->where('object_id', $ndtTask->object_id)
+                ->orderByDesc('id')
+                ->get(),
+        ]);
+    }
+
     public function store(StoreNdtTaskRequest $request, NdtTaskService $tasks): RedirectResponse
     {
-        $tasks->create(
+        $task = $tasks->create(
             data: AssignNdtTaskData::fromArray($request->validated()),
             actor: $request->user(),
             ipAddress: $request->ip(),
             userAgent: $request->userAgent(),
         );
 
-        return back()->with('status', 'Задание создано.');
+        return redirect()->route('admin.ndt-tasks.show', $task)->with('status', 'Задание создано.');
     }
 
     public function update(UpdateNdtTaskRequest $request, NdtTask $ndtTask, NdtTaskService $tasks): RedirectResponse
     {
         $this->authorize('update', $ndtTask);
 
-        $tasks->update(
+        $task = $tasks->update(
             task: $ndtTask,
             data: AssignNdtTaskData::fromArray($request->validated()),
             actor: $request->user(),
@@ -119,7 +160,7 @@ final class NdtTaskController extends Controller
             userAgent: $request->userAgent(),
         );
 
-        return back()->with('status', 'Задание обновлено.');
+        return redirect()->route('admin.ndt-tasks.show', $task)->with('status', 'Задание обновлено.');
     }
 
     public function accept(UpdateNdtTaskStatusRequest $request, NdtTask $ndtTask, NdtTaskService $tasks): RedirectResponse

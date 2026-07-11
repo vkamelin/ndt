@@ -66,6 +66,29 @@ final class ReportController extends Controller
         ]);
     }
 
+    public function create(Request $request): View
+    {
+        $this->authorize('create', ReportJob::class);
+
+        $user = $request->user();
+        $objectId = $user?->objectId();
+
+        $cities = City::query()->orderBy('name');
+        $objects = NdtObject::query()->with('city')->orderBy('name');
+
+        if (! $user?->hasRole('Администратор системы') && $objectId !== null) {
+            $cities->whereHas('objects', fn ($query) => $query->where('id', $objectId));
+            $objects->where('id', $objectId);
+        }
+
+        return view('modules.reports.create', [
+            'reportTypes' => ReportType::cases(),
+            'statuses' => ReportStatus::options(),
+            'cities' => $cities->get(),
+            'objects' => $objects->get(),
+        ]);
+    }
+
     public function store(StoreReportRequest $request, ReportService $service): RedirectResponse
     {
         $reportJob = $service->queue(

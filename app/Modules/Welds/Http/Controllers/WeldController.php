@@ -69,6 +69,25 @@ final class WeldController extends Controller
         ]);
     }
 
+    public function create(Request $request): View
+    {
+        $this->authorize('create', Weld::class);
+
+        return view('modules.welds.create', [
+            'objects' => NdtObject::query()->with('city')->orderBy('name')->get(),
+            'titles' => Title::query()->orderBy('name')->get(),
+            'drawings' => Drawing::query()->orderBy('name')->get(),
+            'lines' => Line::query()->orderBy('name')->get(),
+            'materials' => Material::query()->orderBy('name')->get(),
+            'weldingProcesses' => WeldingProcess::query()->orderBy('name')->get(),
+            'weldTypes' => WeldType::query()->orderBy('name')->get(),
+            'pipelineCategories' => PipelineCategory::query()->orderBy('name')->get(),
+            'media' => Medium::query()->orderBy('name')->get(),
+            'normativeDocuments' => NormativeDocument::query()->orderBy('name')->get(),
+            'methods' => NdtMethod::query()->where('is_active', true)->orderBy('name')->get(),
+        ]);
+    }
+
     public function show(Weld $weld): View
     {
         $this->authorize('view', $weld);
@@ -91,23 +110,46 @@ final class WeldController extends Controller
         ]);
     }
 
+    public function edit(Weld $weld): View
+    {
+        $this->authorize('manage', $weld);
+
+        $weld->load(['object.city', 'title', 'drawing', 'line', 'material1', 'material2', 'weldingProcess', 'weldType', 'pipelineCategory', 'medium', 'normativeDocument', 'ndtMethods', 'statusHistory.changedBy']);
+
+        return view('modules.welds.edit', [
+            'weld' => $weld,
+            'objects' => NdtObject::query()->with('city')->orderBy('name')->get(),
+            'titles' => Title::query()->orderBy('name')->get(),
+            'drawings' => Drawing::query()->orderBy('name')->get(),
+            'lines' => Line::query()->orderBy('name')->get(),
+            'materials' => Material::query()->orderBy('name')->get(),
+            'weldingProcesses' => WeldingProcess::query()->orderBy('name')->get(),
+            'weldTypes' => WeldType::query()->orderBy('name')->get(),
+            'pipelineCategories' => PipelineCategory::query()->orderBy('name')->get(),
+            'media' => Medium::query()->orderBy('name')->get(),
+            'normativeDocuments' => NormativeDocument::query()->orderBy('name')->get(),
+            'methods' => NdtMethod::query()->where('is_active', true)->orderBy('name')->get(),
+            'statuses' => WeldStatus::options(),
+        ]);
+    }
+
     public function store(StoreWeldRequest $request, WeldService $welds): RedirectResponse
     {
-        $welds->create(
+        $weld = $welds->create(
             data: $request->validated(),
             actor: $request->user(),
             ipAddress: $request->ip(),
             userAgent: $request->userAgent(),
         );
 
-        return back()->with('status', 'Стык создан.');
+        return redirect()->route('admin.welds.show', $weld)->with('status', 'Стык создан.');
     }
 
     public function update(UpdateWeldRequest $request, Weld $weld, WeldService $welds): RedirectResponse
     {
         $this->authorize('manage', $weld);
 
-        $welds->update(
+        $updated = $welds->update(
             weld: $weld,
             data: $request->validated(),
             actor: $request->user(),
@@ -115,7 +157,7 @@ final class WeldController extends Controller
             userAgent: $request->userAgent(),
         );
 
-        return back()->with('status', 'Стык обновлен.');
+        return redirect()->route('admin.welds.show', $updated)->with('status', 'Стык обновлен.');
     }
 
     public function updateStatus(UpdateWeldStatusRequest $request, Weld $weld, WeldService $welds): RedirectResponse

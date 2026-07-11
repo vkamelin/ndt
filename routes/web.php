@@ -132,8 +132,10 @@ Route::middleware(['auth', 'active.user'])
     ->name('admin.welds.')
     ->group(function (): void {
         Route::get('/', [WeldController::class, 'index'])->name('index');
+        Route::get('create', [WeldController::class, 'create'])->name('create');
         Route::post('/', [WeldController::class, 'store'])->name('store');
         Route::get('{weld}', [WeldController::class, 'show'])->name('show');
+        Route::get('{weld}/edit', [WeldController::class, 'edit'])->name('edit');
         Route::patch('{weld}', [WeldController::class, 'update'])->name('update');
         Route::patch('{weld}/status', [WeldController::class, 'updateStatus'])->name('status.update');
         Route::patch('{weld}/methods', [WeldController::class, 'syncMethods'])->name('methods.sync');
@@ -163,8 +165,10 @@ Route::middleware(['auth', 'active.user'])
     ->name('admin.ndt-tasks.')
     ->group(function (): void {
         Route::get('/', [NdtTaskController::class, 'index'])->name('index');
+        Route::get('create', [NdtTaskController::class, 'create'])->name('create');
         Route::post('/', [NdtTaskController::class, 'store'])->name('store');
         Route::get('{ndtTask}', [NdtTaskController::class, 'show'])->name('show');
+        Route::get('{ndtTask}/edit', [NdtTaskController::class, 'edit'])->name('edit');
         Route::patch('{ndtTask}', [NdtTaskController::class, 'update'])->name('update');
         Route::patch('{ndtTask}/accept', [NdtTaskController::class, 'accept'])->name('status.accept');
         Route::patch('{ndtTask}/start-work', [NdtTaskController::class, 'startWork'])->name('status.start');
@@ -179,8 +183,10 @@ Route::middleware(['auth', 'active.user'])
     ->name('admin.ndt-results.')
     ->group(function (): void {
         Route::get('/', [NdtResultController::class, 'index'])->name('index');
+        Route::get('create', [NdtResultController::class, 'create'])->name('create');
         Route::post('/', [NdtResultController::class, 'store'])->name('store');
         Route::get('{ndtResult}', [NdtResultController::class, 'show'])->name('show');
+        Route::get('{ndtResult}/edit', [NdtResultController::class, 'edit'])->name('edit');
         Route::patch('{ndtResult}', [NdtResultController::class, 'update'])->name('update');
         Route::patch('{ndtResult}/analysis', [NdtResultController::class, 'sendToAnalysis'])->name('status.analysis');
         Route::patch('{ndtResult}/defect', [NdtResultController::class, 'markDefect'])->name('status.defect');
@@ -200,8 +206,10 @@ Route::middleware(['auth', 'active.user'])
     ->scopeBindings()
     ->group(function (): void {
         Route::get('/', [ConclusionController::class, 'index'])->name('index');
+        Route::get('create', [ConclusionController::class, 'create'])->name('create');
         Route::post('/', [ConclusionController::class, 'store'])->name('store');
         Route::get('{conclusion}', [ConclusionController::class, 'show'])->name('show');
+        Route::get('{conclusion}/edit', [ConclusionController::class, 'edit'])->name('edit');
         Route::patch('{conclusion}', [ConclusionController::class, 'update'])->name('update');
         Route::post('{conclusion}/submit', [ConclusionController::class, 'submit'])->name('submit');
         Route::patch('{conclusion}/approve', [ConclusionController::class, 'approve'])->name('approve');
@@ -219,8 +227,10 @@ Route::middleware(['auth', 'active.user'])
     ->scopeBindings()
     ->group(function (): void {
         Route::get('/', [RadiographyController::class, 'index'])->name('index');
+        Route::get('create', [RadiographyController::class, 'create'])->name('create');
         Route::post('/', [RadiographyController::class, 'store'])->name('store');
         Route::get('{rtResult}', [RadiographyController::class, 'show'])->name('show');
+        Route::get('{rtResult}/edit', [RadiographyController::class, 'edit'])->name('edit');
         Route::patch('{rtResult}/status', [RadiographyController::class, 'updateStatus'])->name('status.update');
         Route::post('{rtResult}/films', [RadiographyController::class, 'storeFilm'])->name('films.store');
         Route::post('{rtResult}/reshoots', [RadiographyController::class, 'storeReshoot'])->name('reshoots.store');
@@ -257,6 +267,7 @@ Route::middleware(['auth', 'active.user'])
     ->scopeBindings()
     ->group(function (): void {
         Route::get('/', [ShiftController::class, 'index'])->name('index');
+        Route::get('create', [ShiftController::class, 'create'])->name('create');
         Route::post('/', [ShiftController::class, 'store'])->name('store');
         Route::get('{shift}', [ShiftController::class, 'show'])->name('show');
         Route::patch('{shift}/complete', [ShiftController::class, 'complete'])->name('complete');
@@ -303,8 +314,10 @@ Route::middleware(['auth', 'active.user'])
     ->scopeBindings()
     ->group(function (): void {
         Route::get('/', [EquipmentController::class, 'index'])->name('index');
+        Route::get('create', [EquipmentController::class, 'create'])->name('create');
         Route::post('/', [EquipmentController::class, 'store'])->name('store');
         Route::get('{equipment}', [EquipmentController::class, 'show'])->name('show');
+        Route::get('{equipment}/edit', [EquipmentController::class, 'edit'])->name('edit');
         Route::patch('{equipment}', [EquipmentController::class, 'update'])->name('update');
         Route::delete('{equipment}', [EquipmentController::class, 'destroy'])->name('destroy');
         Route::post('{equipment}/verifications', [EquipmentController::class, 'storeVerification'])->name('verifications.store');
@@ -323,8 +336,10 @@ Route::middleware(['auth', 'active.user'])
     ->scopeBindings()
     ->group(function (): void {
         Route::get('/', [DocumentController::class, 'index'])->name('index');
+        Route::get('create', [DocumentController::class, 'create'])->name('create');
         Route::post('/', [DocumentController::class, 'store'])->name('store');
         Route::get('{document}', [DocumentController::class, 'show'])->name('show');
+        Route::get('{document}/edit', [DocumentController::class, 'edit'])->name('edit');
         Route::patch('{document}', [DocumentController::class, 'update'])->name('update');
         Route::post('{document}/versions', [DocumentController::class, 'storeVersion'])->name('versions.store');
     });
@@ -334,6 +349,7 @@ Route::middleware(['auth', 'active.user'])
     ->name('admin.reports.')
     ->group(function (): void {
         Route::get('/', [ReportController::class, 'index'])->name('index');
+        Route::get('create', [ReportController::class, 'create'])->name('create');
         Route::post('/', [ReportController::class, 'store'])->name('store');
     });
 

@@ -19,51 +19,15 @@
         <div class="grid gap-6 xl:grid-cols-[1.4fr,1fr]">
             <div class="panel p-6 space-y-6">
                 @can('update', $result)
-                    <form method="post" action="{{ route('admin.ndt-results.update', $result) }}" class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                        @csrf
-                        @method('patch')
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="executor_employee_id">Исполнитель</label>
-                            <select id="executor_employee_id" name="executor_employee_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                                @foreach ($employees as $employee)
-                                    <option value="{{ $employee->id }}" @selected(old('executor_employee_id', $result->executor_employee_id) == $employee->id)>{{ $employee->fullName() }} — {{ $employee->object?->name }}</option>
-                                @endforeach
-                            </select>
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                        <div class="flex flex-wrap items-center justify-between gap-3">
+                            <div>
+                                <p class="text-sm font-medium text-slate-900">Редактирование результата</p>
+                                <p class="mt-1 text-sm text-slate-600">Основная форма перенесена на отдельную страницу.</p>
+                            </div>
+                            <a href="{{ route('admin.ndt-results.edit', $result) }}" class="rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">Редактировать результат</a>
                         </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="control_date">Дата контроля</label>
-                            <input id="control_date" type="date" name="control_date" value="{{ old('control_date', optional($result->control_date)->format('Y-m-d')) }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="normative_document_id">НТД</label>
-                            <select id="normative_document_id" name="normative_document_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                                <option value="">Не указано</option>
-                                @foreach ($normativeDocuments as $document)
-                                    <option value="{{ $document->id }}" @selected(old('normative_document_id', $result->normative_document_id) == $document->id)>{{ $document->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="equipment_id">Оборудование</label>
-                            <select id="equipment_id" name="equipment_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                                <option value="">Не указано</option>
-                                @foreach ($equipment as $item)
-                                    <option value="{{ $item->id }}" @selected(old('equipment_id', $result->equipment_id) == $item->id)>{{ $item->name }} — {{ $item->inventory_number ?: $item->serial_number ?: $item->status->label() }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="md:col-span-2 xl:col-span-3 space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="result_text">Результат</label>
-                            <textarea id="result_text" name="result_text" rows="2" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">{{ old('result_text', $result->result_text) }}</textarea>
-                        </div>
-                        <div class="md:col-span-2 xl:col-span-3 space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="comment">Комментарий</label>
-                            <textarea id="comment" name="comment" rows="2" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">{{ old('comment', $result->comment) }}</textarea>
-                        </div>
-                        <div class="md:col-span-2 xl:col-span-3">
-                            <button type="submit" class="rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">Сохранить результат</button>
-                        </div>
-                    </form>
+                    </div>
                 @endcan
 
                 <div class="grid gap-4 md:grid-cols-2">

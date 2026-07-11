@@ -19,73 +19,15 @@
         <div class="grid gap-6 xl:grid-cols-[1.5fr,1fr]">
             <div class="panel p-6 space-y-4">
                 @can('update', $task)
-                    <form method="post" action="{{ route('admin.ndt-tasks.update', $task) }}" class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                        @csrf
-                        @method('patch')
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="task_number">Номер задания</label>
-                            <input id="task_number" name="task_number" value="{{ old('task_number', $task->task_number) }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                        <div class="flex flex-wrap items-center justify-between gap-3">
+                            <div>
+                                <p class="text-sm font-medium text-slate-900">Редактирование задания</p>
+                                <p class="mt-1 text-sm text-slate-600">Основная форма перенесена на отдельную страницу.</p>
+                            </div>
+                            <a href="{{ route('admin.ndt-tasks.edit', $task) }}" class="rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">Редактировать задание</a>
                         </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="ndt_request_id">Заявка</label>
-                            <select id="ndt_request_id" name="ndt_request_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                                @foreach ($requests as $requestItem)
-                                    <option value="{{ $requestItem->id }}" @selected(old('ndt_request_id', $task->ndt_request_id) == $requestItem->id)>{{ $requestItem->request_number }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="object_id">Объект/участок</label>
-                            <select id="object_id" name="object_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                                @foreach ($objects as $object)
-                                    <option value="{{ $object->id }}" @selected(old('object_id', $task->object_id) == $object->id)>{{ $object->name }} ({{ $object->city?->name }})</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="ndt_method_id">Метод контроля</label>
-                            <select id="ndt_method_id" name="ndt_method_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                                @foreach ($methods as $method)
-                                    <option value="{{ $method->id }}" @selected(old('ndt_method_id', $task->ndt_method_id) == $method->id)>{{ $method->code->label() }} {{ $method->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="assignee_employee_id">Исполнитель</label>
-                            <select id="assignee_employee_id" name="assignee_employee_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                                <option value="">Не назначен</option>
-                                @foreach ($employees as $employee)
-                                    <option value="{{ $employee->id }}" @selected(old('assignee_employee_id', $task->assignee_employee_id) == $employee->id)>{{ $employee->fullName() }} — {{ $employee->object?->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="planned_date">Плановая дата</label>
-                            <input id="planned_date" type="date" name="planned_date" value="{{ old('planned_date', optional($task->planned_date)->format('Y-m-d')) }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="priority">Приоритет</label>
-                            <input id="priority" name="priority" value="{{ old('priority', $task->priority) }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                        </div>
-                        <div class="md:col-span-2 xl:col-span-3 space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="comment">Комментарий</label>
-                            <textarea id="comment" name="comment" rows="2" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">{{ old('comment', $task->comment) }}</textarea>
-                        </div>
-                        <div class="md:col-span-2 xl:col-span-3 space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="weld_ids">Стыки</label>
-                            <select id="weld_ids" name="weld_ids[]" multiple class="min-h-48 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                                @php($selectedWeldIds = old('weld_ids', $task->welds->pluck('id')->all()))
-                                @foreach ($welds as $weld)
-                                    <option value="{{ $weld->id }}" @selected(collect($selectedWeldIds)->contains($weld->id))>
-                                        {{ $weld->weld_number }} — {{ $weld->object?->name }} — {{ $weld->ndtMethods->map(fn ($method) => $method->code->label())->join(', ') ?: 'Без методов' }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="md:col-span-2 xl:col-span-3">
-                            <button type="submit" class="rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">Сохранить задание</button>
-                        </div>
-                    </form>
+                    </div>
                 @endcan
 
                 <div class="grid gap-4 md:grid-cols-2">

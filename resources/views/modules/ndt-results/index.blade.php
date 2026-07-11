@@ -57,62 +57,13 @@
 
         @can('ndt_results.manage')
             <div class="panel p-6">
-                <form method="post" action="{{ route('admin.ndt-results.store') }}" class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                    @csrf
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="ndt_task_id">Задание</label>
-                        <select id="ndt_task_id" name="ndt_task_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                            @foreach ($tasks as $task)
-                                <option value="{{ $task->id }}" @selected(old('ndt_task_id') == $task->id)>{{ $task->task_number }} — {{ $task->method?->code?->label() }} — {{ $task->object?->name }}</option>
-                            @endforeach
-                        </select>
+                <div class="flex items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-semibold text-slate-900">Создание результата</h2>
+                        <p class="mt-2 text-sm text-slate-600">Большая форма перенесена на отдельную страницу.</p>
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="weld_id">Стык</label>
-                        <select id="weld_id" name="weld_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                            @foreach ($welds as $weld)
-                                <option value="{{ $weld->id }}" @selected(old('weld_id') == $weld->id)>{{ $weld->weld_number }} — {{ $weld->object?->name }} — {{ $weld->ndtMethods->map(fn ($method) => $method->code->label())->join(', ') ?: 'Без методов' }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="executor_employee_id">Исполнитель</label>
-                        <select id="executor_employee_id" name="executor_employee_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                            <option value="">По заданию</option>
-                            @foreach ($employees as $employee)
-                                <option value="{{ $employee->id }}" @selected(old('executor_employee_id') == $employee->id)>{{ $employee->fullName() }} — {{ $employee->object?->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="control_date">Дата контроля</label>
-                        <input id="control_date" type="date" name="control_date" value="{{ old('control_date', now()->toDateString()) }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="normative_document_id">НТД</label>
-                        <select id="normative_document_id" name="normative_document_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                            <option value="">Не указано</option>
-                            @foreach ($normativeDocuments as $document)
-                                <option value="{{ $document->id }}" @selected(old('normative_document_id') == $document->id)>{{ $document->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="equipment_id">Оборудование</label>
-                        <input id="equipment_id" name="equipment_id" value="{{ old('equipment_id') }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                    </div>
-                    <div class="md:col-span-2 xl:col-span-3 space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="result_text">Результат</label>
-                        <textarea id="result_text" name="result_text" rows="2" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">{{ old('result_text') }}</textarea>
-                    </div>
-                    <div class="md:col-span-2 xl:col-span-3 space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="comment">Комментарий</label>
-                        <textarea id="comment" name="comment" rows="2" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">{{ old('comment') }}</textarea>
-                    </div>
-                    <div class="md:col-span-2 xl:col-span-3">
-                        <button type="submit" class="rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">Создать результат</button>
-                    </div>
-                </form>
+                    <a href="{{ route('admin.ndt-results.create') }}" class="rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">Создать результат</a>
+                </div>
             </div>
         @endcan
 

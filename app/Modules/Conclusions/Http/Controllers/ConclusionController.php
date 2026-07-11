@@ -97,6 +97,38 @@ final class ConclusionController extends Controller
         ]);
     }
 
+    public function create(Request $request): View
+    {
+        $this->authorize('create', Conclusion::class);
+
+        $user = $request->user();
+        $objectId = $user?->objectId();
+        $isAdmin = $user?->hasRole('Администратор системы') ?? false;
+
+        return view('modules.conclusions.create', [
+            'statuses' => ConclusionStatus::options(),
+            'objects' => NdtObject::query()->with('city')->orderBy('name')->get(),
+            'methods' => NdtMethod::query()->where('is_active', true)->orderBy('name')->get(),
+            'readyResults' => NdtResult::query()
+                ->with(['weld.object.city', 'task.request', 'method', 'executorEmployee.object.city'])
+                ->where('status', NdtResultStatus::ReadyForConclusion)
+                ->when(! $isAdmin, function ($query) use ($objectId): void {
+                    if ($objectId === null) {
+                        $query->whereRaw('1 = 0');
+
+                        return;
+                    }
+
+                    $query->whereHas('weld', function ($subQuery) use ($objectId): void {
+                        $subQuery->where('object_id', $objectId);
+                    });
+                })
+                ->orderByDesc('control_date')
+                ->orderByDesc('id')
+                ->get(),
+        ]);
+    }
+
     public function show(Request $request, Conclusion $conclusion): View
     {
         $this->authorize('view', $conclusion);
@@ -143,6 +175,40 @@ final class ConclusionController extends Controller
         ]);
     }
 
+    public function edit(Conclusion $conclusion): View
+    {
+        $this->authorize('manage', $conclusion);
+
+        $conclusion->load([
+            'object.city',
+            'method',
+            'request.object.city',
+            'preparedBy.object.city',
+            'checkedBy.object.city',
+            'approvedBy.object.city',
+            'items.result.weld.object.city',
+            'versions.file.uploadedBy',
+            'versions.createdBy',
+            'files.uploadedBy',
+            'statusHistory.changedBy',
+            'latestVersion.file',
+        ]);
+
+        return view('modules.conclusions.edit', [
+            'conclusion' => $conclusion,
+            'statuses' => ConclusionStatus::options(),
+            'readyResults' => NdtResult::query()
+                ->with(['weld.object.city', 'task.request', 'method', 'executorEmployee.object.city'])
+                ->where('status', NdtResultStatus::ReadyForConclusion)
+                ->whereHas('weld', function ($subQuery) use ($conclusion): void {
+                    $subQuery->where('object_id', $conclusion->object_id);
+                })
+                ->orderByDesc('control_date')
+                ->orderByDesc('id')
+                ->get(),
+        ]);
+    }
+
     public function store(StoreConclusionRequest $request, ConclusionService $service): RedirectResponse
     {
         $conclusion = $service->create(
@@ -157,7 +223,7 @@ final class ConclusionController extends Controller
 
     public function update(UpdateConclusionRequest $request, Conclusion $conclusion, ConclusionService $service): RedirectResponse
     {
-        $service->update(
+        $updated = $service->update(
             conclusion: $conclusion,
             data: $request->validated(),
             actor: $request->user(),
@@ -165,7 +231,7 @@ final class ConclusionController extends Controller
             userAgent: $request->userAgent(),
         );
 
-        return back()->with('status', 'Заключение обновлено.');
+        return redirect()->route('admin.conclusions.show', $updated)->with('status', 'Заключение обновлено.');
     }
 
     public function submit(SubmitConclusionRequest $request, Conclusion $conclusion, ConclusionService $service): RedirectResponse

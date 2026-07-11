@@ -19,99 +19,15 @@
         <div class="grid gap-6 xl:grid-cols-[1.4fr,1fr]">
             <div class="panel p-6 space-y-6">
                 @can('manage', $document)
-                    <form method="post" action="{{ route('admin.documents.update', $document) }}" class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                        @csrf
-                        @method('patch')
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="document_type_id">Тип документа</label>
-                            <select id="document_type_id" name="document_type_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                                @foreach ($documentTypes as $type)
-                                    <option value="{{ $type->id }}" @selected(old('document_type_id', $document->document_type_id) == $type->id)>{{ $type->name }}</option>
-                                @endforeach
-                            </select>
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                        <div class="flex flex-wrap items-center justify-between gap-3">
+                            <div>
+                                <p class="text-sm font-medium text-slate-900">Редактирование документа</p>
+                                <p class="mt-1 text-sm text-slate-600">Основная форма перенесена на отдельную страницу.</p>
+                            </div>
+                            <a href="{{ route('admin.documents.edit', $document) }}" class="rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">Редактировать документ</a>
                         </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="number">Номер</label>
-                            <input id="number" name="number" value="{{ old('number', $document->number) }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="document_date">Дата</label>
-                            <input id="document_date" type="date" name="document_date" value="{{ old('document_date', optional($document->document_date)->format('Y-m-d')) }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="status">Статус</label>
-                            <select id="status" name="status" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                                @foreach ($statuses as $value => $label)
-                                    <option value="{{ $value }}" @selected(old('status', $document->status->value) === $value)>{{ $label }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="organization_id">Организация</label>
-                            <select id="organization_id" name="organization_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                                <option value="">Не указана</option>
-                                @foreach ($organizations as $organization)
-                                    <option value="{{ $organization->id }}" @selected(old('organization_id', $document->organization_id) == $organization->id)>{{ $organization->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="city_id">Город</label>
-                            <select id="city_id" name="city_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                                <option value="">Не указан</option>
-                                @foreach ($cities as $city)
-                                    <option value="{{ $city->id }}" @selected(old('city_id', $document->city_id) == $city->id)>{{ $city->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="object_id">Объект/участок</label>
-                            <select id="object_id" name="object_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                                <option value="">Не указан</option>
-                                @foreach ($objects as $object)
-                                    <option value="{{ $object->id }}" @selected(old('object_id', $document->object_id) == $object->id)>{{ $object->name }} @if ($object->city) ({{ $object->city->name }}) @endif</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="employee_id">Сотрудник</label>
-                            <select id="employee_id" name="employee_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                                <option value="">Не указан</option>
-                                @foreach ($employees as $employee)
-                                    <option value="{{ $employee->id }}" @selected(old('employee_id', $document->employee_id) == $employee->id)>{{ $employee->fullName() }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="equipment_id">Оборудование</label>
-                            <select id="equipment_id" name="equipment_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                                <option value="">Не указано</option>
-                                @foreach ($equipment as $item)
-                                    <option value="{{ $item->id }}" @selected(old('equipment_id', $document->equipment_id) == $item->id)>{{ $item->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="ndt_request_id">Заявка</label>
-                            <select id="ndt_request_id" name="ndt_request_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                                <option value="">Не указана</option>
-                                @foreach ($requests as $requestItem)
-                                    <option value="{{ $requestItem->id }}" @selected(old('ndt_request_id', $document->ndt_request_id) == $requestItem->id)>{{ $requestItem->request_number }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="valid_until">Действует до</label>
-                            <input id="valid_until" type="date" name="valid_until" value="{{ old('valid_until', optional($document->valid_until)->format('Y-m-d')) }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                        </div>
-                        <div class="md:col-span-2 xl:col-span-3 space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="comment">Комментарий</label>
-                            <textarea id="comment" name="comment" rows="2" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">{{ old('comment', $document->comment) }}</textarea>
-                        </div>
-                        <div class="md:col-span-2 xl:col-span-3">
-                            <button type="submit" class="rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white">Сохранить</button>
-                        </div>
-                    </form>
+                    </div>
                 @endcan
 
                 <div class="grid gap-4 md:grid-cols-2">

@@ -19,25 +19,15 @@
         <div class="grid gap-6 xl:grid-cols-[1.45fr,1fr]">
             <div class="panel p-6 space-y-6">
                 @can('manage', $conclusion)
-                    <form method="post" action="{{ route('admin.conclusions.update', $conclusion) }}" class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                        @csrf
-                        @method('patch')
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="number">Номер</label>
-                            <input id="number" name="number" value="{{ old('number', $conclusion->number) }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                        <div class="flex flex-wrap items-center justify-between gap-3">
+                            <div>
+                                <p class="text-sm font-medium text-slate-900">Редактирование заключения</p>
+                                <p class="mt-1 text-sm text-slate-600">Основная форма перенесена на отдельную страницу.</p>
+                            </div>
+                            <a href="{{ route('admin.conclusions.edit', $conclusion) }}" class="rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">Редактировать заключение</a>
                         </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="date">Дата</label>
-                            <input id="date" type="date" name="date" value="{{ old('date', optional($conclusion->date)->format('Y-m-d')) }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                        </div>
-                        <div class="xl:col-span-3 space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="comment">Комментарий</label>
-                            <textarea id="comment" name="comment" rows="2" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">{{ old('comment', $conclusion->comment) }}</textarea>
-                        </div>
-                        <div class="xl:col-span-3">
-                            <button type="submit" class="rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white">Сохранить</button>
-                        </div>
-                    </form>
+                    </div>
                 @endcan
 
                 <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">

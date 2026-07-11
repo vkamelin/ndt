@@ -81,6 +81,46 @@ final class EquipmentController extends Controller
         ]);
     }
 
+    public function create(Request $request): View
+    {
+        $this->authorize('create', Equipment::class);
+
+        $user = $request->user();
+        $objectId = $user?->objectId();
+        $isAdmin = $user?->hasRole('Администратор системы') ?? false;
+
+        return view('modules.equipment.create', [
+            'equipmentTypes' => EquipmentType::query()->where('is_active', true)->orderBy('name')->get(),
+            'objects' => NdtObject::query()
+                ->with('city')
+                ->when(! $isAdmin, function ($query) use ($objectId): void {
+                    if ($objectId === null) {
+                        $query->whereRaw('1 = 0');
+
+                        return;
+                    }
+
+                    $query->whereKey($objectId);
+                })
+                ->orderBy('name')
+                ->get(),
+            'employees' => Employee::query()
+                ->with(['object.city'])
+                ->when(! $isAdmin, function ($query) use ($objectId): void {
+                    if ($objectId === null) {
+                        $query->whereRaw('1 = 0');
+
+                        return;
+                    }
+
+                    $query->where('object_id', $objectId);
+                })
+                ->orderBy('last_name')
+                ->get(),
+            'statuses' => EquipmentStatus::options(),
+        ]);
+    }
+
     public function show(Request $request, Equipment $equipment): View
     {
         $this->authorize('view', $equipment);
@@ -136,25 +176,80 @@ final class EquipmentController extends Controller
         ]);
     }
 
+    public function edit(Request $request, Equipment $equipment): View
+    {
+        $this->authorize('manage', $equipment);
+
+        $equipment->load([
+            'type',
+            'object.city',
+            'verifications.recordedBy',
+            'calibrations.recordedBy',
+            'repairs.recordedBy',
+            'assignments.employee.object.city',
+            'movements.fromObject.city',
+            'movements.toObject.city',
+            'defects.recordedBy',
+            'documents.recordedBy',
+            'currentAssignment.employee.object.city',
+        ]);
+
+        $user = $request->user();
+        $isAdmin = $user?->hasRole('Администратор системы') ?? false;
+        $objectId = $user?->objectId();
+
+        return view('modules.equipment.edit', [
+            'equipment' => $equipment,
+            'equipmentTypes' => EquipmentType::query()->where('is_active', true)->orderBy('name')->get(),
+            'objects' => NdtObject::query()
+                ->with('city')
+                ->when(! $isAdmin, function ($query) use ($objectId): void {
+                    if ($objectId === null) {
+                        $query->whereRaw('1 = 0');
+
+                        return;
+                    }
+
+                    $query->whereKey($objectId);
+                })
+                ->orderBy('name')
+                ->get(),
+            'employees' => Employee::query()
+                ->with(['object.city'])
+                ->when(! $isAdmin, function ($query) use ($objectId): void {
+                    if ($objectId === null) {
+                        $query->whereRaw('1 = 0');
+
+                        return;
+                    }
+
+                    $query->where('object_id', $objectId);
+                })
+                ->orderBy('last_name')
+                ->get(),
+            'statuses' => EquipmentStatus::options(),
+        ]);
+    }
+
     public function store(StoreEquipmentRequest $request, EquipmentService $equipment): RedirectResponse
     {
         $this->authorize('equipment.manage');
 
-        $equipment->create(
+        $item = $equipment->create(
             data: $request->validated(),
             actor: $request->user(),
             ipAddress: $request->ip(),
             userAgent: $request->userAgent(),
         );
 
-        return back()->with('status', 'Оборудование создано.');
+        return redirect()->route('admin.equipment.show', $item)->with('status', 'Оборудование создано.');
     }
 
     public function update(UpdateEquipmentRequest $request, Equipment $equipment, EquipmentService $equipmentService): RedirectResponse
     {
         $this->authorize('manage', $equipment);
 
-        $equipmentService->update(
+        $item = $equipmentService->update(
             equipment: $equipment,
             data: $request->validated(),
             actor: $request->user(),
@@ -162,7 +257,7 @@ final class EquipmentController extends Controller
             userAgent: $request->userAgent(),
         );
 
-        return back()->with('status', 'Оборудование обновлено.');
+        return redirect()->route('admin.equipment.show', $item)->with('status', 'Оборудование обновлено.');
     }
 
     public function destroy(Request $request, Equipment $equipment, EquipmentService $equipmentService): RedirectResponse

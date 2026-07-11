@@ -19,60 +19,15 @@
         <div class="grid gap-6 xl:grid-cols-[1.5fr,1fr]">
             <div class="panel p-6 space-y-4">
                 @can('manage', $weld)
-                    <form method="post" action="{{ route('admin.welds.update', $weld) }}" class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                        @csrf
-                        @method('patch')
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="object_id">Объект/участок</label>
-                            <select id="object_id" name="object_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                                @foreach ($objects as $object)
-                                    <option value="{{ $object->id }}" @selected(old('object_id', $weld->object_id) == $object->id)>{{ $object->name }}</option>
-                                @endforeach
-                            </select>
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                        <div class="flex flex-wrap items-center justify-between gap-3">
+                            <div>
+                                <p class="text-sm font-medium text-slate-900">Редактирование стыка</p>
+                                <p class="mt-1 text-sm text-slate-600">Основная форма перенесена на отдельную страницу.</p>
+                            </div>
+                            <a href="{{ route('admin.welds.edit', $weld) }}" class="rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">Редактировать стык</a>
                         </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="weld_number">Номер стыка</label>
-                            <input id="weld_number" name="weld_number" value="{{ old('weld_number', $weld->weld_number) }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="title_id">Титул</label>
-                            <select id="title_id" name="title_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                                <option value="">Не выбран</option>
-                                @foreach ($titles as $title)
-                                    <option value="{{ $title->id }}" @selected(old('title_id', $weld->title_id) == $title->id)>{{ $title->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="drawing_id">Чертеж</label>
-                            <select id="drawing_id" name="drawing_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                                <option value="">Не выбран</option>
-                                @foreach ($drawings as $drawing)
-                                    <option value="{{ $drawing->id }}" @selected(old('drawing_id', $weld->drawing_id) == $drawing->id)>{{ $drawing->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="line_id">Линия</label>
-                            <select id="line_id" name="line_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                                <option value="">Не выбран</option>
-                                @foreach ($lines as $line)
-                                    <option value="{{ $line->id }}" @selected(old('line_id', $weld->line_id) == $line->id)>{{ $line->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-700" for="status">Статус</label>
-                            <select id="status" name="status" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                                @foreach ($statuses as $value => $label)
-                                    <option value="{{ $value }}" @selected(old('status', $weld->status->value) === $value)>{{ $label }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="md:col-span-2 xl:col-span-3">
-                            <button type="submit" class="rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">Сохранить стык</button>
-                        </div>
-                    </form>
+                    </div>
                 @endcan
 
                 <div class="grid gap-4 md:grid-cols-2">

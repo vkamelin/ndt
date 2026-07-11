@@ -82,6 +82,34 @@ final class RadiographyController extends Controller
         ]);
     }
 
+    public function create(Request $request): View
+    {
+        $this->authorize('create', RtResult::class);
+
+        $user = $request->user();
+        $isAdmin = $user?->hasRole('Администратор системы') ?? false;
+        $objectId = $user?->objectId();
+
+        return view('modules.radiography.create', [
+            'ndtResults' => NdtResult::query()
+                ->with(['weld.object.city', 'method'])
+                ->when(! $isAdmin, function ($query) use ($objectId): void {
+                    if ($objectId === null) {
+                        $query->whereRaw('1 = 0');
+
+                        return;
+                    }
+
+                    $query->whereHas('weld', function ($weldQuery) use ($objectId): void {
+                        $weldQuery->where('object_id', $objectId);
+                    });
+                })
+                ->orderByDesc('id')
+                ->get(),
+            'filmTypes' => FilmType::query()->where('is_active', true)->orderBy('name')->get(),
+        ]);
+    }
+
     public function show(Request $request, RtResult $rtResult): View
     {
         $this->authorize('view', $rtResult);
@@ -106,12 +134,54 @@ final class RadiographyController extends Controller
         ]);
     }
 
+    public function edit(Request $request, RtResult $rtResult): View
+    {
+        $this->authorize('manage', $rtResult);
+        $user = $request->user();
+        $isAdmin = $user?->hasRole('Администратор системы') ?? false;
+        $objectId = $user?->objectId();
+
+        $rtResult->load([
+            'ndtResult.weld.object.city',
+            'filmType',
+            'films.filmType',
+            'films.images.file',
+            'films.exposures',
+            'exposures',
+            'reshoots',
+            'densityMeasurements',
+            'archiveItems.file',
+            'latestArchiveItem',
+        ]);
+
+        return view('modules.radiography.edit', [
+            'result' => $rtResult,
+            'ndtResults' => NdtResult::query()
+                ->with(['weld.object.city', 'method'])
+                ->when(! $isAdmin, function ($query) use ($objectId): void {
+                    if ($objectId === null) {
+                        $query->whereRaw('1 = 0');
+
+                        return;
+                    }
+
+                    $query->whereHas('weld', function ($weldQuery) use ($objectId): void {
+                        $weldQuery->where('object_id', $objectId);
+                    });
+                })
+                ->orderByDesc('id')
+                ->get(),
+            'statuses' => RtStatus::options(),
+            'filmTypes' => FilmType::query()->where('is_active', true)->orderBy('name')->get(),
+        ]);
+    }
+
     public function store(StoreRtResultRequest $request, RadiographyService $radiography): RedirectResponse
     {
         $ndtResult = NdtResult::query()->with('weld')->findOrFail((int) $request->validated('ndt_result_id'));
         $this->authorize('create', [RtResult::class, $ndtResult]);
 
-        $radiography->createOrUpdate(
+        $rtResult = $radiography->createOrUpdate(
             ndtResult: $ndtResult,
             data: [
                 'film_type_id' => $request->validated('film_type_id') !== null ? (int) $request->validated('film_type_id') : null,
@@ -128,7 +198,7 @@ final class RadiographyController extends Controller
             userAgent: $request->userAgent(),
         );
 
-        return back()->with('status', 'Карта РК сохранена.');
+        return redirect()->route('admin.radiography.show', $rtResult)->with('status', 'Карта РК сохранена.');
     }
 
     public function storeFilm(StoreRtFilmRequest $request, RtResult $rtResult, RadiographyService $radiography): RedirectResponse

@@ -16,53 +16,15 @@
             </div>
         @endif
 
-        @can('welds.manage')
+        @can('create', \App\Modules\Welds\Models\Weld::class)
             <div class="panel p-6">
-                <form method="post" action="{{ route('admin.welds.store') }}" class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                    @csrf
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="object_id">Объект/участок</label>
-                        <select id="object_id" name="object_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                            @foreach ($objects as $object)
-                                <option value="{{ $object->id }}" @selected(old('object_id') == $object->id)>{{ $object->name }}</option>
-                            @endforeach
-                        </select>
+                <div class="flex items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-semibold text-slate-900">Создание стыка</h2>
+                        <p class="mt-2 text-sm text-slate-600">Большая форма перенесена на отдельную страницу.</p>
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="weld_number">Номер стыка</label>
-                        <input id="weld_number" name="weld_number" value="{{ old('weld_number') }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="title_id">Титул</label>
-                        <select id="title_id" name="title_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                            <option value="">Не выбран</option>
-                            @foreach ($titles as $title)
-                                <option value="{{ $title->id }}" @selected(old('title_id') == $title->id)>{{ $title->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="drawing_id">Чертеж</label>
-                        <select id="drawing_id" name="drawing_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                            <option value="">Не выбран</option>
-                            @foreach ($drawings as $drawing)
-                                <option value="{{ $drawing->id }}" @selected(old('drawing_id') == $drawing->id)>{{ $drawing->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="line_id">Линия</label>
-                        <select id="line_id" name="line_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                            <option value="">Не выбран</option>
-                            @foreach ($lines as $line)
-                                <option value="{{ $line->id }}" @selected(old('line_id') == $line->id)>{{ $line->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="md:col-span-2 xl:col-span-3">
-                        <button type="submit" class="rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">Создать стык</button>
-                    </div>
-                </form>
+                    <a href="{{ route('admin.welds.create') }}" class="rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">Создать стык</a>
+                </div>
             </div>
         @endcan
 

@@ -57,34 +57,13 @@
 
         @can('create', \App\Modules\Conclusions\Models\Conclusion::class)
             <div class="panel p-6">
-                <form method="post" action="{{ route('admin.conclusions.store') }}" class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                    @csrf
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="number">Номер</label>
-                        <input id="number" name="number" value="{{ old('number') }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
+                <div class="flex items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-semibold text-slate-900">Создание заключения</h2>
+                        <p class="mt-2 text-sm text-slate-600">Большая форма перенесена на отдельную страницу.</p>
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="date">Дата</label>
-                        <input id="date" type="date" name="date" value="{{ old('date', today()->toDateString()) }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                    </div>
-                    <div class="space-y-2 xl:col-span-3">
-                        <label class="text-sm font-medium text-slate-700" for="result_ids">Результаты, готовые к заключению</label>
-                        <select id="result_ids" name="result_ids[]" multiple size="8" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                            @foreach ($readyResults as $result)
-                                <option value="{{ $result->id }}" @selected(collect(old('result_ids', []))->contains($result->id))>
-                                    {{ $result->weld?->weld_number }} | {{ $result->method?->name }} | {{ $result->weld?->object?->name }} | {{ $result->control_date?->format('d.m.Y') }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="xl:col-span-3 space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="comment">Комментарий</label>
-                        <textarea id="comment" name="comment" rows="2" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">{{ old('comment') }}</textarea>
-                    </div>
-                    <div class="xl:col-span-3">
-                        <button type="submit" class="rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">Создать заключение</button>
-                    </div>
-                </form>
+                    <a href="{{ route('admin.conclusions.create') }}" class="rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">Создать заключение</a>
+                </div>
             </div>
         @endcan
 

@@ -39,57 +39,13 @@
 
         @can('radiography.manage')
             <div class="panel p-6">
-                <form method="post" action="{{ route('admin.radiography.store') }}" class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                    @csrf
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="ndt_result_id">Общий результат</label>
-                        <select id="ndt_result_id" name="ndt_result_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                            @foreach ($ndtResults as $ndtResult)
-                                <option value="{{ $ndtResult->id }}">{{ $ndtResult->weld?->weld_number }} — {{ $ndtResult->weld?->object?->name }} — {{ $ndtResult->method?->code?->label() }}</option>
-                            @endforeach
-                        </select>
+                <div class="flex items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-semibold text-slate-900">Создание карты РК</h2>
+                        <p class="mt-2 text-sm text-slate-600">Большая форма перенесена на отдельную страницу.</p>
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="film_type_id">Тип пленки</label>
-                        <select id="film_type_id" name="film_type_id" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                            <option value="">Не указано</option>
-                            @foreach ($filmTypes as $filmType)
-                                <option value="{{ $filmType->id }}">{{ $filmType->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="barcode">Баркод</label>
-                        <input id="barcode" name="barcode" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="conclusion_number">Номер заключения</label>
-                        <input id="conclusion_number" name="conclusion_number" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="control_date">Дата контроля</label>
-                        <input id="control_date" type="date" name="control_date" value="{{ now()->toDateString() }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="conclusion_date">Дата заключения</label>
-                        <input id="conclusion_date" type="date" name="conclusion_date" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="archive_location">Архивное место</label>
-                        <input id="archive_location" name="archive_location" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-                    </div>
-                    <div class="md:col-span-2 xl:col-span-3 space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="result_text">Итог</label>
-                        <textarea id="result_text" name="result_text" rows="2" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm"></textarea>
-                    </div>
-                    <div class="md:col-span-2 xl:col-span-3 space-y-2">
-                        <label class="text-sm font-medium text-slate-700" for="comment">Комментарий</label>
-                        <textarea id="comment" name="comment" rows="2" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm"></textarea>
-                    </div>
-                    <div class="md:col-span-2 xl:col-span-3">
-                        <button type="submit" class="rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white">Сохранить карту РК</button>
-                    </div>
-                </form>
+                    <a href="{{ route('admin.radiography.create') }}" class="rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">Создать карту РК</a>
+                </div>
             </div>
         @endcan
 

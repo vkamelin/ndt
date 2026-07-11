@@ -79,6 +79,38 @@ final class DocumentController extends Controller
         ]);
     }
 
+    public function create(Request $request): View
+    {
+        $this->authorize('create', Document::class);
+
+        $user = $request->user();
+        $objectId = $user?->objectId();
+        $isAdmin = $user?->hasRole('Администратор системы') ?? false;
+
+        return view('modules.documents.create', [
+            'documentTypes' => DocumentType::query()->where('is_active', true)->orderBy('name')->get(),
+            'objects' => NdtObject::query()
+                ->with('city')
+                ->when(! $isAdmin, function ($query) use ($objectId): void {
+                    if ($objectId === null) {
+                        $query->whereRaw('1 = 0');
+
+                        return;
+                    }
+
+                    $query->whereKey($objectId);
+                })
+                ->orderBy('name')
+                ->get(),
+            'organizations' => Organization::query()->orderBy('name')->get(),
+            'cities' => City::query()->orderBy('name')->get(),
+            'employees' => Employee::query()->with('object.city')->orderBy('last_name')->get(),
+            'equipment' => Equipment::query()->with('object.city')->orderBy('name')->get(),
+            'requests' => NdtRequest::query()->with('object.city')->orderByDesc('request_date')->get(),
+            'statuses' => DocumentStatus::options(),
+        ]);
+    }
+
     public function show(Request $request, Document $document): View
     {
         $this->authorize('view', $document);
@@ -110,6 +142,37 @@ final class DocumentController extends Controller
         ]);
     }
 
+    public function edit(Request $request, Document $document): View
+    {
+        $this->authorize('manage', $document);
+
+        $document->load([
+            'type',
+            'organization',
+            'city',
+            'object.city',
+            'employee.object.city',
+            'equipment.object.city',
+            'request.object.city',
+            'files.uploadedBy',
+            'versions.file.uploadedBy',
+            'versions.createdBy',
+            'relations',
+        ]);
+
+        return view('modules.documents.edit', [
+            'document' => $document,
+            'documentTypes' => DocumentType::query()->where('is_active', true)->orderBy('name')->get(),
+            'organizations' => Organization::query()->orderBy('name')->get(),
+            'cities' => City::query()->orderBy('name')->get(),
+            'objects' => NdtObject::query()->with('city')->orderBy('name')->get(),
+            'employees' => Employee::query()->with('object.city')->orderBy('last_name')->get(),
+            'equipment' => Equipment::query()->with('object.city')->orderBy('name')->get(),
+            'requests' => NdtRequest::query()->with('object.city')->orderByDesc('request_date')->get(),
+            'statuses' => DocumentStatus::options(),
+        ]);
+    }
+
     public function store(StoreDocumentRequest $request, DocumentService $documentService): RedirectResponse
     {
         $document = $documentService->create(
@@ -124,7 +187,7 @@ final class DocumentController extends Controller
 
     public function update(UpdateDocumentRequest $request, Document $document, DocumentService $documentService): RedirectResponse
     {
-        $documentService->update(
+        $item = $documentService->update(
             document: $document,
             data: $request->validated(),
             actor: $request->user(),
@@ -132,7 +195,7 @@ final class DocumentController extends Controller
             userAgent: $request->userAgent(),
         );
 
-        return back()->with('status', 'Документ обновлен.');
+        return redirect()->route('admin.documents.show', $item)->with('status', 'Документ обновлен.');
     }
 
     public function storeVersion(StoreDocumentVersionRequest $request, Document $document, DocumentService $documentService): RedirectResponse

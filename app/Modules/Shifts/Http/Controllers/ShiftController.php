@@ -78,6 +78,32 @@ final class ShiftController extends Controller
         ]);
     }
 
+    public function create(Request $request): View
+    {
+        $this->authorize('create', Shift::class);
+
+        $user = $request->user();
+        $isAdmin = $user?->hasRole('Администратор системы') ?? false;
+        $objectId = $user?->objectId();
+
+        return view('modules.shifts.create', [
+            'employees' => Employee::query()
+                ->with(['object.city'])
+                ->when(! $isAdmin, function ($query) use ($objectId): void {
+                    if ($objectId === null) {
+                        $query->whereRaw('1 = 0');
+
+                        return;
+                    }
+
+                    $query->where('object_id', $objectId);
+                })
+                ->orderBy('last_name')
+                ->get(),
+            'types' => ShiftType::options(),
+        ]);
+    }
+
     public function show(Request $request, Shift $shift): View
     {
         $this->authorize('view', $shift);
@@ -132,12 +158,12 @@ final class ShiftController extends Controller
 
         $type = ShiftType::from($request->validated('type'));
 
-        match ($type) {
+        $shift = match ($type) {
             ShiftType::Lab => $labShifts->start($employee, $request->validated('comment') ?? null, $request->user(), $request->ip(), $request->userAgent()),
             ShiftType::Decoder => $decoderShifts->start($employee, $request->validated('comment') ?? null, $request->user(), $request->ip(), $request->userAgent()),
         };
 
-        return back()->with('status', 'Смена открыта.');
+        return redirect()->route('admin.shifts.show', $shift)->with('status', 'Смена открыта.');
     }
 
     public function complete(CompleteShiftRequest $request, Shift $shift, LabShiftService $labShifts, DecoderShiftService $decoderShifts): RedirectResponse
