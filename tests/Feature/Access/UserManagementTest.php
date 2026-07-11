@@ -31,7 +31,15 @@ final class UserManagementTest extends TestCase
             ->get('/admin/users')
             ->assertOk()
             ->assertSeeText('Пользователи')
-            ->assertSeeText('employee@example.test');
+            ->assertSeeText('employee@example.test')
+            ->assertDontSeeText('Сохранить роли')
+            ->assertDontSeeText('Заблокировать');
+
+        $this->actingAs($admin)
+            ->get(route('admin.users.show', $user))
+            ->assertOk()
+            ->assertSeeText('Карточка пользователя')
+            ->assertSeeText('Сохранить роли');
 
         $this->actingAs($admin)
             ->patch(route('admin.users.roles.update', $user), [

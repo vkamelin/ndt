@@ -22,12 +22,21 @@ final class UserController extends Controller
             ->orderBy('name')
             ->paginate(15);
 
+        return view('admin.users.index', [
+            'users' => $users,
+        ]);
+    }
+
+    public function show(User $user): View
+    {
+        $user->load(['roles', 'employees.object.city']);
+
         $roles = Role::query()
             ->orderBy('name')
             ->get();
 
-        return view('admin.users.index', [
-            'users' => $users,
+        return view('admin.users.show', [
+            'user' => $user,
             'roles' => $roles,
         ]);
     }

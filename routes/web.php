@@ -76,6 +76,7 @@ Route::middleware(['auth', 'active.user', 'can:users.view'])
     ->name('admin.users.')
     ->group(function (): void {
         Route::get('/', [AdminUserController::class, 'index'])->name('index');
+        Route::get('{user}', [AdminUserController::class, 'show'])->name('show');
         Route::patch('{user}/roles', [AdminUserController::class, 'updateRoles'])->name('roles.update');
         Route::patch('{user}/block', [AdminUserController::class, 'block'])->name('block');
         Route::patch('{user}/unblock', [AdminUserController::class, 'unblock'])->name('unblock');
