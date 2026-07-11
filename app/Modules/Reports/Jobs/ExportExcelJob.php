@@ -21,8 +21,7 @@ final class ExportExcelJob implements ShouldQueue
 
     public function __construct(
         public readonly int $reportJobId,
-    ) {
-    }
+    ) {}
 
     public function handle(ReportService $service): void
     {

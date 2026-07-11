@@ -26,11 +26,11 @@ final class PdfReportWriter
         $contentStream = implode("\n", $contentLines);
 
         $objects = [
-            "<< /Type /Catalog /Pages 2 0 R >>",
-            "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
-            "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>",
-            "<< /Length ".strlen($contentStream)." >>\nstream\n{$contentStream}\nendstream",
-            "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+            '<< /Type /Catalog /Pages 2 0 R >>',
+            '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+            '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>',
+            '<< /Length '.strlen($contentStream)." >>\nstream\n{$contentStream}\nendstream",
+            '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
         ];
 
         $pdf = "%PDF-1.4\n";

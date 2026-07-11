@@ -3,12 +3,12 @@
 declare(strict_types=1);
 
 use App\Modules\Api\Http\Controllers\AuthController;
-use App\Modules\Api\Http\Controllers\NotificationsController;
 use App\Modules\Api\Http\Controllers\MobileEquipmentController;
 use App\Modules\Api\Http\Controllers\MobileFilesController;
 use App\Modules\Api\Http\Controllers\MobileShiftsController;
 use App\Modules\Api\Http\Controllers\MobileTasksController;
 use App\Modules\Api\Http\Controllers\MobileWeldsController;
+use App\Modules\Api\Http\Controllers\NotificationsController;
 use App\Modules\Api\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 

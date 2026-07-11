@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\NdtTasks\Models;
 
-use App\Modules\NdtTasks\Enums\NdtMethodCode;
 use App\Modules\NdtResults\Models\NdtResult;
+use App\Modules\NdtTasks\Enums\NdtMethodCode;
 use App\Modules\Welds\Models\Weld;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -47,5 +47,19 @@ final class NdtMethod extends Model
     public function results(): HasMany
     {
         return $this->hasMany(NdtResult::class, 'ndt_method_id');
+    }
+
+    public function label(): string
+    {
+        return $this->code instanceof NdtMethodCode
+            ? $this->code->label()
+            : (string) $this->name;
+    }
+
+    public function fullName(): string
+    {
+        return $this->code instanceof NdtMethodCode
+            ? $this->code->fullName()
+            : (string) $this->name;
     }
 }

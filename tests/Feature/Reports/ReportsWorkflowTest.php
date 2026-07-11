@@ -17,6 +17,7 @@ use App\Modules\Reports\Enums\ReportStatus;
 use App\Modules\Reports\Jobs\ExportExcelJob;
 use App\Modules\Reports\Models\ReportJob;
 use App\Modules\Reports\Services\ReportService;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
@@ -29,7 +30,7 @@ final class ReportsWorkflowTest extends TestCase
 
     public function test_admin_can_queue_and_generate_excel_report_with_notification_and_private_file(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
         Storage::fake('private');
         Queue::fake();
 
@@ -68,7 +69,7 @@ final class ReportsWorkflowTest extends TestCase
 
     public function test_user_cannot_queue_report_for_foreign_object(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         $foreignUser = $this->createScopedUser('foreign-reports@example.test', 'Начальник участка', 'Чужой участок');
         $foreignObject = $foreignUser->objectId();
@@ -91,7 +92,7 @@ final class ReportsWorkflowTest extends TestCase
 
     public function test_user_from_other_object_cannot_download_generated_report_file(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
         Storage::fake('private');
 
         $admin = User::query()->where('email', 'admin@example.test')->firstOrFail();

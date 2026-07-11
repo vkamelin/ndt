@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Reports\Models;
 
 use App\Models\User;
-use App\Modules\Conclusions\Models\Conclusion;
 use App\Modules\Documents\Models\File;
-use App\Modules\Equipment\Models\Equipment;
 use App\Modules\Objects\Models\City;
 use App\Modules\Objects\Models\NdtObject;
 use App\Modules\Reports\Enums\ReportFormat;

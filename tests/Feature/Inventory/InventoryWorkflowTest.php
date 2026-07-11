@@ -12,6 +12,8 @@ use App\Modules\Employees\Models\Position;
 use App\Modules\Objects\Models\City;
 use App\Modules\Objects\Models\NdtObject;
 use App\Modules\Shifts\Enums\ShiftType;
+use App\Modules\Shifts\Models\Shift;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
@@ -22,7 +24,7 @@ final class InventoryWorkflowTest extends TestCase
 
     public function test_inventory_transactions_are_recorded_through_shift_routes(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         $labUser = User::query()->create([
             'name' => 'Лаборант',
@@ -70,7 +72,7 @@ final class InventoryWorkflowTest extends TestCase
             ])
             ->assertRedirect();
 
-        $shift = \App\Modules\Shifts\Models\Shift::query()->where('employee_id', $employee->id)->firstOrFail();
+        $shift = Shift::query()->where('employee_id', $employee->id)->firstOrFail();
 
         $this->actingAs($labUser)
             ->post(route('admin.shifts.lab.film-transactions.store', $shift), [

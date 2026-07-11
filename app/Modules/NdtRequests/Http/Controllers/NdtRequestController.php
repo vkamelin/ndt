@@ -28,8 +28,16 @@ final class NdtRequestController extends Controller
 
         $requests = NdtRequest::query()
             ->with(['organization', 'object.city', 'title', 'welds'])
-            ->when(! $request->user()->can('ndt_requests.manage') && $request->user() !== null, function ($query) use ($request): void {
-                $query->where('object_id', $request->user()->objectId());
+            ->when(! ($request->user()?->hasRole('Администратор системы') ?? false), function ($query) use ($request): void {
+                $objectId = $request->user()?->objectId();
+
+                if ($objectId === null) {
+                    $query->whereRaw('1 = 0');
+
+                    return;
+                }
+
+                $query->where('object_id', $objectId);
             })
             ->when($request->string('search')->toString() !== '', function ($query) use ($request): void {
                 $query->where('request_number', 'like', '%'.$request->string('search')->toString().'%');

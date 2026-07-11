@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\Radiography\Policies;
 
 use App\Models\User;
+use App\Modules\NdtResults\Models\NdtResult;
 use App\Modules\Radiography\Enums\RtStatus;
 use App\Modules\Radiography\Models\RtResult;
-use App\Modules\NdtResults\Models\NdtResult;
 
 final class RtResultPolicy
 {

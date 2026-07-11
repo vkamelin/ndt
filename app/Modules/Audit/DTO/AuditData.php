@@ -25,8 +25,7 @@ final class AuditData
         public readonly ?string $reason = null,
         public readonly ?string $ipAddress = null,
         public readonly ?string $userAgent = null,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  array<string, mixed>  $before

@@ -21,9 +21,7 @@ final class SendNotificationEmailJob implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
-    public function __construct(private readonly int $deliveryId)
-    {
-    }
+    public function __construct(private readonly int $deliveryId) {}
 
     public function handle(): void
     {

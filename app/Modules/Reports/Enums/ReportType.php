@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Modules\Reports\Enums;
 
 use App\Modules\Conclusions\Models\Conclusion;
-use App\Modules\Documents\Models\Document;
 use App\Modules\Equipment\Models\Equipment;
 use App\Modules\Registers\Models\Act;
 use App\Modules\Registers\Models\TransferRegister;

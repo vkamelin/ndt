@@ -20,6 +20,7 @@ use App\Modules\Radiography\Enums\RtStatus;
 use App\Modules\Radiography\Models\RtResult;
 use App\Modules\Welds\Enums\WeldStatus;
 use App\Modules\Welds\Models\Weld;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
@@ -30,7 +31,7 @@ final class RadiographyWorkflowTest extends TestCase
 
     public function test_engineer_can_create_radiography_card_and_work_with_materials(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         $engineer = User::query()->create([
             'name' => 'Инженер НК',

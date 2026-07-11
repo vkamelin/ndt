@@ -24,7 +24,7 @@ return new class extends Migration
             'film_types',
             'chemical_types',
         ] as $tableName) {
-            Schema::create($tableName, function (Blueprint $table) use ($tableName): void {
+            Schema::create($tableName, function (Blueprint $table): void {
                 $table->id();
                 $table->string('name')->unique();
                 $table->boolean('is_active')->default(true)->index();

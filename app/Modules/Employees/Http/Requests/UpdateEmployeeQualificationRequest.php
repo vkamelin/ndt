@@ -4,6 +4,4 @@ declare(strict_types=1);
 
 namespace App\Modules\Employees\Http\Requests;
 
-final class UpdateEmployeeQualificationRequest extends StoreEmployeeQualificationRequest
-{
-}
+final class UpdateEmployeeQualificationRequest extends StoreEmployeeQualificationRequest {}

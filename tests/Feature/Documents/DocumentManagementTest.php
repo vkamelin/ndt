@@ -7,7 +7,6 @@ namespace Tests\Feature\Documents;
 use App\Models\User;
 use App\Modules\Auth\Enums\UserStatus;
 use App\Modules\Documents\Enums\DocumentStatus;
-use App\Modules\Documents\Enums\DocumentVersionStatus;
 use App\Modules\Documents\Models\Document;
 use App\Modules\Documents\Models\DocumentType;
 use App\Modules\Documents\Models\File;
@@ -17,6 +16,7 @@ use App\Modules\Employees\Models\Position;
 use App\Modules\Objects\Models\City;
 use App\Modules\Objects\Models\NdtObject;
 use App\Modules\Organizations\Models\Organization;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -29,7 +29,7 @@ final class DocumentManagementTest extends TestCase
 
     public function test_admin_can_create_document_attach_file_and_download_it(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
         Storage::fake('private');
 
         $admin = User::query()->where('email', 'admin@example.test')->firstOrFail();
@@ -103,7 +103,7 @@ final class DocumentManagementTest extends TestCase
 
     public function test_user_from_other_object_cannot_download_document_file(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
         Storage::fake('private');
 
         $admin = User::query()->where('email', 'admin@example.test')->firstOrFail();
@@ -188,7 +188,7 @@ final class DocumentManagementTest extends TestCase
 
     public function test_file_deletion_marks_file_as_deleted_and_writes_audit(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
         Storage::fake('private');
 
         $admin = User::query()->where('email', 'admin@example.test')->firstOrFail();

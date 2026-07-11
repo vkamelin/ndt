@@ -16,4 +16,3 @@ final class ExampleTest extends TestCase
         $response->assertSeeText('Базовый каркас Laravel-проекта');
     }
 }
-

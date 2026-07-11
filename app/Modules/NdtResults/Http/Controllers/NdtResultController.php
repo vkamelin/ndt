@@ -33,6 +33,7 @@ use App\Modules\NdtResults\Services\VisualControlService;
 use App\Modules\NdtTasks\Enums\NdtMethodCode;
 use App\Modules\NdtTasks\Models\NdtMethod;
 use App\Modules\NdtTasks\Models\NdtTask;
+use App\Modules\Objects\Models\NdtObject;
 use App\Modules\Welds\Models\Weld;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -108,7 +109,7 @@ final class NdtResultController extends Controller
                 })
                 ->orderByDesc('id')
                 ->get(),
-            'objects' => \App\Modules\Objects\Models\NdtObject::query()
+            'objects' => NdtObject::query()
                 ->with('city')
                 ->when(! $isAdmin, function ($query) use ($objectId): void {
                     if ($objectId === null) {

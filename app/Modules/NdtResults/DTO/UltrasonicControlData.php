@@ -17,8 +17,7 @@ final class UltrasonicControlData
         public readonly ?string $tuningParameters,
         public readonly ?string $transferRegisterNumber,
         public readonly ?string $actNumber,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  array{

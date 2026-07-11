@@ -14,6 +14,11 @@ final class WeldStatusHistory extends Model
     use HasFactory;
 
     /**
+     * @var string
+     */
+    protected $table = 'weld_status_history';
+
+    /**
      * @var list<string>
      */
     protected $fillable = [

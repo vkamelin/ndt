@@ -15,9 +15,7 @@ use App\Modules\Equipment\Models\EquipmentDefect;
 use App\Modules\Equipment\Models\EquipmentDocument;
 use App\Modules\Equipment\Models\EquipmentMovement;
 use App\Modules\Equipment\Models\EquipmentRepair;
-use App\Modules\Equipment\Models\EquipmentType;
 use App\Modules\Equipment\Models\EquipmentVerification;
-use App\Modules\Employees\Models\Employee;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 

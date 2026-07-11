@@ -22,9 +22,6 @@ final class FileService
 {
     use RecordsAuditLogs;
 
-    /**
-     * @param  Model|Document|null  $related
-     */
     public function store(UploadedFile $upload, ?User $actor = null, Model|Document|null $related = null): File
     {
         return DB::transaction(function () use ($upload, $actor, $related): File {

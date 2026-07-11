@@ -4,16 +4,13 @@ declare(strict_types=1);
 
 namespace App\Modules\Api\Http\Controllers;
 
-use App\Modules\Api\Http\Requests\StoreMobileTaskItemResultRequest;
 use App\Modules\Api\Http\Requests\StoreMobileTaskItemFileRequest;
+use App\Modules\Api\Http\Requests\StoreMobileTaskItemResultRequest;
 use App\Modules\Api\Http\Resources\FileResource;
 use App\Modules\Api\Http\Resources\NdtResultResource;
 use App\Modules\Api\Http\Resources\NdtTaskResource;
-use App\Modules\Documents\Models\File;
 use App\Modules\Documents\Services\FileService;
-use App\Modules\Employees\Models\Employee;
 use App\Modules\NdtResults\DTO\NdtResultData;
-use App\Modules\NdtResults\Models\NdtResult;
 use App\Modules\NdtResults\Services\NdtResultService;
 use App\Modules\NdtTasks\Enums\NdtTaskStatus;
 use App\Modules\NdtTasks\Http\Requests\UpdateNdtTaskStatusRequest;
@@ -22,7 +19,6 @@ use App\Modules\NdtTasks\Models\NdtTaskItem;
 use App\Modules\NdtTasks\Services\NdtTaskService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
 
 final class MobileTasksController extends ApiController
 {

@@ -6,6 +6,7 @@ namespace App\Modules\Equipment\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Employees\Models\Employee;
+use App\Modules\Equipment\Enums\EquipmentStatus;
 use App\Modules\Equipment\Http\Requests\ReturnEquipmentAssignmentRequest;
 use App\Modules\Equipment\Http\Requests\StoreEquipmentAssignmentRequest;
 use App\Modules\Equipment\Http\Requests\StoreEquipmentCalibrationRequest;
@@ -76,7 +77,7 @@ final class EquipmentController extends Controller
                 })
                 ->orderBy('name')
                 ->get(),
-            'statuses' => \App\Modules\Equipment\Enums\EquipmentStatus::options(),
+            'statuses' => EquipmentStatus::options(),
         ]);
     }
 
@@ -131,7 +132,7 @@ final class EquipmentController extends Controller
                 })
                 ->orderBy('last_name')
                 ->get(),
-            'statuses' => \App\Modules\Equipment\Enums\EquipmentStatus::options(),
+            'statuses' => EquipmentStatus::options(),
         ]);
     }
 

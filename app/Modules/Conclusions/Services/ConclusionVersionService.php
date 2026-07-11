@@ -163,11 +163,11 @@ final class ConclusionVersionService
         $contentStream = implode("\n", $commands);
 
         $objects = [];
-        $objects[] = "<< /Type /Catalog /Pages 2 0 R >>";
-        $objects[] = "<< /Type /Pages /Kids [3 0 R] /Count 1 >>";
-        $objects[] = "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>";
-        $objects[] = "<< /Length ".strlen($contentStream)." >>\nstream\n{$contentStream}\nendstream";
-        $objects[] = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>";
+        $objects[] = '<< /Type /Catalog /Pages 2 0 R >>';
+        $objects[] = '<< /Type /Pages /Kids [3 0 R] /Count 1 >>';
+        $objects[] = '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>';
+        $objects[] = '<< /Length '.strlen($contentStream)." >>\nstream\n{$contentStream}\nendstream";
+        $objects[] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>';
 
         $pdf = "%PDF-1.4\n";
         $offsets = [0];

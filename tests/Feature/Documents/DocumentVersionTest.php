@@ -9,6 +9,7 @@ use App\Modules\Documents\Enums\DocumentStatus;
 use App\Modules\Documents\Enums\DocumentVersionStatus;
 use App\Modules\Documents\Models\Document;
 use App\Modules\Documents\Models\DocumentType;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -20,7 +21,7 @@ final class DocumentVersionTest extends TestCase
 
     public function test_document_versions_increment_and_previous_versions_become_superseded(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
         Storage::fake('private');
 
         $admin = User::query()->where('email', 'admin@example.test')->firstOrFail();

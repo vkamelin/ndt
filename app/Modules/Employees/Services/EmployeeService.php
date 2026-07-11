@@ -11,8 +11,8 @@ use App\Modules\Employees\Enums\EmployeeStatus;
 use App\Modules\Employees\Enums\QualificationMethod;
 use App\Modules\Employees\Models\Employee;
 use App\Modules\Employees\Models\EmployeeQualification;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 final class EmployeeService
 {

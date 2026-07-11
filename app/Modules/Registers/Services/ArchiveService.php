@@ -69,6 +69,15 @@ final class ArchiveService
         return DB::transaction(function () use ($archiveCase, $data, $actor, $ipAddress, $userAgent): ArchiveCaseItem {
             $this->ensureRelatedModelExists($data['related_type'], (int) $data['related_id']);
 
+            $existing = $archiveCase->items()
+                ->where('related_type', $data['related_type'])
+                ->where('related_id', $data['related_id'])
+                ->first();
+
+            if ($existing !== null) {
+                return $existing;
+            }
+
             $item = $archiveCase->items()->create([
                 'related_type' => $data['related_type'],
                 'related_id' => $data['related_id'],

@@ -10,7 +10,6 @@ use App\Modules\Employees\Enums\EmployeeStatus;
 use App\Modules\Employees\Models\Employee;
 use App\Modules\Employees\Models\Position;
 use App\Modules\NdtResults\Enums\NdtResultStatus;
-use App\Modules\NdtResults\Models\NdtResult;
 use App\Modules\NdtTasks\Enums\NdtMethodCode;
 use App\Modules\NdtTasks\Enums\NdtTaskStatus;
 use App\Modules\NdtTasks\Models\NdtMethod;
@@ -19,6 +18,7 @@ use App\Modules\NdtTasks\Models\NdtTaskItem;
 use App\Modules\Objects\Models\City;
 use App\Modules\Objects\Models\NdtObject;
 use App\Modules\Welds\Models\Weld;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
@@ -29,7 +29,7 @@ final class ApiMobileTasksTest extends TestCase
 
     public function test_defectoscopist_can_work_with_mobile_tasks_and_results(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         $user = User::query()->create([
             'name' => 'Исполнитель',

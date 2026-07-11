@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\NdtTasks\Models;
 
 use App\Modules\Employees\Models\Employee;
+use App\Modules\NdtRequests\Models\NdtRequest;
 use App\Modules\NdtTasks\Enums\NdtTaskStatus;
 use App\Modules\Objects\Models\NdtObject;
-use App\Modules\NdtRequests\Models\NdtRequest;
 use App\Modules\Welds\Models\Weld;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

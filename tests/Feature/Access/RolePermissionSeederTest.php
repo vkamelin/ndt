@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Access;
 
+use App\Modules\Access\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -15,7 +16,7 @@ final class RolePermissionSeederTest extends TestCase
 
     public function test_role_permission_seeder_creates_base_roles_and_permissions(): void
     {
-        $this->seed(\App\Modules\Access\Seeders\RolePermissionSeeder::class);
+        $this->seed(RolePermissionSeeder::class);
 
         $this->assertDatabaseHas('roles', ['name' => 'Администратор системы', 'guard_name' => 'web']);
         $this->assertDatabaseHas('roles', ['name' => 'Начальник участка', 'guard_name' => 'web']);

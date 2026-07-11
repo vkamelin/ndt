@@ -8,8 +8,8 @@ use App\Modules\Auth\Enums\UserStatus;
 use App\Modules\Employees\Models\Employee;
 use App\Modules\Notifications\Models\Notification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
@@ -19,8 +19,8 @@ final class User extends Authenticatable
 {
     use HasApiTokens;
     use HasFactory;
-    use SoftDeletes;
     use HasRoles;
+    use SoftDeletes;
 
     /**
      * @var list<string>
@@ -51,8 +51,6 @@ final class User extends Authenticatable
 
     /**
      * Default guard for roles and permissions.
-     *
-     * @var string
      */
     protected string $guard_name = 'web';
 

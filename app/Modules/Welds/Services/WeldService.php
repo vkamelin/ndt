@@ -9,7 +9,6 @@ use App\Modules\Audit\Concerns\RecordsAuditLogs;
 use App\Modules\Audit\DTO\AuditData;
 use App\Modules\Welds\Enums\WeldStatus;
 use App\Modules\Welds\Models\Weld;
-use Illuminate\Validation\ValidationException;
 
 final class WeldService
 {

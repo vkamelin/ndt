@@ -11,13 +11,14 @@ use App\Modules\Admin\Models\Medium;
 use App\Modules\Admin\Models\NormativeDocument;
 use App\Modules\Admin\Models\PipelineCategory;
 use App\Modules\Admin\Models\Title;
-use App\Modules\Admin\Models\WeldType;
 use App\Modules\Admin\Models\WeldingProcess;
+use App\Modules\Admin\Models\WeldType;
 use App\Modules\Documents\Models\File;
-use App\Modules\NdtTasks\Models\NdtMethod;
 use App\Modules\NdtRequests\Models\NdtRequest;
 use App\Modules\NdtResults\Models\NdtResult;
+use App\Modules\NdtTasks\Models\NdtMethod;
 use App\Modules\Objects\Models\NdtObject;
+use App\Modules\Welds\Enums\WeldStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -62,7 +63,7 @@ final class Weld extends Model
         'thickness' => 'decimal:2',
         'welded_at' => 'date',
         'pwht' => 'bool',
-        'status' => \App\Modules\Welds\Enums\WeldStatus::class,
+        'status' => WeldStatus::class,
         'deleted_at' => 'datetime',
     ];
 

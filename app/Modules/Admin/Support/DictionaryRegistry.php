@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Modules\Admin\Support;
 
-use App\Modules\Admin\Models\ActType;
 use App\Modules\Admin\Models\AbstractDictionary;
-use App\Modules\Admin\Models\Drawing;
+use App\Modules\Admin\Models\ActType;
 use App\Modules\Admin\Models\ChemicalType;
 use App\Modules\Admin\Models\DefectType;
+use App\Modules\Admin\Models\Drawing;
 use App\Modules\Admin\Models\FilmType;
 use App\Modules\Admin\Models\Line;
 use App\Modules\Admin\Models\Material;
@@ -18,8 +18,8 @@ use App\Modules\Admin\Models\PipelineCategory;
 use App\Modules\Admin\Models\RegisterType;
 use App\Modules\Admin\Models\ResultStatus;
 use App\Modules\Admin\Models\Title;
-use App\Modules\Admin\Models\WeldType;
 use App\Modules\Admin\Models\WeldingProcess;
+use App\Modules\Admin\Models\WeldType;
 
 final class DictionaryRegistry
 {

@@ -15,6 +15,7 @@ use App\Modules\Objects\Models\City;
 use App\Modules\Objects\Models\NdtObject;
 use App\Modules\Organizations\Models\Organization;
 use App\Modules\Welds\Models\Weld;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
@@ -25,7 +26,7 @@ final class Stage5WorkflowTest extends TestCase
 
     public function test_admin_can_manage_organizations_welds_requests_and_relations(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         $admin = User::query()->where('email', 'admin@example.test')->firstOrFail();
         $city = City::query()->create([
@@ -145,7 +146,7 @@ final class Stage5WorkflowTest extends TestCase
 
     public function test_chief_sees_only_own_object_and_cannot_manage_other_object_records(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         $chief = User::factory()->create([
             'name' => 'Начальник участка',
@@ -179,6 +180,13 @@ final class Stage5WorkflowTest extends TestCase
             'is_active' => true,
             'comment' => null,
         ]);
+        $executorUser = User::query()->create([
+            'name' => 'Исполнитель',
+            'email' => 'stage5-executor@example.test',
+            'password' => 'password',
+            'status' => UserStatus::Active,
+        ]);
+        $executorUser->assignRole(Role::findByName('Дефектоскопист', 'web'));
 
         Employee::query()->create([
             'object_id' => $objectA->id,
@@ -224,7 +232,7 @@ final class Stage5WorkflowTest extends TestCase
         ]);
 
         $this->actingAs($chief)
-            ->get(route('admin.ndt-requests.index'))
+            ->get(route('admin.ndt-requests.index', ['search' => '001']))
             ->assertOk()
             ->assertSeeText('A-001')
             ->assertDontSeeText('B-001');
@@ -260,7 +268,7 @@ final class Stage5WorkflowTest extends TestCase
 
     public function test_request_cannot_move_to_work_without_welds(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         $admin = User::query()->where('email', 'admin@example.test')->firstOrFail();
         $city = City::query()->create([

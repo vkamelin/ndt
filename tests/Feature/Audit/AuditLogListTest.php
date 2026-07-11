@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Modules\Audit\DTO\AuditData;
 use App\Modules\Audit\Livewire\AuditLogList;
 use App\Modules\Audit\Services\AuditService;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -18,7 +19,7 @@ final class AuditLogListTest extends TestCase
 
     public function test_filters_are_applied_on_the_database_level(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         $admin = User::query()->where('email', 'admin@example.test')->firstOrFail();
         $target = User::factory()->create([

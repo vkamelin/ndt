@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Modules\Audit\Concerns\RecordsAuditLogs;
 use App\Modules\Audit\DTO\AuditData;
 use App\Modules\NdtResults\Models\NdtResult;
+use App\Modules\Notifications\Services\NotificationService;
 use App\Modules\Radiography\Enums\RtStatus;
 use App\Modules\Radiography\Models\RtArchiveItem;
 use App\Modules\Radiography\Models\RtDensityMeasurement;
@@ -16,9 +17,7 @@ use App\Modules\Radiography\Models\RtFilm;
 use App\Modules\Radiography\Models\RtImage;
 use App\Modules\Radiography\Models\RtReshoot;
 use App\Modules\Radiography\Models\RtResult;
-use App\Modules\Notifications\Services\NotificationService;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
 
 final class RadiographyService
 {

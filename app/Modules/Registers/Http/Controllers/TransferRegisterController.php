@@ -8,11 +8,11 @@ use App\Http\Controllers\Controller;
 use App\Modules\Admin\Models\ActType;
 use App\Modules\Admin\Models\RegisterType;
 use App\Modules\Documents\Http\Requests\StoreFileRequest;
-use App\Modules\Documents\Models\File;
 use App\Modules\Documents\Services\FileService;
 use App\Modules\Employees\Models\Employee;
 use App\Modules\Objects\Models\City;
 use App\Modules\Objects\Models\NdtObject;
+use App\Modules\Registers\Enums\TransferRegisterStatus;
 use App\Modules\Registers\Http\Requests\StoreActRequest;
 use App\Modules\Registers\Http\Requests\StoreArchiveCaseItemRequest;
 use App\Modules\Registers\Http\Requests\StoreArchiveCaseRequest;
@@ -30,6 +30,7 @@ use App\Modules\Registers\Models\TransferRegister;
 use App\Modules\Registers\Services\ArchiveService;
 use App\Modules\Registers\Services\TransferRegisterService;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
@@ -72,7 +73,7 @@ final class TransferRegisterController extends Controller
         return view('modules.registers.index', [
             'registers' => $registers->orderByDesc('date')->orderByDesc('id')->paginate(15)->withQueryString(),
             'registerTypes' => RegisterType::query()->where('is_active', true)->orderBy('name')->get(),
-            'statuses' => \App\Modules\Registers\Enums\TransferRegisterStatus::options(),
+            'statuses' => TransferRegisterStatus::options(),
             'cities' => City::query()->orderBy('name')->get(),
             'objects' => NdtObject::query()->with('city')->orderBy('name')->get(),
             'employees' => Employee::query()->with('object.city')->orderBy('last_name')->get(),
@@ -102,7 +103,7 @@ final class TransferRegisterController extends Controller
         return view('modules.registers.show', [
             'register' => $transferRegister,
             'registerTypes' => RegisterType::query()->where('is_active', true)->orderBy('name')->get(),
-            'statuses' => \App\Modules\Registers\Enums\TransferRegisterStatus::options(),
+            'statuses' => TransferRegisterStatus::options(),
             'cities' => City::query()->orderBy('name')->get(),
             'objects' => NdtObject::query()->with('city')->orderBy('name')->get(),
             'employees' => Employee::query()->with('object.city')->orderBy('last_name')->get(),
@@ -141,11 +142,11 @@ final class TransferRegisterController extends Controller
         $comment = $request->string('comment')->toString();
 
         match ($status) {
-            \App\Modules\Registers\Enums\TransferRegisterStatus::Formed->value => $service->form($transferRegister, $request->user(), $comment !== '' ? $comment : null, $request->ip(), $request->userAgent()),
-            \App\Modules\Registers\Enums\TransferRegisterStatus::Sent->value => $service->send($transferRegister, $request->user(), $comment !== '' ? $comment : null, $request->ip(), $request->userAgent()),
-            \App\Modules\Registers\Enums\TransferRegisterStatus::Accepted->value => $service->accept($transferRegister, $request->user(), $comment !== '' ? $comment : null, $request->ip(), $request->userAgent()),
-            \App\Modules\Registers\Enums\TransferRegisterStatus::Returned->value => $service->returnRegister($transferRegister, $request->user(), $comment !== '' ? $comment : null, $request->ip(), $request->userAgent()),
-            \App\Modules\Registers\Enums\TransferRegisterStatus::Closed->value => $service->close($transferRegister, $request->user(), $comment !== '' ? $comment : null, $request->ip(), $request->userAgent()),
+            TransferRegisterStatus::Formed->value => $service->form($transferRegister, $request->user(), $comment !== '' ? $comment : null, $request->ip(), $request->userAgent()),
+            TransferRegisterStatus::Sent->value => $service->send($transferRegister, $request->user(), $comment !== '' ? $comment : null, $request->ip(), $request->userAgent()),
+            TransferRegisterStatus::Accepted->value => $service->accept($transferRegister, $request->user(), $comment !== '' ? $comment : null, $request->ip(), $request->userAgent()),
+            TransferRegisterStatus::Returned->value => $service->returnRegister($transferRegister, $request->user(), $comment !== '' ? $comment : null, $request->ip(), $request->userAgent()),
+            TransferRegisterStatus::Closed->value => $service->close($transferRegister, $request->user(), $comment !== '' ? $comment : null, $request->ip(), $request->userAgent()),
             default => abort(422, 'Неподдерживаемый статус.'),
         };
 
@@ -177,7 +178,7 @@ final class TransferRegisterController extends Controller
                 abort(422, 'Связанная сущность не найдена.');
             }
 
-            /** @var \Illuminate\Database\Eloquent\Model $related */
+            /** @var Model $related */
             $related = $relatedClass::query()->findOrFail($relatedId);
             $this->authorize('manage', $related);
         } else {

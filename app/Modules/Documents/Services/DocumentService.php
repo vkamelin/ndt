@@ -24,8 +24,7 @@ final class DocumentService
 
     public function __construct(
         private readonly FileService $fileService,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  array{

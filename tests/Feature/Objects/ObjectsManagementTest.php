@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Tests\Feature\Objects;
 
 use App\Models\User;
+use App\Modules\Auth\Enums\UserStatus;
 use App\Modules\Employees\Enums\EmployeeStatus;
 use App\Modules\Employees\Models\Employee;
 use App\Modules\Employees\Models\Position;
 use App\Modules\Objects\Models\City;
 use App\Modules\Objects\Models\NdtObject;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
@@ -20,7 +22,7 @@ final class ObjectsManagementTest extends TestCase
 
     public function test_admin_can_create_city_and_object(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         $admin = User::query()->where('email', 'admin@example.test')->firstOrFail();
 
@@ -51,21 +53,21 @@ final class ObjectsManagementTest extends TestCase
         ]);
 
         $this->actingAs($admin)
-            ->get(route('admin.cities.index'))
+            ->get(route('admin.cities.index', ['search' => 'Екатеринбург']))
             ->assertOk()
-            ->assertSeeText('Екатеринбург');
+            ->assertSee('Екатеринбург');
     }
 
     public function test_chief_sees_only_assigned_object_and_cannot_edit_other_objects(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         $admin = User::query()->where('email', 'admin@example.test')->firstOrFail();
         $chief = User::factory()->create([
             'name' => 'Начальник участка',
             'email' => 'chief@example.test',
             'password' => 'password',
-            'status' => \App\Modules\Auth\Enums\UserStatus::Active,
+            'status' => UserStatus::Active,
         ]);
         $chief->assignRole(Role::findByName('Начальник участка', 'web'));
 
@@ -119,10 +121,10 @@ final class ObjectsManagementTest extends TestCase
         ]);
 
         $this->actingAs($chief)
-            ->get(route('admin.objects.index'))
+            ->get(route('admin.objects.index', ['search' => 'Участок']))
             ->assertOk()
-            ->assertSeeText('Участок А')
-            ->assertDontSeeText('Участок Б');
+            ->assertSee('Участок А')
+            ->assertDontSee('Участок Б');
 
         $this->actingAs($chief)
             ->patch(route('admin.objects.update', $objectB), [

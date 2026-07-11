@@ -5,6 +5,15 @@ declare(strict_types=1);
 namespace Tests\Feature\Notifications;
 
 use App\Models\User;
+use App\Modules\Admin\Models\Drawing;
+use App\Modules\Admin\Models\Line;
+use App\Modules\Admin\Models\Material;
+use App\Modules\Admin\Models\Medium;
+use App\Modules\Admin\Models\NormativeDocument;
+use App\Modules\Admin\Models\PipelineCategory;
+use App\Modules\Admin\Models\Title;
+use App\Modules\Admin\Models\WeldingProcess;
+use App\Modules\Admin\Models\WeldType;
 use App\Modules\Auth\Enums\UserStatus;
 use App\Modules\Employees\Enums\EmployeeStatus;
 use App\Modules\Employees\Models\Employee;
@@ -13,22 +22,16 @@ use App\Modules\NdtRequests\Enums\NdtRequestStatus;
 use App\Modules\NdtRequests\Models\NdtRequest;
 use App\Modules\NdtTasks\DTO\AssignNdtTaskData;
 use App\Modules\NdtTasks\Models\NdtMethod;
+use App\Modules\NdtTasks\Models\NdtTask;
 use App\Modules\NdtTasks\Services\NdtTaskService;
 use App\Modules\Notifications\Enums\NotificationType;
 use App\Modules\Notifications\Models\Notification;
+use App\Modules\Notifications\Services\NotificationService;
 use App\Modules\Objects\Models\City;
 use App\Modules\Objects\Models\NdtObject;
-use App\Modules\Admin\Models\Drawing;
-use App\Modules\Admin\Models\Line;
-use App\Modules\Admin\Models\Material;
-use App\Modules\Admin\Models\Medium;
-use App\Modules\Admin\Models\NormativeDocument;
-use App\Modules\Admin\Models\PipelineCategory;
-use App\Modules\Admin\Models\Title;
-use App\Modules\Admin\Models\WeldType;
-use App\Modules\Admin\Models\WeldingProcess;
 use App\Modules\Welds\Enums\WeldStatus;
 use App\Modules\Welds\Models\Weld;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
@@ -39,7 +42,7 @@ final class NotificationWorkflowTest extends TestCase
 
     public function test_task_assignment_creates_inbox_notification_for_assignee(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         $admin = User::query()->where('email', 'admin@example.test')->firstOrFail();
         $role = Role::findByName('Дефектоскопист', 'web');
@@ -70,10 +73,10 @@ final class NotificationWorkflowTest extends TestCase
 
     public function test_notifications_api_returns_own_items_and_marks_read(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         $user = User::query()->where('email', 'admin@example.test')->firstOrFail();
-        app(\App\Modules\Notifications\Services\NotificationService::class)->notifyUser(
+        app(NotificationService::class)->notifyUser(
             $user,
             NotificationType::QueueFailure,
             'queue_failure',
@@ -94,7 +97,7 @@ final class NotificationWorkflowTest extends TestCase
     }
 
     /**
-     * @return array{0: \App\Modules\NdtTasks\Models\NdtTask, 1: User}
+     * @return array{0: NdtTask, 1: User}
      */
     private function createAssignedTask(User $actor, Role $role): array
     {

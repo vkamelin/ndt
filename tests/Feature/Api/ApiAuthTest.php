@@ -6,6 +6,7 @@ namespace Tests\Feature\Api;
 
 use App\Models\User;
 use App\Modules\Auth\Enums\UserStatus;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
@@ -16,7 +17,7 @@ final class ApiAuthTest extends TestCase
 
     public function test_user_can_login_and_read_profile(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         $user = User::query()->create([
             'name' => 'Лаборант',

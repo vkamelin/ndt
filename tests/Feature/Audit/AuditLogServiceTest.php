@@ -7,6 +7,7 @@ namespace Tests\Feature\Audit;
 use App\Models\User;
 use App\Modules\Audit\DTO\AuditData;
 use App\Modules\Audit\Services\AuditService;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -16,7 +17,7 @@ final class AuditLogServiceTest extends TestCase
 
     public function test_audit_service_records_expected_payload(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         $actor = User::query()->where('email', 'admin@example.test')->firstOrFail();
 

@@ -8,8 +8,8 @@ use App\Models\User;
 use App\Modules\Audit\Concerns\RecordsAuditLogs;
 use App\Modules\Audit\DTO\AuditData;
 use App\Modules\Employees\Models\Employee;
-use App\Modules\Radiography\Enums\RtStatus;
 use App\Modules\Radiography\Models\RtResult;
+use App\Modules\Radiography\Services\RadiographyService;
 use App\Modules\Shifts\Enums\ShiftStatus;
 use App\Modules\Shifts\Enums\ShiftType;
 use App\Modules\Shifts\Models\DecoderCleanup;
@@ -237,7 +237,7 @@ final class DecoderShiftService
 
             if ($decryption->rt_result_id !== null) {
                 $rtResult = RtResult::query()->findOrFail($decryption->rt_result_id);
-                app(\App\Modules\Radiography\Services\RadiographyService::class)->markDecoded($rtResult, $actor, 'Дешифровка завершена', $ipAddress, $userAgent);
+                app(RadiographyService::class)->markDecoded($rtResult, $actor, 'Дешифровка завершена', $ipAddress, $userAgent);
             }
 
             $this->recordAudit(

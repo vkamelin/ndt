@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\Admin\Services;
 
 use App\Models\User;
+use App\Modules\Admin\Models\AbstractDictionary;
 use App\Modules\Audit\Concerns\RecordsAuditLogs;
 use App\Modules\Audit\DTO\AuditData;
-use App\Modules\Admin\Models\AbstractDictionary;
 
 final class ReferenceDictionaryService
 {

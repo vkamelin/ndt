@@ -26,11 +26,10 @@ final class NdtResultService
     use RecordsAuditLogs;
 
     public function __construct(
-        private readonly \App\Modules\NdtResults\Services\EquipmentAvailabilityServiceInterface $equipmentAvailability,
+        private readonly EquipmentAvailabilityServiceInterface $equipmentAvailability,
         private readonly QualificationGuardService $qualificationGuard,
         private readonly WeldService $welds,
-    ) {
-    }
+    ) {}
 
     /**
      * Create a result from a task and weld pairing.

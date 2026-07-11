@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\Shifts\Models;
 
 use App\Modules\Employees\Models\Employee;
+use App\Modules\Inventory\Models\ChemicalInventoryTransaction;
+use App\Modules\Inventory\Models\ChemicalRequest;
+use App\Modules\Inventory\Models\FilmInventoryTransaction;
 use App\Modules\Objects\Models\NdtObject;
 use App\Modules\Shifts\Enums\ShiftStatus;
 use App\Modules\Shifts\Enums\ShiftType;
@@ -66,17 +69,17 @@ final class Shift extends Model
 
     public function filmTransactions(): HasMany
     {
-        return $this->hasMany(\App\Modules\Inventory\Models\FilmInventoryTransaction::class, 'shift_id');
+        return $this->hasMany(FilmInventoryTransaction::class, 'shift_id');
     }
 
     public function chemicalTransactions(): HasMany
     {
-        return $this->hasMany(\App\Modules\Inventory\Models\ChemicalInventoryTransaction::class, 'shift_id');
+        return $this->hasMany(ChemicalInventoryTransaction::class, 'shift_id');
     }
 
     public function chemicalRequests(): HasMany
     {
-        return $this->hasMany(\App\Modules\Inventory\Models\ChemicalRequest::class, 'shift_id');
+        return $this->hasMany(ChemicalRequest::class, 'shift_id');
     }
 
     public function decoderReport(): HasOne

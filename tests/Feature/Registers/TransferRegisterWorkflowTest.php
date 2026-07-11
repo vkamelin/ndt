@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Tests\Feature\Registers;
 
 use App\Models\User;
+use App\Modules\Admin\Models\ActType;
+use App\Modules\Admin\Models\RegisterType;
 use App\Modules\Conclusions\Enums\ConclusionStatus;
 use App\Modules\Conclusions\Models\Conclusion;
 use App\Modules\Documents\Enums\FileStatus;
@@ -12,15 +14,13 @@ use App\Modules\Documents\Models\File;
 use App\Modules\Employees\Enums\EmployeeStatus;
 use App\Modules\Employees\Models\Employee;
 use App\Modules\Employees\Models\Position;
-use App\Modules\Admin\Models\ActType;
-use App\Modules\Admin\Models\RegisterType;
 use App\Modules\NdtTasks\Models\NdtMethod;
 use App\Modules\Objects\Models\City;
 use App\Modules\Objects\Models\NdtObject;
 use App\Modules\Registers\Enums\TransferRegisterStatus;
-use App\Modules\Registers\Models\Act;
 use App\Modules\Registers\Models\ArchiveCase;
 use App\Modules\Registers\Models\TransferRegister;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -33,7 +33,7 @@ final class TransferRegisterWorkflowTest extends TestCase
 
     public function test_admin_can_create_register_transition_it_and_add_related_documents(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
         Storage::fake('private');
 
         $admin = User::query()->where('email', 'admin@example.test')->firstOrFail();
@@ -218,7 +218,7 @@ final class TransferRegisterWorkflowTest extends TestCase
 
     public function test_user_from_other_object_cannot_view_register(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         $admin = User::query()->where('email', 'admin@example.test')->firstOrFail();
         $registerType = RegisterType::query()->orderBy('id')->firstOrFail();

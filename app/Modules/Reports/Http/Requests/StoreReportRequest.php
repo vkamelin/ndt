@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\Reports\Http\Requests;
 
 use App\Modules\Reports\Enums\ReportType;
-use App\Modules\Conclusions\Models\Conclusion;
-use App\Modules\Registers\Models\Act;
-use App\Modules\Registers\Models\TransferRegister;
 use App\Modules\Shifts\Models\Shift;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
@@ -49,7 +47,7 @@ final class StoreReportRequest extends FormRequest
             return false;
         }
 
-        /** @var \Illuminate\Database\Eloquent\Model|null $entity */
+        /** @var Model|null $entity */
         $entity = $entityClass::query()->find($entityId);
 
         if ($entity === null) {

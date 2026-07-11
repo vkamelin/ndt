@@ -6,6 +6,15 @@ namespace Tests\Feature\Dashboard;
 
 use App\Models\User;
 use App\Modules\Auth\Enums\UserStatus;
+use App\Modules\Admin\Models\Drawing;
+use App\Modules\Admin\Models\Line;
+use App\Modules\Admin\Models\Material;
+use App\Modules\Admin\Models\Medium;
+use App\Modules\Admin\Models\NormativeDocument;
+use App\Modules\Admin\Models\PipelineCategory;
+use App\Modules\Admin\Models\Title;
+use App\Modules\Admin\Models\WeldingProcess;
+use App\Modules\Admin\Models\WeldType;
 use App\Modules\Employees\Enums\EmployeeStatus;
 use App\Modules\Employees\Models\Employee;
 use App\Modules\Employees\Models\Position;
@@ -18,19 +27,10 @@ use App\Modules\Notifications\Enums\NotificationType;
 use App\Modules\Notifications\Services\NotificationService;
 use App\Modules\Objects\Models\City;
 use App\Modules\Objects\Models\NdtObject;
-use App\Modules\Admin\Models\Drawing;
-use App\Modules\Admin\Models\Line;
-use App\Modules\Admin\Models\Material;
-use App\Modules\Admin\Models\Medium;
-use App\Modules\Admin\Models\NormativeDocument;
-use App\Modules\Admin\Models\PipelineCategory;
-use App\Modules\Admin\Models\Title;
-use App\Modules\Admin\Models\WeldType;
-use App\Modules\Admin\Models\WeldingProcess;
 use App\Modules\Welds\Enums\WeldStatus;
 use App\Modules\Welds\Models\Weld;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 final class DashboardOverviewTest extends TestCase
@@ -39,7 +39,7 @@ final class DashboardOverviewTest extends TestCase
 
     public function test_dashboard_shows_notifications_and_worklist_blocks(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         $admin = User::query()->where('email', 'admin@example.test')->firstOrFail();
         $this->createWorkbenchData($admin);
@@ -93,6 +93,13 @@ final class DashboardOverviewTest extends TestCase
             'is_active' => true,
             'comment' => null,
         ]);
+        $executorUser = User::query()->create([
+            'name' => 'Исполнитель',
+            'email' => 'dashboard-executor@example.test',
+            'password' => 'password',
+            'status' => UserStatus::Active,
+        ]);
+        $executorUser->assignRole(Role::findByName('Дефектоскопист', 'web'));
         $employee = Employee::query()->create([
             'object_id' => $object->id,
             'position_id' => $position->id,
@@ -104,7 +111,7 @@ final class DashboardOverviewTest extends TestCase
             'status' => EmployeeStatus::Active,
             'personnel_number' => '202',
         ]);
-        $employee->users()->attach($admin->id);
+        $employee->users()->attach($executorUser->id);
 
         $method = NdtMethod::query()->where('code', 'rk')->firstOrFail();
 

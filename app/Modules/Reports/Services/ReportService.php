@@ -7,8 +7,8 @@ namespace App\Modules\Reports\Services;
 use App\Models\User;
 use App\Modules\Conclusions\Models\Conclusion;
 use App\Modules\Documents\Enums\FileStatus;
-use App\Modules\Documents\Models\File;
 use App\Modules\Documents\Models\Document;
+use App\Modules\Documents\Models\File;
 use App\Modules\Equipment\Models\Equipment;
 use App\Modules\NdtRequests\Models\NdtRequest;
 use App\Modules\NdtResults\Enums\NdtResultStatus;
@@ -43,15 +43,14 @@ final class ReportService
         private readonly ExcelReportWriter $excelWriter,
         private readonly PdfReportWriter $pdfWriter,
         private readonly NotificationService $notificationService,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  array<string, mixed>  $data
      */
     public function queue(array $data, User $actor, ?string $ipAddress = null, ?string $userAgent = null): ReportJob
     {
-        return DB::transaction(function () use ($data, $actor, $ipAddress, $userAgent): ReportJob {
+        return DB::transaction(function () use ($data, $actor): ReportJob {
             $reportType = ReportType::from((string) $data['report_type']);
             $entity = $this->resolveEntity($reportType, $data);
 
@@ -85,7 +84,9 @@ final class ReportService
     public function generate(ReportJob $reportJob): void
     {
         $reportJob->refresh();
-        $reportType = ReportType::from((string) $reportJob->report_type);
+        $reportType = $reportJob->report_type instanceof ReportType
+            ? $reportJob->report_type
+            : ReportType::from((string) $reportJob->report_type);
 
         try {
             DB::transaction(function () use ($reportJob, $reportType): void {
@@ -716,6 +717,7 @@ final class ReportService
 
     /**
      * @template TModel of Model
+     *
      * @param  class-string<TModel>  $class
      * @param  list<string>  $relations
      * @return TModel

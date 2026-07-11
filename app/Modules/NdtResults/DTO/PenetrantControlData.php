@@ -16,8 +16,7 @@ final class PenetrantControlData
         public readonly ?string $materialsUsed,
         public readonly ?string $transferRegisterNumber,
         public readonly ?string $actNumber,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  array{

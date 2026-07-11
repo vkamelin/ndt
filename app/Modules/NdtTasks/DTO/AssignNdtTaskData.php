@@ -22,8 +22,7 @@ final class AssignNdtTaskData
         public readonly ?string $priority,
         public readonly ?string $comment,
         public readonly array $weldIds,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  array{

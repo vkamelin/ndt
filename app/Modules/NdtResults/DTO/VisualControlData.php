@@ -15,8 +15,7 @@ final class VisualControlData
         public readonly ?string $measurements,
         public readonly ?string $transferRegisterNumber,
         public readonly ?string $actNumber,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  array{

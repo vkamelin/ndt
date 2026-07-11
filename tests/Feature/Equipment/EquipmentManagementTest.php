@@ -5,6 +5,15 @@ declare(strict_types=1);
 namespace Tests\Feature\Equipment;
 
 use App\Models\User;
+use App\Modules\Admin\Models\Drawing;
+use App\Modules\Admin\Models\Line;
+use App\Modules\Admin\Models\Material;
+use App\Modules\Admin\Models\Medium;
+use App\Modules\Admin\Models\NormativeDocument;
+use App\Modules\Admin\Models\PipelineCategory;
+use App\Modules\Admin\Models\Title;
+use App\Modules\Admin\Models\WeldingProcess;
+use App\Modules\Admin\Models\WeldType;
 use App\Modules\Auth\Enums\UserStatus;
 use App\Modules\Employees\Enums\EmployeeStatus;
 use App\Modules\Employees\Enums\QualificationMethod;
@@ -16,15 +25,6 @@ use App\Modules\Equipment\Models\Equipment;
 use App\Modules\Equipment\Models\EquipmentCalibration;
 use App\Modules\Equipment\Models\EquipmentType;
 use App\Modules\Equipment\Models\EquipmentVerification;
-use App\Modules\Admin\Models\Drawing;
-use App\Modules\Admin\Models\Line;
-use App\Modules\Admin\Models\Material;
-use App\Modules\Admin\Models\Medium;
-use App\Modules\Admin\Models\NormativeDocument;
-use App\Modules\Admin\Models\PipelineCategory;
-use App\Modules\Admin\Models\Title;
-use App\Modules\Admin\Models\WeldType;
-use App\Modules\Admin\Models\WeldingProcess;
 use App\Modules\NdtRequests\Enums\NdtRequestStatus;
 use App\Modules\NdtRequests\Models\NdtRequest;
 use App\Modules\NdtResults\DTO\NdtResultData;
@@ -36,6 +36,7 @@ use App\Modules\Objects\Models\City;
 use App\Modules\Objects\Models\NdtObject;
 use App\Modules\Welds\Enums\WeldStatus;
 use App\Modules\Welds\Models\Weld;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
 use Spatie\Permission\Models\Role;
@@ -47,7 +48,7 @@ final class EquipmentManagementTest extends TestCase
 
     public function test_admin_can_create_equipment_and_dashboard_shows_expiring_checks(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         $admin = User::query()->where('email', 'admin@example.test')->firstOrFail();
         $city = City::query()->create([
@@ -144,7 +145,7 @@ final class EquipmentManagementTest extends TestCase
 
     public function test_strict_guard_blocks_unqualified_executor_in_task_service(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
         config(['equipment.strict_qualification_guard' => true]);
 
         $admin = User::query()->where('email', 'admin@example.test')->firstOrFail();
@@ -286,7 +287,7 @@ final class EquipmentManagementTest extends TestCase
 
     public function test_strict_guard_blocks_result_when_equipment_verification_is_expired(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
         config(['equipment.strict_qualification_guard' => true]);
 
         $admin = User::query()->where('email', 'admin@example.test')->firstOrFail();

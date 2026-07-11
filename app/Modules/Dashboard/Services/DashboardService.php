@@ -16,6 +16,7 @@ use App\Modules\Notifications\Models\Notification;
 use App\Modules\Shifts\Enums\ShiftStatus;
 use App\Modules\Shifts\Models\Shift;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 final class DashboardService
 {
@@ -24,15 +25,15 @@ final class DashboardService
      *     user: User,
      *     role_names: list<string>,
      *     unread_notifications_count: int,
-     *     active_requests: \Illuminate\Database\Eloquent\Collection<int, NdtRequest>,
-     *     overdue_tasks: \Illuminate\Database\Eloquent\Collection<int, NdtTask>,
-     *     my_tasks: \Illuminate\Database\Eloquent\Collection<int, NdtTask>,
-     *     approval_requests: \Illuminate\Database\Eloquent\Collection<int, NdtRequest>,
-     *     open_shifts: \Illuminate\Database\Eloquent\Collection<int, Shift>,
-     *     expiring_verifications: \Illuminate\Database\Eloquent\Collection<int, EquipmentVerification>,
-     *     expiring_calibrations: \Illuminate\Database\Eloquent\Collection<int, EquipmentCalibration>,
-     *     expiring_qualifications: \Illuminate\Database\Eloquent\Collection<int, EmployeeQualification>,
-     *     latest_notifications: \Illuminate\Database\Eloquent\Collection<int, Notification>,
+     *     active_requests: Collection<int, NdtRequest>,
+     *     overdue_tasks: Collection<int, NdtTask>,
+     *     my_tasks: Collection<int, NdtTask>,
+     *     approval_requests: Collection<int, NdtRequest>,
+     *     open_shifts: Collection<int, Shift>,
+     *     expiring_verifications: Collection<int, EquipmentVerification>,
+     *     expiring_calibrations: Collection<int, EquipmentCalibration>,
+     *     expiring_qualifications: Collection<int, EmployeeQualification>,
+     *     latest_notifications: Collection<int, Notification>,
      *     strict_qualification_guard: bool,
      * }
      */

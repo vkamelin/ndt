@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\NdtRequests\Http\Requests;
 
-use Illuminate\Validation\Rule;
 use App\Modules\NdtRequests\Models\NdtRequest;
+use Illuminate\Validation\Rule;
 
 final class UpdateNdtRequestRequest extends StoreNdtRequestRequest
 {

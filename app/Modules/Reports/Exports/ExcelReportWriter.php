@@ -20,7 +20,7 @@ final class ExcelReportWriter
             throw new RuntimeException('Unable to create temporary XLSX file.');
         }
 
-        $zip = new ZipArchive();
+        $zip = new ZipArchive;
         if ($zip->open($tmpPath, ZipArchive::OVERWRITE) !== true) {
             throw new RuntimeException('Unable to create XLSX archive.');
         }

@@ -20,6 +20,7 @@ use App\Modules\Objects\Models\City;
 use App\Modules\Objects\Models\NdtObject;
 use App\Modules\Welds\Enums\WeldStatus;
 use App\Modules\Welds\Models\Weld;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
@@ -30,7 +31,7 @@ final class NdtResultsWorkflowTest extends TestCase
 
     public function test_defectoscopist_can_create_result_and_send_it_to_analysis(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         $defectoscopist = User::query()->create([
             'name' => 'Дефектоскопист',
@@ -113,7 +114,7 @@ final class NdtResultsWorkflowTest extends TestCase
 
     public function test_engineer_can_mark_defect_and_it_updates_weld_status(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         $engineer = User::query()->create([
             'name' => 'Инженер',
@@ -160,6 +161,17 @@ final class NdtResultsWorkflowTest extends TestCase
             'personnel_number' => '501',
         ]);
         $executor->users()->sync([$defectoscopist->id]);
+        Employee::query()->create([
+            'object_id' => $object->id,
+            'position_id' => $position->id,
+            'last_name' => 'Ильин',
+            'first_name' => 'Илья',
+            'middle_name' => null,
+            'phone' => null,
+            'email' => null,
+            'status' => EmployeeStatus::Active,
+            'personnel_number' => '511',
+        ])->users()->sync([$engineer->id]);
 
         $method = NdtMethod::query()->where('code', NdtMethodCode::VIK->value)->firstOrFail();
         $weld = $this->createWeld($object->id, 'W-501');
@@ -198,7 +210,7 @@ final class NdtResultsWorkflowTest extends TestCase
 
     public function test_method_specific_forms_are_persisted(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         $engineer = User::query()->create([
             'name' => 'Инженер',
@@ -245,6 +257,17 @@ final class NdtResultsWorkflowTest extends TestCase
             'personnel_number' => '502',
         ]);
         $executor->users()->sync([$defectoscopist->id]);
+        Employee::query()->create([
+            'object_id' => $object->id,
+            'position_id' => $position->id,
+            'last_name' => 'Сергеев',
+            'first_name' => 'Сергей',
+            'middle_name' => null,
+            'phone' => null,
+            'email' => null,
+            'status' => EmployeeStatus::Active,
+            'personnel_number' => '512',
+        ])->users()->sync([$engineer->id]);
 
         $this->actingAs($engineer);
 
@@ -308,10 +331,13 @@ final class NdtResultsWorkflowTest extends TestCase
                 ->patch(route($config['route'], $result), $config['payload'])
                 ->assertRedirect();
 
-            $this->assertDatabaseHas($config['table'], array_merge(
+            $expected = array_merge(
                 ['ndt_result_id' => $result->id],
                 $config['payload'],
-            ));
+            );
+            $expected['conclusion_date'] = $expected['conclusion_date'].' 00:00:00';
+
+            $this->assertDatabaseHas($config['table'], $expected);
         }
     }
 

@@ -6,6 +6,7 @@ namespace Tests\Feature\Auth;
 
 use App\Models\User;
 use App\Modules\Auth\Enums\UserStatus;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
@@ -23,7 +24,7 @@ final class LoginTest extends TestCase
 
     public function test_active_user_can_log_in_and_open_dashboard(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         $user = User::factory()->create([
             'email' => 'worker@example.test',

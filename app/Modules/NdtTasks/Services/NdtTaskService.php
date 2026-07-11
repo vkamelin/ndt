@@ -7,13 +7,13 @@ namespace App\Modules\NdtTasks\Services;
 use App\Models\User;
 use App\Modules\Audit\Concerns\RecordsAuditLogs;
 use App\Modules\Audit\DTO\AuditData;
-use App\Modules\Equipment\Services\QualificationGuardService;
 use App\Modules\Employees\Enums\EmployeeStatus;
 use App\Modules\Employees\Models\Employee;
+use App\Modules\Equipment\Services\QualificationGuardService;
+use App\Modules\NdtRequests\Models\NdtRequest;
 use App\Modules\NdtTasks\DTO\AssignNdtTaskData;
 use App\Modules\NdtTasks\Enums\NdtTaskStatus;
 use App\Modules\NdtTasks\Models\NdtTask;
-use App\Modules\NdtRequests\Models\NdtRequest;
 use App\Modules\Welds\Models\Weld;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -25,8 +25,7 @@ final class NdtTaskService
     public function __construct(
         private readonly NdtTaskNotificationService $notifications,
         private readonly QualificationGuardService $qualificationGuard,
-    ) {
-    }
+    ) {}
 
     /**
      * Create a task, attach weld positions, and assign an executor when provided.
@@ -125,7 +124,7 @@ final class NdtTaskService
 
     /**
      * @param  list<int>  $methodIds
-     * Synchronize the methods assigned to a weld.
+     *                                Synchronize the methods assigned to a weld.
      */
     public function syncWeldMethods(Weld $weld, array $methodIds, ?User $actor = null, ?string $ipAddress = null, ?string $userAgent = null): Weld
     {

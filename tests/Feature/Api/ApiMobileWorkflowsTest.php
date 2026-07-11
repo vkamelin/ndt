@@ -19,6 +19,7 @@ use App\Modules\Shifts\Enums\ShiftType;
 use App\Modules\Shifts\Models\Shift;
 use App\Modules\Welds\Enums\WeldStatus;
 use App\Modules\Welds\Models\Weld;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -31,7 +32,7 @@ final class ApiMobileWorkflowsTest extends TestCase
 
     public function test_lab_and_decoder_shift_endpoints_work(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         $labUser = User::query()->create([
             'name' => 'Лаборант',

@@ -6,7 +6,6 @@ namespace App\Modules\Notifications\Services;
 
 use App\Models\User;
 use App\Modules\Conclusions\Models\Conclusion;
-use App\Modules\Employees\Models\Employee;
 use App\Modules\Employees\Models\EmployeeQualification;
 use App\Modules\Equipment\Models\EquipmentCalibration;
 use App\Modules\Equipment\Models\EquipmentVerification;
@@ -22,6 +21,7 @@ use App\Modules\Notifications\Models\Notification;
 use App\Modules\Notifications\Models\NotificationDelivery;
 use App\Modules\Notifications\Models\NotificationTemplate;
 use App\Modules\Radiography\Models\RtResult;
+use App\Modules\Reports\Enums\ReportType;
 use App\Modules\Reports\Models\ReportJob;
 use App\Modules\Shifts\Models\Shift;
 use Illuminate\Support\Collection;
@@ -306,7 +306,7 @@ final class NotificationService
 
         $this->notifyUser($reportJob->requestedBy, NotificationType::ReportReady, 'report_ready', [
             'report_title' => $reportJob->title,
-            'report_type' => $reportJob->report_type instanceof \App\Modules\Reports\Enums\ReportType ? $reportJob->report_type->label() : (string) $reportJob->report_type,
+            'report_type' => $reportJob->report_type instanceof ReportType ? $reportJob->report_type->label() : (string) $reportJob->report_type,
             'object_name' => $reportJob->object?->name ?? '',
         ], [
             'report_job_id' => $reportJob->getKey(),

@@ -41,7 +41,6 @@ return new class extends Migration
 
             $table->index(['object_id', 'inventory_number', 'serial_number', 'status'], 'equipment_object_inventory_serial_status_index');
             $table->index('equipment_type_id');
-            $table->index('status');
             $table->index('object_id');
         });
 

@@ -19,8 +19,7 @@ final class NdtResultData
         public readonly string $controlDate,
         public readonly ?string $resultText,
         public readonly ?string $comment,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  array{

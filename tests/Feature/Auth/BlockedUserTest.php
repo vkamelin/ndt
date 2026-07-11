@@ -6,6 +6,7 @@ namespace Tests\Feature\Auth;
 
 use App\Models\User;
 use App\Modules\Auth\Enums\UserStatus;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
@@ -16,7 +17,7 @@ final class BlockedUserTest extends TestCase
 
     public function test_blocked_user_cannot_log_in(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         User::factory()->create([
             'email' => 'blocked@example.test',
@@ -35,7 +36,7 @@ final class BlockedUserTest extends TestCase
 
     public function test_blocked_user_is_logged_out_by_middleware(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         $user = User::factory()->create([
             'email' => 'blocked2@example.test',

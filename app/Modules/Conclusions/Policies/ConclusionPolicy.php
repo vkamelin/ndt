@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Conclusions\Policies;
 
 use App\Models\User;
+use App\Modules\Conclusions\Enums\ConclusionStatus;
 use App\Modules\Conclusions\Models\Conclusion;
 
 final class ConclusionPolicy
@@ -35,35 +36,35 @@ final class ConclusionPolicy
     {
         return $user->can('conclusions.version')
             && $this->scopeMatches($user, $conclusion)
-            && ! in_array($conclusion->status, [\App\Modules\Conclusions\Enums\ConclusionStatus::Annulled, \App\Modules\Conclusions\Enums\ConclusionStatus::Replaced], true);
+            && ! in_array($conclusion->status, [ConclusionStatus::Annulled, ConclusionStatus::Replaced], true);
     }
 
     public function approve(User $user, Conclusion $conclusion): bool
     {
         return $user->can('conclusions.approve')
             && $this->scopeMatches($user, $conclusion)
-            && in_array($conclusion->status, [\App\Modules\Conclusions\Enums\ConclusionStatus::OnCheck, \App\Modules\Conclusions\Enums\ConclusionStatus::Returned], true);
+            && in_array($conclusion->status, [ConclusionStatus::OnCheck, ConclusionStatus::Returned], true);
     }
 
     public function issue(User $user, Conclusion $conclusion): bool
     {
         return $user->can('conclusions.issue')
             && $this->scopeMatches($user, $conclusion)
-            && $conclusion->status === \App\Modules\Conclusions\Enums\ConclusionStatus::Approved;
+            && $conclusion->status === ConclusionStatus::Approved;
     }
 
     public function replace(User $user, Conclusion $conclusion): bool
     {
         return $user->can('conclusions.replace')
             && $this->scopeMatches($user, $conclusion)
-            && ! in_array($conclusion->status, [\App\Modules\Conclusions\Enums\ConclusionStatus::Annulled, \App\Modules\Conclusions\Enums\ConclusionStatus::Replaced], true);
+            && ! in_array($conclusion->status, [ConclusionStatus::Annulled, ConclusionStatus::Replaced], true);
     }
 
     public function annul(User $user, Conclusion $conclusion): bool
     {
         return $user->can('conclusions.annul')
             && $this->scopeMatches($user, $conclusion)
-            && ! in_array($conclusion->status, [\App\Modules\Conclusions\Enums\ConclusionStatus::Annulled, \App\Modules\Conclusions\Enums\ConclusionStatus::Replaced], true);
+            && ! in_array($conclusion->status, [ConclusionStatus::Annulled, ConclusionStatus::Replaced], true);
     }
 
     private function scopeMatches(User $user, Conclusion $conclusion): bool

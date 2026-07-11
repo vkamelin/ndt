@@ -43,7 +43,7 @@ final class NotificationsController extends ApiController
     {
         $this->authorize('view', $notification);
 
-        return $this->accepted([
+        return $this->success([
             'notification' => $this->payload($service->markRead($notification, auth()->user())),
         ], 'Уведомление отмечено как прочитанное.');
     }
@@ -52,7 +52,7 @@ final class NotificationsController extends ApiController
     {
         $count = $service->markAllRead(auth()->user());
 
-        return $this->accepted([
+        return $this->success([
             'updated' => $count,
         ], 'Все уведомления отмечены как прочитанные.');
     }

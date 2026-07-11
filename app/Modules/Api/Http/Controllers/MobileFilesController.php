@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class MobileFilesController extends ApiController
 {
@@ -29,7 +30,7 @@ final class MobileFilesController extends ApiController
         return $this->created(new FileResource($file), 'Файл загружен.');
     }
 
-    public function download(Request $request, File $file, FileService $files): \Symfony\Component\HttpFoundation\StreamedResponse
+    public function download(Request $request, File $file, FileService $files): StreamedResponse
     {
         $this->authorize('download', $file);
 

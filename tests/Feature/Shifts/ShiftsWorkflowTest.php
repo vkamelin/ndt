@@ -23,6 +23,7 @@ use App\Modules\Shifts\Enums\ShiftType;
 use App\Modules\Shifts\Models\Shift;
 use App\Modules\Welds\Enums\WeldStatus;
 use App\Modules\Welds\Models\Weld;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
@@ -33,7 +34,7 @@ final class ShiftsWorkflowTest extends TestCase
 
     public function test_lab_shift_records_inventory_and_can_be_completed(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         $labUser = User::query()->create([
             'name' => 'Лаборант',
@@ -153,7 +154,7 @@ final class ShiftsWorkflowTest extends TestCase
 
     public function test_employee_cannot_open_two_decoder_shifts_at_once(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         $engineer = User::query()->create([
             'name' => 'Дешифровщик',
@@ -212,7 +213,7 @@ final class ShiftsWorkflowTest extends TestCase
 
     public function test_decoder_shift_records_decryption_and_completion(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         $engineer = User::query()->create([
             'name' => 'Дешифровщик',

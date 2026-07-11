@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
+use Symfony\Component\Console\Formatter\NullOutputFormatter;
 use Symfony\Component\Console\Formatter\OutputFormatterInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 if (class_exists('Mockery')) {
     return;
@@ -10,9 +12,7 @@ if (class_exists('Mockery')) {
 
 final class Mockery
 {
-    public static function close(): void
-    {
-    }
+    public static function close(): void {}
 
     public static function getContainer(): null
     {
@@ -41,14 +41,17 @@ final class Mockery
 
     private static function stub(): object
     {
-        return new class implements \Symfony\Component\Console\Output\OutputInterface {
+        return new class implements OutputInterface
+        {
             private int $verbosity = self::VERBOSITY_NORMAL;
+
             private bool $decorated = false;
+
             private OutputFormatterInterface $formatter;
 
             public function __construct()
             {
-                $this->formatter = new \Symfony\Component\Console\Formatter\NullOutputFormatter();
+                $this->formatter = new NullOutputFormatter;
             }
 
             public function shouldReceive(string $method): self
@@ -131,13 +134,9 @@ final class Mockery
                 return $this;
             }
 
-            public function write(iterable|string $messages, bool $newline = false, int $options = 0): void
-            {
-            }
+            public function write(iterable|string $messages, bool $newline = false, int $options = 0): void {}
 
-            public function writeln(iterable|string $messages, int $options = 0): void
-            {
-            }
+            public function writeln(iterable|string $messages, int $options = 0): void {}
 
             public function setVerbosity(int $level): void
             {

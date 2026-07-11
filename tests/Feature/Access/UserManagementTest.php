@@ -6,6 +6,7 @@ namespace Tests\Feature\Access;
 
 use App\Models\User;
 use App\Modules\Auth\Enums\UserStatus;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
@@ -16,7 +17,7 @@ final class UserManagementTest extends TestCase
 
     public function test_admin_can_manage_user_roles_and_status(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         $admin = User::query()->where('email', 'admin@example.test')->firstOrFail();
         $user = User::factory()->create([

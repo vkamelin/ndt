@@ -6,9 +6,7 @@ namespace App\Modules\Api\Http\Controllers;
 
 use App\Modules\Api\Http\Resources\ShiftResource;
 use App\Modules\Employees\Models\Employee;
-use App\Modules\Inventory\Models\ChemicalInventoryTransaction;
-use App\Modules\Inventory\Models\ChemicalRequest;
-use App\Modules\Inventory\Models\FilmInventoryTransaction;
+use App\Modules\Shifts\Enums\ShiftStatus;
 use App\Modules\Shifts\Enums\ShiftType;
 use App\Modules\Shifts\Http\Requests\CompleteShiftRequest;
 use App\Modules\Shifts\Http\Requests\StoreChemicalInventoryTransactionRequest;
@@ -42,7 +40,7 @@ final class MobileShiftsController extends ApiController
         $query = Shift::query()
             ->with(['employee.object.city', 'labReport', 'decoderReport'])
             ->where('employee_id', $employee->getKey())
-            ->where('status', \App\Modules\Shifts\Enums\ShiftStatus::Open);
+            ->where('status', ShiftStatus::Open);
 
         if ($request->filled('type') && in_array($request->string('type')->toString(), ['lab', 'decoder'], true)) {
             $query->where('type', ShiftType::from($request->string('type')->toString()));

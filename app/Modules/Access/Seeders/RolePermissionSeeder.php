@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\Access\Seeders;
 
 use Illuminate\Database\Seeder;
-use Spatie\Permission\PermissionRegistrar;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 final class RolePermissionSeeder extends Seeder
 {

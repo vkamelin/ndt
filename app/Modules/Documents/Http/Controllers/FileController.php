@@ -10,9 +10,11 @@ use App\Modules\Documents\Models\Document;
 use App\Modules\Documents\Models\File;
 use App\Modules\Documents\Services\DocumentService;
 use App\Modules\Documents\Services\FileService;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class FileController extends Controller
 {
@@ -33,7 +35,7 @@ final class FileController extends Controller
                 abort(422, 'Связанная сущность не найдена.');
             }
 
-            /** @var \Illuminate\Database\Eloquent\Model $related */
+            /** @var Model $related */
             $related = $relatedClass::query()->findOrFail($relatedId);
             Gate::authorize('manage', $related);
         }
@@ -59,7 +61,7 @@ final class FileController extends Controller
         return back()->with('status', 'Файл загружен.');
     }
 
-    public function download(Request $request, File $file, FileService $fileService): \Symfony\Component\HttpFoundation\StreamedResponse|RedirectResponse
+    public function download(Request $request, File $file, FileService $fileService): StreamedResponse|RedirectResponse
     {
         $this->authorize('download', $file);
 

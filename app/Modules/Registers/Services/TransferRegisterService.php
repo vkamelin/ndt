@@ -106,6 +106,15 @@ final class TransferRegisterService
         return DB::transaction(function () use ($register, $data, $actor, $ipAddress, $userAgent): TransferRegisterItem {
             $this->ensureRelatedModelExists($data['related_type'], (int) $data['related_id']);
 
+            $existing = $register->items()
+                ->where('related_type', $data['related_type'])
+                ->where('related_id', $data['related_id'])
+                ->first();
+
+            if ($existing !== null) {
+                return $existing;
+            }
+
             $item = $register->items()->create([
                 'related_type' => $data['related_type'],
                 'related_id' => $data['related_id'],

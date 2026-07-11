@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Modules\Employees\Models\Employee;
 use App\Modules\NdtResults\Enums\NdtResultStatus;
 use App\Modules\NdtResults\Models\NdtResult;
 use App\Modules\NdtTasks\Enums\NdtTaskStatus;

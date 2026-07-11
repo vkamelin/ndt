@@ -8,6 +8,7 @@ use App\Modules\Api\Http\Requests\LoginRequest;
 use App\Modules\Api\Http\Resources\ProfileResource;
 use App\Modules\Auth\Services\UserService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 final class AuthController extends ApiController
 {
@@ -33,7 +34,7 @@ final class AuthController extends ApiController
         ], 'Вход выполнен.');
     }
 
-    public function logout(\Illuminate\Http\Request $request): JsonResponse
+    public function logout(Request $request): JsonResponse
     {
         $request->user()?->currentAccessToken()?->delete();
 

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Modules\Equipment\Services;
 
 use App\Models\User;
-use App\Modules\Equipment\Enums\EquipmentStatus;
 use App\Modules\Equipment\Models\Equipment;
 use App\Modules\NdtResults\Services\EquipmentAvailabilityServiceInterface;
 use Illuminate\Validation\ValidationException;

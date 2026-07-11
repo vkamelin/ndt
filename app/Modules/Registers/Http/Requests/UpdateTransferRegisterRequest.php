@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Registers\Http\Requests;
 
+use App\Modules\Registers\Enums\TransferRegisterStatus;
 use App\Modules\Registers\Models\TransferRegister;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -31,7 +32,7 @@ final class UpdateTransferRegisterRequest extends FormRequest
             'object_id' => ['required', 'integer', 'exists:objects,id'],
             'sender_employee_id' => ['required', 'integer', 'exists:employees,id'],
             'receiver_employee_id' => ['required', 'integer', 'exists:employees,id'],
-            'status' => ['required', Rule::enum(\App\Modules\Registers\Enums\TransferRegisterStatus::class)],
+            'status' => ['required', Rule::enum(TransferRegisterStatus::class)],
             'comment' => ['nullable', 'string'],
         ];
     }

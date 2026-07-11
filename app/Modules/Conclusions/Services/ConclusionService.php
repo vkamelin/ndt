@@ -25,8 +25,7 @@ final class ConclusionService
 
     public function __construct(
         private readonly ConclusionVersionService $versionService,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  array{

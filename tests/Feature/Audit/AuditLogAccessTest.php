@@ -6,6 +6,7 @@ namespace Tests\Feature\Audit;
 
 use App\Models\User;
 use App\Modules\Auth\Enums\UserStatus;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
@@ -16,7 +17,7 @@ final class AuditLogAccessTest extends TestCase
 
     public function test_admin_can_open_audit_log_page(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         $admin = User::query()->where('email', 'admin@example.test')->firstOrFail();
 
@@ -28,7 +29,7 @@ final class AuditLogAccessTest extends TestCase
 
     public function test_user_without_permission_cannot_open_audit_log_page(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         $user = User::factory()->create([
             'email' => 'auditorless@example.test',

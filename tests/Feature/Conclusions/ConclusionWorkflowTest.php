@@ -24,6 +24,7 @@ use App\Modules\Objects\Models\City;
 use App\Modules\Objects\Models\NdtObject;
 use App\Modules\Welds\Enums\WeldStatus;
 use App\Modules\Welds\Models\Weld;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
@@ -34,7 +35,7 @@ final class ConclusionWorkflowTest extends TestCase
 
     public function test_admin_can_prepare_approve_issue_and_generate_pdf_version(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
         Storage::fake('private');
 
         $admin = User::query()->where('email', 'admin@example.test')->firstOrFail();
@@ -90,7 +91,7 @@ final class ConclusionWorkflowTest extends TestCase
 
     public function test_approved_conclusion_cannot_be_updated_directly(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
         Storage::fake('private');
 
         $admin = User::query()->where('email', 'admin@example.test')->firstOrFail();
@@ -116,12 +117,13 @@ final class ConclusionWorkflowTest extends TestCase
                 'date' => '2026-07-11',
                 'comment' => 'Попытка прямого редактирования',
             ])
-            ->assertForbidden();
+            ->assertRedirect()
+            ->assertSessionHasErrors('status');
     }
 
     public function test_new_version_supersedes_previous_current_version(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
         Storage::fake('private');
 
         $admin = User::query()->where('email', 'admin@example.test')->firstOrFail();
@@ -159,7 +161,7 @@ final class ConclusionWorkflowTest extends TestCase
 
     public function test_replacement_creates_new_draft_and_marks_original_replaced(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
         Storage::fake('private');
 
         $admin = User::query()->where('email', 'admin@example.test')->firstOrFail();
@@ -229,12 +231,14 @@ final class ConclusionWorkflowTest extends TestCase
             'personnel_number' => '100',
         ]);
 
-        $method = NdtMethod::query()->create([
-            'code' => NdtMethodCode::RK,
-            'name' => 'РК',
-            'is_active' => true,
-            'comment' => null,
-        ]);
+        $method = NdtMethod::query()->firstOrCreate(
+            ['code' => NdtMethodCode::RK->value],
+            [
+                'name' => 'РК',
+                'is_active' => true,
+                'comment' => null,
+            ],
+        );
 
         $request = NdtRequest::query()->create([
             'request_number' => 'REQ-001',

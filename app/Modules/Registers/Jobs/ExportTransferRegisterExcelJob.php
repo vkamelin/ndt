@@ -29,8 +29,7 @@ final class ExportTransferRegisterExcelJob implements ShouldQueue
         public readonly ?int $actorId = null,
         public readonly ?string $ipAddress = null,
         public readonly ?string $userAgent = null,
-    ) {
-    }
+    ) {}
 
     public function handle(): void
     {
@@ -98,7 +97,7 @@ final class ExportTransferRegisterExcelJob implements ShouldQueue
             throw new \RuntimeException('Unable to create temporary XLSX file.');
         }
 
-        $zip = new ZipArchive();
+        $zip = new ZipArchive;
         if ($zip->open($tmpPath, ZipArchive::OVERWRITE) !== true) {
             throw new \RuntimeException('Unable to create XLSX archive.');
         }

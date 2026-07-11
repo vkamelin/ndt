@@ -7,6 +7,7 @@ namespace App\Modules\Employees\Models;
 use App\Models\User;
 use App\Modules\Documents\Models\File;
 use App\Modules\Employees\Enums\EmployeeStatus;
+use App\Modules\Objects\Models\NdtObject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -45,7 +46,7 @@ final class Employee extends Model
 
     public function object(): BelongsTo
     {
-        return $this->belongsTo(\App\Modules\Objects\Models\NdtObject::class, 'object_id');
+        return $this->belongsTo(NdtObject::class, 'object_id');
     }
 
     public function position(): BelongsTo

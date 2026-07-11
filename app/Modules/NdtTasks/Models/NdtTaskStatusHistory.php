@@ -14,6 +14,11 @@ final class NdtTaskStatusHistory extends Model
     use HasFactory;
 
     /**
+     * @var string
+     */
+    protected $table = 'ndt_task_status_history';
+
+    /**
      * @var list<string>
      */
     protected $fillable = [

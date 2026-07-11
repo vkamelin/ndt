@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\Welds\Http\Requests;
 
-use App\Modules\Welds\Models\Weld;
 use Illuminate\Foundation\Http\FormRequest;
 
 final class StoreWeldRequest extends FormRequest

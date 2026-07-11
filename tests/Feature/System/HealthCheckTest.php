@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\System;
 
 use Illuminate\Contracts\Database\Connection as DatabaseConnection;
+use Illuminate\Redis\Connections\Connection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Storage;
@@ -22,7 +23,7 @@ final class HealthCheckTest extends TestCase
 
         DB::shouldReceive('connection')->once()->andReturn($databaseConnection);
 
-        $redisConnection = Mockery::mock(\Illuminate\Redis\Connections\Connection::class);
+        $redisConnection = Mockery::mock(Connection::class);
         $redisConnection->shouldReceive('ping')->once()->andReturn('PONG');
 
         Redis::shouldReceive('connection')->once()->with('default')->andReturn($redisConnection);
@@ -47,7 +48,7 @@ final class HealthCheckTest extends TestCase
 
         DB::shouldReceive('connection')->once()->andReturn($databaseConnection);
 
-        $redisConnection = Mockery::mock(\Illuminate\Redis\Connections\Connection::class);
+        $redisConnection = Mockery::mock(Connection::class);
         $redisConnection->shouldReceive('ping')->once()->andReturn('PONG');
 
         Redis::shouldReceive('connection')->once()->with('default')->andReturn($redisConnection);

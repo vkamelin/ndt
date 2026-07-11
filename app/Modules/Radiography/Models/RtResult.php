@@ -6,7 +6,6 @@ namespace App\Modules\Radiography\Models;
 
 use App\Modules\Admin\Models\FilmType;
 use App\Modules\Documents\Models\File;
-use App\Modules\Employees\Models\Employee;
 use App\Modules\NdtResults\Models\NdtResult;
 use App\Modules\Radiography\Enums\RtStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

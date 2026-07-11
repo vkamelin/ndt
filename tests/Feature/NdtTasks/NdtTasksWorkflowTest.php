@@ -9,14 +9,15 @@ use App\Modules\Auth\Enums\UserStatus;
 use App\Modules\Employees\Enums\EmployeeStatus;
 use App\Modules\Employees\Models\Employee;
 use App\Modules\Employees\Models\Position;
+use App\Modules\NdtRequests\Models\NdtRequest;
 use App\Modules\NdtTasks\Enums\NdtMethodCode;
 use App\Modules\NdtTasks\Enums\NdtTaskStatus;
 use App\Modules\NdtTasks\Models\NdtMethod;
 use App\Modules\NdtTasks\Models\NdtTask;
 use App\Modules\Objects\Models\City;
 use App\Modules\Objects\Models\NdtObject;
-use App\Modules\NdtRequests\Models\NdtRequest;
 use App\Modules\Welds\Models\Weld;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
@@ -27,7 +28,7 @@ final class NdtTasksWorkflowTest extends TestCase
 
     public function test_chief_can_assign_methods_and_create_task_with_items(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         $admin = User::query()->where('email', 'admin@example.test')->firstOrFail();
         $city = City::query()->create([
@@ -146,7 +147,7 @@ final class NdtTasksWorkflowTest extends TestCase
 
     public function test_executor_sees_only_own_tasks_and_can_complete_workflow(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         $chief = User::query()->where('email', 'admin@example.test')->firstOrFail();
         $city = City::query()->create([

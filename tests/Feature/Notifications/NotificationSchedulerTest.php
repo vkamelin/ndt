@@ -5,6 +5,15 @@ declare(strict_types=1);
 namespace Tests\Feature\Notifications;
 
 use App\Models\User;
+use App\Modules\Admin\Models\Drawing;
+use App\Modules\Admin\Models\Line;
+use App\Modules\Admin\Models\Material;
+use App\Modules\Admin\Models\Medium;
+use App\Modules\Admin\Models\NormativeDocument;
+use App\Modules\Admin\Models\PipelineCategory;
+use App\Modules\Admin\Models\Title;
+use App\Modules\Admin\Models\WeldingProcess;
+use App\Modules\Admin\Models\WeldType;
 use App\Modules\Auth\Enums\UserStatus;
 use App\Modules\Employees\Enums\EmployeeStatus;
 use App\Modules\Employees\Models\Employee;
@@ -13,6 +22,7 @@ use App\Modules\NdtRequests\Enums\NdtRequestStatus;
 use App\Modules\NdtRequests\Models\NdtRequest;
 use App\Modules\NdtTasks\DTO\AssignNdtTaskData;
 use App\Modules\NdtTasks\Models\NdtMethod;
+use App\Modules\NdtTasks\Models\NdtTask;
 use App\Modules\NdtTasks\Services\NdtTaskService;
 use App\Modules\Notifications\Enums\NotificationDeliveryStatus;
 use App\Modules\Notifications\Enums\NotificationType;
@@ -20,17 +30,9 @@ use App\Modules\Notifications\Models\Notification;
 use App\Modules\Notifications\Models\NotificationDelivery;
 use App\Modules\Objects\Models\City;
 use App\Modules\Objects\Models\NdtObject;
-use App\Modules\Admin\Models\Drawing;
-use App\Modules\Admin\Models\Line;
-use App\Modules\Admin\Models\Material;
-use App\Modules\Admin\Models\Medium;
-use App\Modules\Admin\Models\NormativeDocument;
-use App\Modules\Admin\Models\PipelineCategory;
-use App\Modules\Admin\Models\Title;
-use App\Modules\Admin\Models\WeldType;
-use App\Modules\Admin\Models\WeldingProcess;
 use App\Modules\Welds\Enums\WeldStatus;
 use App\Modules\Welds\Models\Weld;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 use Spatie\Permission\Models\Role;
@@ -42,7 +44,7 @@ final class NotificationSchedulerTest extends TestCase
 
     public function test_overdue_task_command_creates_notification(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         [$task, $assigneeUser] = $this->createAssignedTask();
         $task->forceFill(['planned_date' => now()->subDay()->toDateString()])->save();
@@ -57,7 +59,7 @@ final class NotificationSchedulerTest extends TestCase
 
     public function test_queue_health_command_alerts_admin_when_deliveries_are_stuck(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         $admin = User::query()->where('email', 'admin@example.test')->firstOrFail();
         $notification = Notification::query()->create([
@@ -91,7 +93,7 @@ final class NotificationSchedulerTest extends TestCase
     }
 
     /**
-     * @return array{0: \App\Modules\NdtTasks\Models\NdtTask, 1: User}
+     * @return array{0: NdtTask, 1: User}
      */
     private function createAssignedTask(): array
     {

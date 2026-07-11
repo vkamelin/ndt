@@ -80,7 +80,7 @@ return new class extends Migration
             'mt_results',
             'ut_results',
         ] as $tableName) {
-            Schema::create($tableName, function (Blueprint $table) use ($tableName): void {
+            Schema::create($tableName, function (Blueprint $table): void {
                 $table->id();
                 $table->foreignId('ndt_result_id')
                     ->constrained('ndt_results')

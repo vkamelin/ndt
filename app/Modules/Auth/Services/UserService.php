@@ -130,7 +130,7 @@ final class UserService
         if (! $authenticatedUser instanceof User) {
             Auth::logout();
 
-            throw new AuthenticationException();
+            throw new AuthenticationException;
         }
 
         return $authenticatedUser;

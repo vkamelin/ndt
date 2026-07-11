@@ -13,4 +13,3 @@ final class ExampleTest extends TestCase
         self::assertTrue(true);
     }
 }
-

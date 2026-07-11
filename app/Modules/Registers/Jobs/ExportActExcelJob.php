@@ -27,8 +27,7 @@ final class ExportActExcelJob implements ShouldQueue
     public function __construct(
         public readonly int $actId,
         public readonly ?int $actorId = null,
-    ) {
-    }
+    ) {}
 
     public function handle(): void
     {
@@ -75,7 +74,7 @@ final class ExportActExcelJob implements ShouldQueue
             throw new \RuntimeException('Unable to create temporary XLSX file.');
         }
 
-        $zip = new ZipArchive();
+        $zip = new ZipArchive;
         if ($zip->open($tmpPath, ZipArchive::OVERWRITE) !== true) {
             throw new \RuntimeException('Unable to create XLSX archive.');
         }

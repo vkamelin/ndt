@@ -14,6 +14,11 @@ final class ConclusionStatusHistory extends Model
     use HasFactory;
 
     /**
+     * @var string
+     */
+    protected $table = 'conclusion_status_history';
+
+    /**
      * @var list<string>
      */
     protected $fillable = [

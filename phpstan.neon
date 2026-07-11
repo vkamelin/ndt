@@ -9,6 +9,4 @@ parameters:
         - routes
         - tests
     tmpDir: storage/framework/cache/phpstan
-    checkMissingIterableValueType: false
     treatPhpDocTypesAsCertain: false
-

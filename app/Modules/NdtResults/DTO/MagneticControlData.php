@@ -17,8 +17,7 @@ final class MagneticControlData
         public readonly ?string $controlParameters,
         public readonly ?string $transferRegisterNumber,
         public readonly ?string $actNumber,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  array{

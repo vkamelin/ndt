@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Employees;
 
 use App\Models\User;
+use App\Modules\Auth\Enums\UserStatus;
 use App\Modules\Employees\Enums\EmployeeStatus;
 use App\Modules\Employees\Enums\QualificationMethod;
 use App\Modules\Employees\Models\Employee;
@@ -12,6 +13,7 @@ use App\Modules\Employees\Models\Position;
 use App\Modules\Objects\Models\City;
 use App\Modules\Objects\Models\NdtObject;
 use App\Modules\Objects\Models\NdtObject as ObjectModel;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
@@ -22,7 +24,7 @@ final class EmployeesManagementTest extends TestCase
 
     public function test_admin_can_create_employee_update_object_and_add_qualification(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         $admin = User::query()->where('email', 'admin@example.test')->firstOrFail();
         $city = City::query()->create([
@@ -106,13 +108,13 @@ final class EmployeesManagementTest extends TestCase
 
     public function test_chief_sees_only_employees_of_assigned_object(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         $chief = User::factory()->create([
             'name' => 'Начальник участка',
             'email' => 'chief-employee@example.test',
             'password' => 'password',
-            'status' => \App\Modules\Auth\Enums\UserStatus::Active,
+            'status' => UserStatus::Active,
         ]);
         $chief->assignRole(Role::findByName('Начальник участка', 'web'));
 

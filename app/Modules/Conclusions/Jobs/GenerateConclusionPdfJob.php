@@ -26,8 +26,7 @@ final class GenerateConclusionPdfJob implements ShouldQueue
         public readonly ?int $actorId = null,
         public readonly ?string $ipAddress = null,
         public readonly ?string $userAgent = null,
-    ) {
-    }
+    ) {}
 
     public function handle(ConclusionVersionService $versionService): void
     {

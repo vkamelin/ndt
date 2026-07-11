@@ -9,9 +9,7 @@ use App\Modules\Notifications\Services\NotificationService;
 
 final class NdtTaskNotificationService
 {
-    public function __construct(private readonly NotificationService $notifications)
-    {
-    }
+    public function __construct(private readonly NotificationService $notifications) {}
 
     public function notifyAssigned(NdtTask $task): void
     {

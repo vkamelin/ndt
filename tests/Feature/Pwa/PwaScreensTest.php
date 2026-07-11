@@ -6,6 +6,7 @@ namespace Tests\Feature\Pwa;
 
 use App\Models\User;
 use App\Modules\Auth\Enums\UserStatus;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
@@ -16,7 +17,7 @@ final class PwaScreensTest extends TestCase
 
     public function test_authenticated_user_can_open_pwa_screens(): void
     {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $this->seed(DatabaseSeeder::class);
 
         $user = User::query()->create([
             'name' => 'Работник PWA',
