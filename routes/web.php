@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PwaController;
-use App\Http\Controllers\WelcomeController;
 use App\Modules\Admin\Http\Controllers\ReferenceDictionaryController;
 use App\Modules\Audit\Http\Controllers\AuditLogController;
 use App\Modules\Auth\Http\Controllers\AuthenticatedSessionController;
@@ -31,7 +30,11 @@ use App\Modules\System\Http\Controllers\HealthController;
 use App\Modules\Welds\Http\Controllers\WeldController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', WelcomeController::class)->name('home');
+Route::get('/', function () {
+    return auth()->check()
+        ? redirect()->route('dashboard')
+        : redirect()->route('login');
+})->name('home');
 Route::get('/health', HealthController::class)->name('health');
 
 Route::middleware('guest')->group(function (): void {

@@ -41,7 +41,7 @@ final class AuthenticatedSessionController
         $request->session()->regenerateToken();
 
         return redirect()
-            ->route('home')
+            ->route('login')
             ->with('status', 'Вы вышли из системы.');
     }
 }

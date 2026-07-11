@@ -13,7 +13,7 @@
 <body class="bg-slate-950 text-slate-100">
     <div class="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.16),_transparent_35%),linear-gradient(180deg,_#0f172a_0%,_#020617_100%)]">
         <header class="border-b border-white/10 bg-slate-950/70 backdrop-blur">
-            <div class="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+            <div class="mx-auto flex w-full flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-[0.32em] text-sky-300/80">PWA</p>
                     <h1 class="text-xl font-semibold text-white">@yield('title', 'Рабочее место')</h1>
@@ -28,7 +28,7 @@
             </div>
         </header>
 
-        <main class="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
+        <main class="mx-auto w-full px-4 py-6 sm:px-6 lg:px-8">
             @if (session('status'))
                 <div class="mb-6 rounded-2xl border border-emerald-400/25 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100">
                     {{ session('status') }}
